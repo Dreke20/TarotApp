@@ -12,11 +12,16 @@ import '../../domain/tarot_card.dart';
 import '../../domain/tarot_deck_theme.dart';
 import '../notifiers/reading_notifier.dart';
 import '../notifiers/reading_state.dart';
+import '../../data/tarot_deck_service.dart';
+import '../widgets/ambient_audio_button.dart';
 import '../widgets/deck_pile_widget.dart';
 import '../widgets/glass_container.dart';
+import '../widgets/lunar_transit_banner.dart';
+import '../widgets/manual_card_picker_dialog.dart';
 import '../widgets/mystic_background.dart';
 import '../widgets/reading_result_sheet.dart';
 import '../widgets/spread_selector.dart';
+import '../widgets/streak_badge.dart';
 import '../widgets/tarot_card_widget.dart';
 import 'readings_history_screen.dart';
 import 'tarot_codex_screen.dart';
@@ -84,11 +89,18 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                   children: [
                     const SizedBox(height: 10),
 
-                    // Spread Selector (Daily, Three Fates, Celtic Cross)
+                    // Real-Time Lunar Transit & Cosmic Timing
+                    const LunarTransitBanner(),
+
+                    // Spread Selector (Daily, Three Fates, Celtic Cross, Love, Career, Shadow)
                     SpreadSelector(
                       selectedSpread: state.spreadType,
                       onSpreadChanged: (type) {
-                        notifier.setSpreadType(type);
+                        if (!isPro && type != SpreadType.dailyGuidance && type != SpreadType.threeFates) {
+                          OracleProModal.show(context);
+                        } else {
+                          notifier.setSpreadType(type);
+                        }
                       },
                     ),
 
@@ -272,13 +284,13 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                 ],
               ),
 
-              // Pro Upgrade Modal Trigger
-              if (!isPro)
-                IconButton(
-                  tooltip: 'Upgrade to Oracle Pro',
-                  icon: const Icon(Icons.workspace_premium, color: AppColors.goldBright, size: 21),
-                  onPressed: () => OracleProModal.show(context),
-                ),
+              // Daily Habit Streak Badge
+              const StreakBadge(),
+              const SizedBox(width: 6),
+
+              // Ambient Meditative Soundscape Button
+              const AmbientAudioButton(),
+              const SizedBox(width: 6),
 
               // Sacred Tarot Codex Action Button
               GlassContainer(
@@ -480,37 +492,79 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
 
             const SizedBox(height: 26),
 
-            // Consult Oracle Action Button
-            SizedBox(
-              width: 250,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.goldBright,
-                  foregroundColor: AppColors.backgroundDeep,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 8,
-                  shadowColor: AppColors.goldBright.withValues(alpha: 0.4),
-                ),
-                onPressed: state.isShuffling ? null : () => notifier.startReading(),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.auto_awesome, size: 18),
-                    const SizedBox(width: 8),
-                    Text(
-                      state.isShuffling ? 'SHUFFLING DECK...' : 'CONSULT ORACLE',
-                      style: GoogleFonts.cinzel(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ),
+            // Action Buttons: Automated Shuffle vs Manual Ritual Draw
+            Wrap(
+              spacing: 12,
+              runSpacing: 10,
+              alignment: WrapAlignment.center,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.goldBright,
+                    foregroundColor: AppColors.backgroundDeep,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ],
+                    elevation: 6,
+                    shadowColor: AppColors.goldBright.withValues(alpha: 0.4),
+                  ),
+                  onPressed: state.isShuffling ? null : () => notifier.startReading(),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.auto_awesome, size: 16),
+                      const SizedBox(width: 6),
+                      Text(
+                        state.isShuffling ? 'SHUFFLING...' : 'CONSULT ORACLE',
+                        style: GoogleFonts.cinzel(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.goldBright,
+                    side: const BorderSide(color: AppColors.goldMuted, width: 1.2),
+                    backgroundColor: AppColors.glassFill,
+                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  onPressed: state.isShuffling
+                      ? null
+                      : () {
+                          ManualCardPickerDialog.show(
+                            context,
+                            spreadType: state.spreadType,
+                            fullDeck: TarotDeckService().shuffleDeck(),
+                            onCardsSelected: (chosen) {
+                              notifier.setManualDrawnCards(chosen);
+                            },
+                          );
+                        },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.style, size: 16),
+                      const SizedBox(width: 6),
+                      Text(
+                        'CUT THE DECK',
+                        style: GoogleFonts.cinzel(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ] else ...[
             // Cards are dealt on the table
@@ -730,7 +784,7 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                           ),
                         ),
                         child: Text(
-                          '${index + 1}. ${_shortCelticPos(index)}',
+                          '${index + 1}. ${_shortPositionName(state.spreadType, index)}',
                           style: GoogleFonts.cinzel(
                             fontSize: 8.5,
                             color: isInspected
@@ -769,12 +823,24 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
     }
   }
 
-  String _shortCelticPos(int index) {
-    const names = [
-      'Present', 'Cross', 'Root', 'Past', 'Crown',
-      'Future', 'Self', 'World', 'Hopes', 'Outcome'
-    ];
-    return index < names.length ? names[index] : 'Card ${index + 1}';
+  String _shortPositionName(SpreadType spread, int index) {
+    if (spread == SpreadType.celticCross) {
+      const names = [
+        'Present', 'Cross', 'Root', 'Past', 'Crown',
+        'Future', 'Self', 'World', 'Hopes', 'Outcome'
+      ];
+      return index < names.length ? names[index] : 'Card ${index + 1}';
+    } else if (spread == SpreadType.heartOfTwo) {
+      const names = ['You', 'Them', 'Nexus', 'Lesson', 'Horizon'];
+      return index < names.length ? names[index] : 'Card ${index + 1}';
+    } else if (spread == SpreadType.careerCrossroads) {
+      const names = ['Station', 'Leverage', 'Obstacle', 'Action', 'Peak'];
+      return index < names.length ? names[index] : 'Card ${index + 1}';
+    } else if (spread == SpreadType.shadowMirror) {
+      const names = ['Persona', 'Shadow', 'Wound', 'Gateway'];
+      return index < names.length ? names[index] : 'Card ${index + 1}';
+    }
+    return 'Card ${index + 1}';
   }
 
   Widget _buildInspectorPill(TarotCard card, ReadingState state) {

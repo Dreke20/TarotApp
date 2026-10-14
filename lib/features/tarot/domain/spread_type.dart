@@ -34,6 +34,44 @@ enum SpreadType {
       'IX. Hopes & Fears (Inner Desires)',
       'X. Culmination (Final Outcome)',
     ],
+  ),
+  heartOfTwo(
+    id: 'heart_of_two',
+    title: 'Heart & Soulmate',
+    subtitle: '5 cards revealing emotional resonance, soulmate bonds, and relational truth',
+    cardCount: 5,
+    positionTitles: [
+      'I. Your Emotional Core',
+      'II. Their Energetic Presence',
+      'III. The Relational Nexus',
+      'IV. The Sacred Lesson / Tension',
+      'V. Highest Harmonious Horizon',
+    ],
+  ),
+  careerCrossroads(
+    id: 'career_crossroads',
+    title: 'Career Crossroads',
+    subtitle: '5 cards charting professional momentum, hidden leverage, and destiny',
+    cardCount: 5,
+    positionTitles: [
+      'I. Current Professional Station',
+      'II. Hidden Genius & Leverage',
+      'III. The True Impediment',
+      'IV. Decisive Tactical Step',
+      'V. Peak Career Manifestation',
+    ],
+  ),
+  shadowMirror(
+    id: 'shadow_mirror',
+    title: 'Shadow Work',
+    subtitle: '4 cards peering behind the ego persona to illuminate hidden unconscious truths',
+    cardCount: 4,
+    positionTitles: [
+      'I. The Persona (The Mask)',
+      'II. The Shadow (The Repressed)',
+      'III. The Karmic Wound',
+      'IV. Gateway to Integration',
+    ],
   );
 
   const SpreadType({

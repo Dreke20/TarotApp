@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/services/celestial_voice_service.dart';
 import '../../domain/reading.dart';
 import '../notifiers/reading_notifier.dart';
 import 'glass_container.dart';
@@ -50,10 +51,18 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
   void initState() {
     super.initState();
     _notesController = TextEditingController(text: widget.reading.notes);
+    CelestialVoiceService.instance.init();
+    CelestialVoiceService.instance.onStarted = () {
+      if (mounted) setState(() => _isPlayingNarration = true);
+    };
+    CelestialVoiceService.instance.onStopped = () {
+      if (mounted) setState(() => _isPlayingNarration = false);
+    };
   }
 
   @override
   void dispose() {
+    CelestialVoiceService.instance.stop();
     _followUpController.dispose();
     _notesController.dispose();
     super.dispose();
@@ -186,8 +195,14 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
 
                     // Spoken Prophecy Voice Narration Bar
                     GestureDetector(
-                      onTap: () {
-                        setState(() => _isPlayingNarration = !_isPlayingNarration);
+                      onTap: () async {
+                        final voice = CelestialVoiceService.instance;
+                        if (_isPlayingNarration) {
+                          await voice.stop();
+                        } else {
+                          final textToSpeak = "${reading.summary} ${reading.interpretation} Guidance: ${reading.advice}";
+                          await voice.speak(textToSpeak);
+                        }
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),

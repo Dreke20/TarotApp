@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tarot_app/core/utils/lunar_calculator.dart';
 import 'package:tarot_app/features/auth/domain/user_profile.dart';
 import 'package:tarot_app/features/tarot/data/tarot_deck_service.dart';
 import 'package:tarot_app/features/tarot/domain/oracle_message.dart';
@@ -84,6 +85,33 @@ void main() {
       expect(profile.zodiacSign, 'Aries');
       expect(profile.moonSign, 'Scorpio');
       expect(profile.risingSign, 'Leo');
+    });
+
+    test('Specialized Spreads draw accurate card counts and positions', () {
+      final service = TarotDeckService();
+
+      final heart = service.drawSpread(spreadType: SpreadType.heartOfTwo);
+      expect(heart.length, 5);
+      expect(heart[0].positionName, contains('Emotional Core'));
+      expect(heart[4].positionName, contains('Harmonious Horizon'));
+
+      final career = service.drawSpread(spreadType: SpreadType.careerCrossroads);
+      expect(career.length, 5);
+      expect(career[0].positionName, contains('Professional Station'));
+      expect(career[4].positionName, contains('Peak Career'));
+
+      final shadow = service.drawSpread(spreadType: SpreadType.shadowMirror);
+      expect(shadow.length, 4);
+      expect(shadow[0].positionName, contains('Persona'));
+      expect(shadow[3].positionName, contains('Integration'));
+    });
+
+    test('LunarCalculator calculates valid moon phase and illumination', () {
+      final lunar = LunarCalculator.getTodayLunarInfo();
+      expect(lunar.phase.title.isNotEmpty, isTrue);
+      expect(lunar.phase.symbol.isNotEmpty, isTrue);
+      expect(lunar.illuminationPercent, inInclusiveRange(0.0, 100.0));
+      expect(lunar.moonZodiac.isNotEmpty, isTrue);
     });
   });
 

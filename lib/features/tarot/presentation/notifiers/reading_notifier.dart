@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/services/sensory_service.dart';
+import '../../../../core/services/streak_service.dart';
 import '../../../../core/supabase/supabase_client.dart';
 import '../../../auth/presentation/auth_notifier.dart';
 import '../../data/tarot_deck_service.dart';
@@ -8,6 +9,7 @@ import '../../domain/altar_theme.dart';
 import '../../domain/oracle_message.dart';
 import '../../domain/reading.dart';
 import '../../domain/spread_type.dart';
+import '../../domain/tarot_card.dart';
 import '../../domain/tarot_deck_theme.dart';
 import 'reading_state.dart';
 
@@ -108,6 +110,29 @@ class ReadingNotifier extends _$ReadingNotifier {
     state = state.copyWith(isDealing: false);
   }
 
+  /// Sets manually selected cards from the "Cut the Deck" sacred ritual
+  Future<void> setManualDrawnCards(List<TarotCard> selectedCards) async {
+    final positionedCards = <TarotCard>[];
+    for (int i = 0; i < selectedCards.length; i++) {
+      final pos = i < state.spreadType.positionTitles.length
+          ? state.spreadType.positionTitles[i]
+          : 'Card ${i + 1}';
+      positionedCards.add(selectedCards[i].copyWith(positionName: pos));
+    }
+
+    state = state.copyWith(
+      drawnCards: positionedCards,
+      revealedIndices: {},
+      selectedInspectIndex: null,
+      currentReading: null,
+      isDealing: true,
+    );
+
+    _sensory.playCardFlipSound();
+    await Future.delayed(const Duration(milliseconds: 300));
+    state = state.copyWith(isDealing: false);
+  }
+
   /// Flips a specific card at index face-up
   Future<void> flipCard(int index) async {
     if (index < 0 || index >= state.drawnCards.length) return;
@@ -192,6 +217,9 @@ class ReadingNotifier extends _$ReadingNotifier {
         currentReading: savedReading,
         history: updatedHistory,
       );
+
+      await StreakService.recordReadingToday();
+      ref.invalidate(streakProvider);
     } catch (e) {
       state = state.copyWith(
         isConsultingOracle: false,

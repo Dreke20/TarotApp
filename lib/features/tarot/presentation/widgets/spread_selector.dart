@@ -38,6 +38,24 @@ class SpreadSelector extends StatelessWidget {
             icon: Icons.auto_awesome_motion,
             isPro: true,
           ),
+          const SizedBox(width: 10),
+          _buildSpreadOption(
+            type: SpreadType.heartOfTwo,
+            icon: Icons.favorite,
+            isPro: true,
+          ),
+          const SizedBox(width: 10),
+          _buildSpreadOption(
+            type: SpreadType.careerCrossroads,
+            icon: Icons.explore,
+            isPro: true,
+          ),
+          const SizedBox(width: 10),
+          _buildSpreadOption(
+            type: SpreadType.shadowMirror,
+            icon: Icons.visibility,
+            isPro: true,
+          ),
         ],
       ),
     );

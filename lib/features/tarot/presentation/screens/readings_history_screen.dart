@@ -148,6 +148,9 @@ class _ReadingsHistoryScreenState extends ConsumerState<ReadingsHistoryScreen> {
             ),
             const SizedBox(height: 14),
 
+            // AI Archetypal Pattern Insights
+            _buildArchetypalPatternCard(state.history),
+
             // Journal List
             Expanded(
               child: filteredHistory.isEmpty
@@ -380,6 +383,121 @@ class _ReadingsHistoryScreenState extends ConsumerState<ReadingsHistoryScreen> {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildArchetypalPatternCard(List<Reading> history) {
+    if (history.isEmpty) return const SizedBox.shrink();
+
+    final cardCounts = <String, int>{};
+    final elementCounts = <String, int>{'Fire': 0, 'Water': 0, 'Air': 0, 'Earth': 0};
+
+    for (final reading in history) {
+      for (final card in reading.cards) {
+        cardCounts[card.name] = (cardCounts[card.name] ?? 0) + 1;
+        if (card.element != null && elementCounts.containsKey(card.element)) {
+          elementCounts[card.element!] = (elementCounts[card.element!] ?? 0) + 1;
+        }
+      }
+    }
+
+    final topCards = cardCounts.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final mostFrequent = topCards.isNotEmpty ? topCards.first.key : 'None';
+    final topElement = elementCounts.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final dominantElement = topElement.first.key;
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.backgroundMidnight.withValues(alpha: 0.75),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.goldBright.withValues(alpha: 0.4)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.psychology, size: 16, color: AppColors.goldBright),
+              const SizedBox(width: 8),
+              Text(
+                'AI ARCHETYPAL PATTERNS',
+                style: GoogleFonts.cinzel(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.goldBright,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${history.length} READINGS',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 9.5,
+                  color: AppColors.textMuted,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.glassFill,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.glassBorder),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'GUIDING ARCHETYPE',
+                        style: GoogleFonts.cinzel(fontSize: 8.5, color: AppColors.textSecondary),
+                      ),
+                      Text(
+                        mostFrequent,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.cinzel(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.glassFill,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.glassBorder),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'DOMINANT ELEMENT',
+                        style: GoogleFonts.cinzel(fontSize: 8.5, color: AppColors.textSecondary),
+                      ),
+                      Text(
+                        dominantElement.toUpperCase(),
+                        style: GoogleFonts.cinzel(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.goldBright),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
