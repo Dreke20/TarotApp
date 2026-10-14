@@ -84,15 +84,19 @@ timeline
 ---
 
 ### Beyond v1: Post-Launch & Production Operations 🔮
-1. **Live Cloud Provisioning:**
-   - Deploy Supabase Edge Function `tarot-reader` to your live Supabase project.
-   - Set `GEMINI_API_KEY` in Supabase Secrets for live Vertex/Gemini Flash AI inference.
-2. **Binary Compilation:**
+1. **Live Cloud Provisioning (Completed ✅):**
+   - [x] Connected live Supabase project `ryxzludoiffboqwkhqqb` (`https://ryxzludoiffboqwkhqqb.supabase.co`).
+   - [x] Applied PostgreSQL migration with `profiles` and `readings` tables and strict Row Level Security.
+   - [x] Deployed `tarot-reader` Edge Function with Gemini inference and conversational follow-up chat.
+   - [x] Configured encrypted `GEMINI_API_KEY` secret in Supabase Cloud with resilient multi-model failover (`gemini-3.1-flash-lite`, `gemini-3.8-flash`).
+2. **Card Art Asset Pipeline (Completed ✅):**
+   - [x] Generated 22 custom high-resolution Major Arcana artworks in 2:3 tarot ratio under `assets/cards/`.
+   - [x] Built the Sacred Tarot Codex (`TarotCodexScreen`) with full deck encyclopedia, search, filtering, and high-res modal inspector.
+3. **Git Repository Setup (Completed ✅):**
+   - [x] Initialized Git and pushed production releases to `https://github.com/Dreke20/TarotApp.git` on `main`.
+4. **Binary Compilation & Distribution:**
    - Android: `flutter build appbundle --release` (or `flutter build apk`)
-   - iOS: `flutter build ipa --release`
    - Web: `flutter build web --release`
-3. **Card Art Asset Pipeline:**
-   - Generate high-resolution card artwork for all 78 tarot cards (or Major Arcana) into `assets/cards/`.
-4. **Git Repository Setup:**
-   - Initialize git version control and create initial production commit.
+   - iOS: `flutter build ipa --release`
+
 
