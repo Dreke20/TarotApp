@@ -1,0 +1,17 @@
+# Supabase CLI configuration
+project_id = "tarot-app"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql"]
+
+[db]
+port = 54322
+
+[studio]
+enabled = true
+port = 54323
+
+[functions.tarot-reader]
+verify_jwt = false

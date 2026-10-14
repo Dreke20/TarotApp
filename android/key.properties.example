@@ -1,0 +1,7 @@
+# Production Android Release Keystore Configuration Example
+# Copy this file to android/key.properties and fill in your real credentials:
+#
+# storePassword=your-keystore-password
+# keyPassword=your-key-password
+# keyAlias=oraculum-key
+# storeFile=../oraculum-release-key.jks
