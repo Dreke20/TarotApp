@@ -5,6 +5,7 @@ import '../../domain/spread_type.dart';
 import '../../domain/tarot_card.dart';
 import '../notifiers/reading_notifier.dart';
 import '../notifiers/reading_state.dart';
+import 'altar_cloth_widget.dart';
 import 'tarot_card_widget.dart';
 
 /// Renders the spread layout according to the active [SpreadType]
@@ -28,35 +29,44 @@ class SpreadBoardView extends StatelessWidget {
       final card = drawnCards.first;
       final isFlipped = revealed.contains(0);
 
-      return Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.glassFillStrong,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.glassBorder),
-            ),
-            child: Text(
-              'TODAY\'S GUIDANCE',
-              style: GoogleFonts.cinzel(
-                fontSize: 10,
-                color: AppColors.goldBright,
-                fontWeight: FontWeight.w600,
+      return AltarClothWidget(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+              decoration: BoxDecoration(
+                color: AppColors.glassFillStrong,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.goldBright.withValues(alpha: 0.5)),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.goldBright.withValues(alpha: 0.25),
+                    blurRadius: 12,
+                  ),
+                ],
+              ),
+              child: Text(
+                'TODAY\'S SACRED GUIDANCE',
+                style: GoogleFonts.cinzel(
+                  fontSize: 10.5,
+                  color: AppColors.goldBright,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 12),
-          TarotCardWidget(
-            card: card,
-            isFaceUp: isFlipped,
-            width: 140,
-            height: 230,
-            index: 0,
-            deckTheme: state.deckTheme,
-            onTap: () => notifier.flipCard(0),
-          ),
-        ],
+            const SizedBox(height: 16),
+            TarotCardWidget(
+              card: card,
+              isFaceUp: isFlipped,
+              width: 170,
+              height: 275,
+              index: 0,
+              deckTheme: state.deckTheme,
+              onTap: () => notifier.flipCard(0),
+            ),
+          ],
+        ),
       );
     } else if (state.spreadType == SpreadType.threeFates) {
       // The Three Fates Spread
@@ -199,6 +209,13 @@ class SpreadBoardView extends StatelessWidget {
       return index < names.length ? names[index] : 'Card ${index + 1}';
     } else if (spread == SpreadType.shadowMirror) {
       const names = ['Persona', 'Shadow', 'Wound', 'Gateway'];
+      return index < names.length ? names[index] : 'Card ${index + 1}';
+    } else if (spread == SpreadType.wheelOfTheYear) {
+      const names = [
+        '1st Aries', '2nd Taurus', '3rd Gemini', '4th Cancer',
+        '5th Leo', '6th Virgo', '7th Libra', '8th Scorpio',
+        '9th Sag', '10th Cap', '11th Aqua', '12th Pisces'
+      ];
       return index < names.length ? names[index] : 'Card ${index + 1}';
     }
     return 'Card ${index + 1}';

@@ -19,6 +19,13 @@ import '../widgets/reading_result_sheet.dart';
 import '../widgets/spread_board_view.dart';
 import '../widgets/spread_selector.dart';
 import '../widgets/tarot_header_bar.dart';
+import '../widgets/sacred_mystic_dock.dart';
+import '../../../astrology/presentation/screens/natal_chart_screen.dart';
+import '../../../collective/presentation/screens/collective_sanctuary_screen.dart';
+import '../../../divination/presentation/screens/iching_screen.dart';
+import '../../../divination/presentation/screens/rune_casting_screen.dart';
+import '../../../dream/presentation/screens/dream_journal_screen.dart';
+import '../../../lens/presentation/screens/tarot_lens_screen.dart';
 
 /// The central Tarot Altar Table where cards are shuffled, drawn, flipped in 3D,
 /// and synthesized by the AI Oracle with multi-deck themes, Celtic Cross, and astrological alignment.
@@ -69,57 +76,72 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
       resizeToAvoidBottomInset: false,
       body: MysticBackground(
         altarTheme: state.altarTheme,
-        child: Column(
-          children: [
-            // Header Bar
-            TarotHeaderBar(state: state, isPro: isPro),
-
-            // Main Content Area
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-
-                    // Real-Time Lunar Transit & Cosmic Timing
-                    const LunarTransitBanner(),
-
-                    // Spread Selector
-                    SpreadSelector(
-                      selectedSpread: state.spreadType,
-                      onSpreadChanged: (type) {
-                        if (!isPro &&
-                            type != SpreadType.dailyGuidance &&
-                            type != SpreadType.threeFates) {
-                          OracleProModal.show(context);
-                        } else {
-                          notifier.setSpreadType(type);
-                        }
-                      },
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    // Question Input with prompt chips
-                    OracleQuestionBar(
-                      controller: _questionController,
-                      notifier: notifier,
-                      quickPrompts: _quickPrompts,
-                    ),
-
-                    const SizedBox(height: 18),
-
-                    // Altar Table
-                    _buildAltarTable(context, state, notifier),
-
-                    const SizedBox(height: 24),
-                  ],
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Constrained Centered Header Bar
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1040),
+                  child: TarotHeaderBar(state: state, isPro: isPro),
                 ),
               ),
-            ),
-          ],
+
+              // Main Content Area (Centered & Proportioned)
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1040),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 8),
+
+                          // Real-Time Lunar Transit & Cosmic Timing
+                          const LunarTransitBanner(),
+
+                          // Spread Selector
+                          SpreadSelector(
+                            selectedSpread: state.spreadType,
+                            onSpreadChanged: (type) {
+                              if (!isPro &&
+                                  type != SpreadType.dailyGuidance &&
+                                  type != SpreadType.threeFates) {
+                                OracleProModal.show(context);
+                              } else {
+                                notifier.setSpreadType(type);
+                              }
+                            },
+                          ),
+
+                          const SizedBox(height: 14),
+
+                          // Question Input with prompt chips & voice invocation
+                          OracleQuestionBar(
+                            controller: _questionController,
+                            notifier: notifier,
+                            quickPrompts: _quickPrompts,
+                          ),
+
+                          const SizedBox(height: 18),
+
+                          // Altar Table
+                          _buildAltarTable(context, state, notifier),
+
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // Sacred Mystic Bottom Dock
+              const SacredMysticDock(),
+            ],
+          ),
         ),
       ),
     );
@@ -245,6 +267,83 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                 ),
               ],
             ),
+
+            const SizedBox(height: 22),
+            const Divider(color: AppColors.glassBorder, height: 1),
+            const SizedBox(height: 14),
+
+            Text(
+              'SACRED ORACLE SANCTUARIES',
+              style: GoogleFonts.cinzel(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: AppColors.etherealLavender,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Row(
+                children: [
+                  _buildQuickPortalChip(
+                    context,
+                    glyph: 'ᚦ',
+                    title: 'Elder Runes',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const RuneCastingScreen()),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickPortalChip(
+                    context,
+                    glyph: '☯',
+                    title: 'I Ching',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const IChingScreen()),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickPortalChip(
+                    context,
+                    glyph: '🌙',
+                    title: 'Dream Journal',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const DreamJournalScreen()),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickPortalChip(
+                    context,
+                    glyph: '🪐',
+                    title: 'Natal Chart',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const NatalChartScreen()),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickPortalChip(
+                    context,
+                    glyph: '✨',
+                    title: 'Collective Pulse',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const CollectiveSanctuaryScreen()),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickPortalChip(
+                    context,
+                    glyph: '🔍',
+                    title: 'Tarot Lens',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const TarotLensScreen()),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ] else ...[
             // Cards are dealt on the table
             Row(
@@ -337,6 +436,40 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
             ],
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildQuickPortalChip(
+    BuildContext context, {
+    required String glyph,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          color: AppColors.glassFillStrong,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.goldBright.withValues(alpha: 0.35)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(glyph, style: const TextStyle(fontSize: 14)),
+            const SizedBox(width: 6),
+            Text(
+              title,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
