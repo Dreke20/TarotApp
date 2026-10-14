@@ -56,3 +56,7 @@ android/key.properties
 .env
 .env.*
 !.env.example
+
+# Supabase CLI temp files
+supabase/.temp/
+
