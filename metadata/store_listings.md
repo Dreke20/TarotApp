@@ -3,8 +3,8 @@
 ## 🏷️ Metadata Specifications
 
 ### App Name
-- **Google Play:** `Oraculum: AI Tarot Reader & Daily Astrology` *(49 / 50 chars)*
-- **Apple App Store:** `Oraculum • AI Tarot Reader` *(27 / 30 chars)*
+- **Google Play:** `Astral Guidance: AI Tarot, Runes & Astrology` *(47 / 50 chars)*
+- **Apple App Store:** `Astral Guidance • AI Tarot` *(26 / 30 chars)*
 
 ### Subtitle (iOS)
 `Daily Spreads & Cosmic Oracle` *(29 / 30 chars)*
@@ -20,9 +20,9 @@
 ## 📜 Full Store Description
 
 ```markdown
-Step into the celestial sanctuary. **Oraculum** reimagines ancient divination for the modern seeker through high-fidelity 3D card animation, empathetic Google Vertex AI (Gemini Flash), and deep astrological synthesis.
+Step into the celestial sanctuary. **Astral Guidance** reimagines ancient divination for the modern seeker through high-fidelity 3D card animation, empathetic Google Vertex AI (Gemini Flash), and deep astrological synthesis.
 
-Whether you seek clarity on love, career, crossroads, or personal awakening, Oraculum casts light upon the unseen currents of your life.
+Whether you seek clarity on love, career, crossroads, or personal awakening, Astral Guidance casts light upon the unseen currents of your life.
 
 ### 🔮 SACRED ENGINE & SPREADS
 • **Daily Guidance (1 Card):** Align with the morning energies and receive a focal archetype for your day.

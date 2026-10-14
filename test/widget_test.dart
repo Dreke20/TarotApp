@@ -197,7 +197,7 @@ void main() {
   });
 
   group('TarotApp Smoke Test', () {
-    testWidgets('App renders Oraculum altar', (WidgetTester tester) async {
+    testWidgets('App renders Astral Guidance altar', (WidgetTester tester) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: TarotApp(),
@@ -206,7 +206,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.text('ORACULUM'), findsOneWidget);
+      expect(find.text('ASTRAL GUIDANCE'), findsOneWidget);
       expect(find.text('CONSULT ORACLE'), findsOneWidget);
     });
   });

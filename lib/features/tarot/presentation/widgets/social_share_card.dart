@@ -55,12 +55,12 @@ class SocialShareCardDialog extends StatelessWidget {
                         const Icon(Icons.auto_awesome, color: AppColors.goldBright, size: 16),
                         const SizedBox(width: 6),
                         Text(
-                          'ORACULUM',
+                          'ASTRAL GUIDANCE',
                           style: GoogleFonts.cinzel(
-                            fontSize: 14,
+                            fontSize: 13,
                             fontWeight: FontWeight.bold,
                             color: AppColors.goldBright,
-                            letterSpacing: 2.5,
+                            letterSpacing: 2.0,
                           ),
                         ),
                       ],
@@ -142,7 +142,7 @@ class SocialShareCardDialog extends StatelessWidget {
 
                 // Footer watermark
                 Text(
-                  'Channel your reading on Oraculum',
+                  'Channel your reading on Astral Guidance',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 9,
                     color: AppColors.textMuted,

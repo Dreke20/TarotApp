@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 enum TarotDeckTheme {
   classic(
     id: 'classic',
-    title: 'Whispers & Warnings',
+    title: 'Astral Guidance',
     subtitle: 'Obsidian velvet with imperial metallic gold foil',
     backGradient: LinearGradient(
       begin: Alignment.topLeft,

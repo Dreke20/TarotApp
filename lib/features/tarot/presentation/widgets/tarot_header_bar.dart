@@ -80,9 +80,9 @@ class TarotHeaderBar extends ConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'ORACULUM',
+                            'ASTRAL GUIDANCE',
                             style: GoogleFonts.cinzel(
-                              fontSize: 16,
+                              fontSize: 15,
                               fontWeight: FontWeight.bold,
                               color: AppColors.goldBright,
                               letterSpacing: 2.0,
@@ -111,7 +111,7 @@ class TarotHeaderBar extends ConsumerWidget {
                       Text(
                         authProfile?.zodiacSign != null
                             ? 'ALIGNED WITH ${authProfile!.zodiacSign!.toUpperCase()}'
-                            : 'WHISPERS & WARNINGS',
+                            : 'SACRED ORACULUM',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.cinzel(

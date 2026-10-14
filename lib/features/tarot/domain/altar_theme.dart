@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 enum AltarTheme {
   midnightNebula(
     id: 'midnight_nebula',
-    title: 'Whispers & Warnings',
+    title: 'Astral Guidance',
     primaryColor: Color(0xFFD4AF37),
     secondaryColor: Color(0xFFFFAE42),
     backgroundGradient: LinearGradient(

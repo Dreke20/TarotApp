@@ -1,7 +1,7 @@
 /// User-facing app strings and sacred lore.
 class AppStrings {
-  static const String appName = 'Oraculum';
-  static const String appSubtitle = 'AI Tarot Sanctuary';
+  static const String appName = 'Astral Guidance';
+  static const String appSubtitle = 'Sacred Divination Sanctuary';
 
   static const String consultOracle = 'CONSULT ORACLE';
   static const String shuffling = 'SHUFFLING SACRED DECK...';
