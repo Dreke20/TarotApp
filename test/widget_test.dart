@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tarot_app/core/utils/lunar_calculator.dart';
+import 'package:tarot_app/features/auth/data/auth_repository.dart';
 import 'package:tarot_app/features/auth/domain/user_profile.dart';
 import 'package:tarot_app/features/tarot/data/tarot_deck_service.dart';
 import 'package:tarot_app/features/tarot/domain/oracle_message.dart';
@@ -85,6 +87,13 @@ void main() {
       expect(profile.zodiacSign, 'Aries');
       expect(profile.moonSign, 'Scorpio');
       expect(profile.risingSign, 'Leo');
+    });
+
+    test('AuthRepository verifyAndActivatePro updates profile in local/offline fallback', () async {
+      SharedPreferences.setMockInitialValues({});
+      final repo = AuthRepository();
+      final updated = await repo.verifyAndActivatePro(action: 'subscribe', plan: 'yearly');
+      expect(updated.isPro, isTrue);
     });
 
     test('Specialized Spreads draw accurate card counts and positions', () {

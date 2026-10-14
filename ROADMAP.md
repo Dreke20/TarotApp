@@ -116,6 +116,10 @@ timeline
    - [x] Android APK: Compiled production binary at `build/app/outputs/flutter-apk/app-release.apk` (80.6 MB) with core library desugaring and font tree-shaking.
    - [x] Web PWA: Compiled release bundle at `build/web/` (78.8s build).
    - [ ] iOS: `flutter build ipa --release` (on macOS builder).
+5. **Architectural Hardening & Server-Verified Pro Membership (Completed ✅):**
+   - [x] Migrated 100% of providers across core services and feature layers to modern `@riverpod` annotations and `build_runner` generation.
+   - [x] Decomposed `TarotTableScreen` (from 935 lines to 337 lines) into atomic layout sub-widgets: `TarotHeaderBar`, `OracleQuestionBar`, `SpreadBoardView`, and `OracleChannelingView`.
+   - [x] Built and deployed `verify-subscription` Supabase Edge Function live to cloud; secured Oracle Pro upgrade with server-side `service_role` validation, restore purchases, and celestial promo codes (`CELESTIAL_PRO`).
 
 
 

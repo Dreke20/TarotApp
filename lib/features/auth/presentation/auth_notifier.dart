@@ -76,10 +76,34 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
+  Future<bool> activatePro({
+    String action = 'subscribe',
+    String plan = 'yearly',
+    String? promoCode,
+  }) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      final profile = await _repository.verifyAndActivatePro(
+        action: action,
+        plan: plan,
+        promoCode: promoCode,
+      );
+      state = state.copyWith(profile: profile, isLoading: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      return false;
+    }
+  }
+
   Future<void> setProStatus(bool isPro) async {
+    if (isPro) {
+      await activatePro();
+      return;
+    }
     final current = state.profile;
     if (current == null) return;
-    final updated = current.copyWith(isPro: isPro);
+    final updated = current.copyWith(isPro: false);
     try {
       await _repository.updateProfile(updated);
       state = state.copyWith(profile: updated, errorMessage: null);

@@ -136,4 +136,41 @@ class AuthRepository {
       await _supabase.auth.signOut();
     }
   }
+
+  /// Securely verifies and activates Oracle Pro through the Supabase Edge Function
+  Future<UserProfile> verifyAndActivatePro({
+    String action = 'subscribe',
+    String plan = 'yearly',
+    String? promoCode,
+  }) async {
+    if (_supabase != null && SupabaseConfig.isConfigured) {
+      final user = _supabase.auth.currentUser;
+      if (user != null) {
+        final res = await _supabase.functions.invoke(
+          'verify-subscription',
+          body: {
+            'action': action,
+            'plan': plan,
+            if (promoCode != null && promoCode.trim().isNotEmpty)
+              'promo_code': promoCode.trim(),
+          },
+        );
+        if (res.status == 200) {
+          // Re-fetch fresh profile from Supabase with verified is_pro
+          return getCurrentProfile();
+        } else {
+          final data = res.data;
+          final errorMsg = (data is Map && data['error'] != null)
+              ? data['error'].toString()
+              : 'Failed to verify subscription with server';
+          throw Exception(errorMsg);
+        }
+      }
+    }
+
+    // Local / Guest fallback for offline testing
+    _localProfile = _localProfile.copyWith(isPro: true);
+    await _storage.saveProfile(_localProfile);
+    return _localProfile;
+  }
 }

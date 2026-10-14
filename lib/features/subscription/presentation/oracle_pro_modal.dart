@@ -23,6 +23,105 @@ class OracleProModal extends ConsumerStatefulWidget {
 
 class _OracleProModalState extends ConsumerState<OracleProModal> {
   bool _isAnnual = true;
+  bool _isSubmitting = false;
+  bool _showPromoField = false;
+  final TextEditingController _promoController = TextEditingController();
+
+  @override
+  void dispose() {
+    _promoController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleUpgrade() async {
+    setState(() => _isSubmitting = true);
+    final notifier = ref.read(authNotifierProvider.notifier);
+    final success = await notifier.activatePro(
+      action: 'subscribe',
+      plan: _isAnnual ? 'yearly' : 'monthly',
+    );
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
+
+    if (success) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✨ Welcome to Oracle Pro! All celestial mysteries are unlocked.'),
+          backgroundColor: AppColors.cosmicSurface,
+        ),
+      );
+    } else {
+      final error = ref.read(authNotifierProvider).errorMessage ??
+          'Subscription could not be verified by the celestial server.';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: Colors.red.shade900,
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleRedeemPromo() async {
+    final code = _promoController.text.trim();
+    if (code.isEmpty) return;
+
+    setState(() => _isSubmitting = true);
+    final notifier = ref.read(authNotifierProvider.notifier);
+    final success = await notifier.activatePro(
+      action: 'redeem_promo',
+      promoCode: code,
+    );
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
+
+    if (success) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✨ Celestial code "$code" redeemed! Welcome to Oracle Pro.'),
+          backgroundColor: AppColors.cosmicSurface,
+        ),
+      );
+    } else {
+      final error = ref.read(authNotifierProvider).errorMessage ??
+          'Invalid or expired celestial code.';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: Colors.red.shade900,
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleRestore() async {
+    setState(() => _isSubmitting = true);
+    final notifier = ref.read(authNotifierProvider.notifier);
+    final success = await notifier.activatePro(
+      action: 'restore_purchase',
+    );
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
+
+    if (success) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✨ Oracle Pro purchases restored successfully.'),
+          backgroundColor: AppColors.cosmicSurface,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('No active Oracle Pro subscription found to restore.'),
+          backgroundColor: Colors.red.shade900,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -182,6 +281,87 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                       ],
                     ),
                     const SizedBox(height: 16),
+
+                    // Promo Code Toggle / Input
+                    if (!_showPromoField)
+                      TextButton.icon(
+                        icon: const Icon(Icons.confirmation_number_outlined,
+                            size: 15, color: AppColors.etherealLavender),
+                        label: Text(
+                          'Redeem Celestial Code',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 11,
+                            color: AppColors.etherealLavender,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                        onPressed: () => setState(() => _showPromoField = true),
+                      )
+                    else ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _promoController,
+                              textCapitalization: TextCapitalization.characters,
+                              style: GoogleFonts.cinzel(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.goldBright,
+                                letterSpacing: 1.5,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'ENTER CODE (e.g. CELESTIAL_PRO)',
+                                hintStyle: GoogleFonts.plusJakartaSans(
+                                  fontSize: 10,
+                                  color: AppColors.textMuted,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 10),
+                                filled: true,
+                                fillColor: AppColors.glassFill,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: const BorderSide(
+                                      color: AppColors.glassBorder),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.goldBright,
+                              foregroundColor: AppColors.backgroundDeep,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: _isSubmitting ? null : _handleRedeemPromo,
+                            child: Text(
+                              'APPLY',
+                              style: GoogleFonts.cinzel(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+
+                    // Restore Purchases Link
+                    TextButton(
+                      onPressed: _isSubmitting ? null : _handleRestore,
+                      child: Text(
+                        'Restore Previous Purchases',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -200,26 +380,25 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                   ),
                   elevation: 6,
                 ),
-                onPressed: () async {
-                  await ref.read(authNotifierProvider.notifier).setProStatus(true);
-                  if (context.mounted) {
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('✨ Welcome to Oracle Pro! All celestial mysteries are unlocked.'),
-                        backgroundColor: AppColors.cosmicSurface,
+                onPressed: _isSubmitting ? null : _handleUpgrade,
+                child: _isSubmitting
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.backgroundDeep),
+                        ),
+                      )
+                    : Text(
+                        'UPGRADE TO ORACLE PRO',
+                        style: GoogleFonts.cinzel(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                        ),
                       ),
-                    );
-                  }
-                },
-                child: Text(
-                  'UPGRADE TO ORACLE PRO',
-                  style: GoogleFonts.cinzel(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.5,
-                  ),
-                ),
               ),
             ),
           ],
