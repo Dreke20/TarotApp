@@ -81,7 +81,10 @@ class _TarotLensScreenState extends State<TarotLensScreen> {
             ],
           ),
         ),
-        child: SingleChildScrollView(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 880),
+            child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
           physics: const BouncingScrollPhysics(),
           child: Column(
@@ -276,8 +279,10 @@ class _TarotLensScreenState extends State<TarotLensScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  ),
+);
+}
 
   Widget _buildCardAnalysisCard(TarotCard card) {
     return GlassContainer(

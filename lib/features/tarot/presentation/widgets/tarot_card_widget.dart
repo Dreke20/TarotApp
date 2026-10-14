@@ -153,23 +153,20 @@ class _TarotCardWidgetState extends State<TarotCardWidget>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                color: AppColors.goldMuted.withValues(alpha: 0.4),
-                width: 1.0,
+                color: widget.deckTheme.accentColor.withValues(alpha: 0.35),
+                width: 0.8,
               ),
             ),
           ),
 
           // Celestial center geometry
-          CustomPaint(
-            size: Size(widget.width * 0.75, widget.height * 0.65),
-            painter: _CardBackPatternPainter(),
-          ),
-
-          // Central mystic star
-          Icon(
-            Icons.auto_awesome,
-            color: widget.deckTheme.accentColor,
-            size: 22,
+          Positioned.fill(
+            child: Padding(
+              padding: const EdgeInsets.all(7.0),
+              child: CustomPaint(
+                painter: CardBackPatternPainter(accentColor: widget.deckTheme.accentColor),
+              ),
+            ),
           ),
         ],
       ),
@@ -495,35 +492,102 @@ class _TarotCardWidgetState extends State<TarotCardWidget>
 }
 
 /// Custom painter rendering sacred celestial geometry on the back of each card
-class _CardBackPatternPainter extends CustomPainter {
+class CardBackPatternPainter extends CustomPainter {
+  final Color? accentColor;
+
+  const CardBackPatternPainter({this.accentColor});
+
   @override
   void paint(Canvas canvas, Size size) {
+    final goldColor = accentColor ?? AppColors.goldBright;
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = min(size.width, size.height) * 0.42;
+    final minDim = min(size.width, size.height);
+    final radius = minDim * 0.44;
 
-    final paint = Paint()
-      ..color = AppColors.goldMuted.withValues(alpha: 0.32)
+    final primaryGold = Paint()
+      ..color = goldColor.withValues(alpha: 0.55)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
+      ..strokeWidth = 1.2;
 
-    // Concentric rings
-    canvas.drawCircle(center, radius, paint);
-    canvas.drawCircle(center, radius * 0.7, paint);
-    canvas.drawCircle(center, radius * 0.4, paint);
+    final hairlineGold = Paint()
+      ..color = goldColor.withValues(alpha: 0.3)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8;
 
-    // Sacred Star diagonals
+    final dotPaint = Paint()
+      ..color = goldColor.withValues(alpha: 0.7)
+      ..style = PaintingStyle.fill;
+
+    // 1. Four Corner Filigree Accents
+    const cornerMargin = 4.0;
+    const cornerSize = 10.0;
+    final corners = [
+      Offset(cornerMargin, cornerMargin), // Top-Left
+      Offset(size.width - cornerMargin, cornerMargin), // Top-Right
+      Offset(size.width - cornerMargin, size.height - cornerMargin), // Bottom-Right
+      Offset(cornerMargin, size.height - cornerMargin), // Bottom-Left
+    ];
+
     for (int i = 0; i < 4; i++) {
-      final angle = (pi / 4) * i;
-      final dx = cos(angle) * radius;
-      final dy = sin(angle) * radius;
-      canvas.drawLine(
-        Offset(center.dx - dx, center.dy - dy),
-        Offset(center.dx + dx, center.dy + dy),
-        paint,
-      );
+      final c = corners[i];
+      final dx = (i == 0 || i == 3) ? cornerSize : -cornerSize;
+      final dy = (i == 0 || i == 1) ? cornerSize : -cornerSize;
+      
+      canvas.drawLine(c, Offset(c.dx + dx, c.dy), hairlineGold);
+      canvas.drawLine(c, Offset(c.dx, c.dy + dy), hairlineGold);
+      canvas.drawCircle(Offset(c.dx + dx * 0.6, c.dy + dy * 0.6), 1.2, dotPaint);
     }
+
+    // 2. Central Mystic Diamond
+    final pathDiamond = Path()
+      ..moveTo(center.dx, center.dy - radius * 1.08)
+      ..lineTo(center.dx + radius * 0.75, center.dy)
+      ..lineTo(center.dx, center.dy + radius * 1.08)
+      ..lineTo(center.dx - radius * 0.75, center.dy)
+      ..close();
+    canvas.drawPath(pathDiamond, hairlineGold);
+
+    // 3. Dual Concentric Sacred Rings
+    canvas.drawCircle(center, radius, primaryGold);
+    canvas.drawCircle(center, radius * 0.72, hairlineGold);
+    canvas.drawCircle(center, radius * 0.38, hairlineGold);
+
+    // 4. 12 Zodiac Astral Nodes on middle ring
+    for (int i = 0; i < 12; i++) {
+      final angle = (i * 30) * (pi / 180);
+      final node = Offset(
+        center.dx + cos(angle) * (radius * 0.72),
+        center.dy + sin(angle) * (radius * 0.72),
+      );
+      canvas.drawCircle(node, (i % 3 == 0) ? 2.0 : 1.2, dotPaint);
+    }
+
+    // 5. Eight-Pointed Sacred Celestial Star
+    final starPath = Path();
+    const int points = 8;
+    for (int i = 0; i < points * 2; i++) {
+      final isTip = i % 2 == 0;
+      final isMajor = i % 4 == 0;
+      final r = isTip
+          ? (isMajor ? radius * 0.95 : radius * 0.7)
+          : (radius * 0.22);
+      final angle = (i * pi / points) - (pi / 2);
+      final pt = Offset(center.dx + cos(angle) * r, center.dy + sin(angle) * r);
+      if (i == 0) {
+        starPath.moveTo(pt.dx, pt.dy);
+      } else {
+        starPath.lineTo(pt.dx, pt.dy);
+      }
+    }
+    starPath.close();
+    canvas.drawPath(starPath, primaryGold);
+
+    // 6. Center Sun Node
+    canvas.drawCircle(center, radius * 0.14, dotPaint);
+    canvas.drawCircle(center, radius * 0.08, Paint()..color = const Color(0xFF0F0E17)..style = PaintingStyle.fill);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant CardBackPatternPainter oldDelegate) =>
+      oldDelegate.accentColor != accentColor;
 }

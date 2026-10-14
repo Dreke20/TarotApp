@@ -88,7 +88,10 @@ class _CollectiveSanctuaryScreenState extends ConsumerState<CollectiveSanctuaryS
             ],
           ),
         ),
-        child: SingleChildScrollView(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 880),
+            child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
           physics: const BouncingScrollPhysics(),
           child: Column(
@@ -362,6 +365,8 @@ class _CollectiveSanctuaryScreenState extends ConsumerState<CollectiveSanctuaryS
           ),
         ),
       ),
-    );
-  }
+    ),
+  ),
+);
+}
 }

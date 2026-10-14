@@ -70,116 +70,126 @@ class SpreadBoardView extends StatelessWidget {
       );
     } else if (state.spreadType == SpreadType.threeFates) {
       // The Three Fates Spread
-      return SizedBox(
-        height: 250,
-        child: ListView.separated(
+      return AltarClothWidget(
+        minHeight: 340,
+        child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
-          itemCount: drawnCards.length,
-          separatorBuilder: (_, _) => const SizedBox(width: 14),
-          itemBuilder: (context, index) {
-            final card = drawnCards[index];
-            final isFlipped = revealed.contains(index);
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: drawnCards.asMap().entries.map((entry) {
+              final index = entry.key;
+              final card = entry.value;
+              final isFlipped = revealed.contains(index);
 
-            return Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: AppColors.glassFillStrong,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.glassBorder),
-                  ),
-                  child: Text(
-                    index == 0
-                        ? 'I. PAST'
-                        : index == 1
-                            ? 'II. PRESENT'
-                            : 'III. FUTURE',
-                    style: GoogleFonts.cinzel(
-                      fontSize: 9,
-                      color: AppColors.goldBright,
-                      fontWeight: FontWeight.bold,
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.glassFillStrong,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.goldBright.withValues(alpha: 0.6)),
+                      ),
+                      child: Text(
+                        index == 0
+                            ? 'I. PAST'
+                            : index == 1
+                                ? 'II. PRESENT'
+                                : 'III. FUTURE',
+                        style: GoogleFonts.cinzel(
+                          fontSize: 9.5,
+                          color: AppColors.goldBright,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 10),
+                    TarotCardWidget(
+                      card: card,
+                      isFaceUp: isFlipped,
+                      width: 125,
+                      height: 205,
+                      index: index,
+                      deckTheme: state.deckTheme,
+                      onTap: () => notifier.flipCard(index),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                TarotCardWidget(
-                  card: card,
-                  isFaceUp: isFlipped,
-                  width: 95,
-                  height: 165,
-                  index: index,
-                  deckTheme: state.deckTheme,
-                  onTap: () => notifier.flipCard(index),
-                ),
-              ],
-            );
-          },
+              );
+            }).toList(),
+          ),
         ),
       );
     } else {
       // --- THE CELTIC CROSS & EXPANDED SPREADS (4-10 Cards) ---
       return Column(
         children: [
-          SizedBox(
-            height: 260,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              itemCount: drawnCards.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 12),
-              itemBuilder: (context, index) {
-                final card = drawnCards[index];
-                final isFlipped = revealed.contains(index);
-                final isInspected = state.selectedInspectIndex == index;
+          AltarClothWidget(
+            minHeight: 330,
+            child: SizedBox(
+              height: 270,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                itemCount: drawnCards.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 14),
+                itemBuilder: (context, index) {
+                  final card = drawnCards[index];
+                  final isFlipped = revealed.contains(index);
+                  final isInspected = state.selectedInspectIndex == index;
 
-                return GestureDetector(
-                  onTap: () {
-                    notifier.selectInspectIndex(index);
-                    notifier.flipCard(index);
-                  },
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
-                        decoration: BoxDecoration(
-                          color: isInspected
-                              ? AppColors.goldBright
-                              : AppColors.glassFillStrong,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
+                  return GestureDetector(
+                    onTap: () {
+                      notifier.selectInspectIndex(index);
+                      notifier.flipCard(index);
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
                             color: isInspected
                                 ? AppColors.goldBright
-                                : AppColors.glassBorder,
+                                : AppColors.glassFillStrong,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isInspected
+                                  ? AppColors.goldBright
+                                  : AppColors.glassBorder,
+                            ),
+                          ),
+                          child: Text(
+                            '${index + 1}. ${_shortPositionName(state.spreadType, index)}',
+                            style: GoogleFonts.cinzel(
+                              fontSize: 8.5,
+                              color: isInspected
+                                  ? AppColors.backgroundDeep
+                                  : AppColors.goldBright,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        child: Text(
-                          '${index + 1}. ${_shortPositionName(state.spreadType, index)}',
-                          style: GoogleFonts.cinzel(
-                            fontSize: 8.5,
-                            color: isInspected
-                                ? AppColors.backgroundDeep
-                                : AppColors.goldBright,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        const SizedBox(height: 8),
+                        TarotCardWidget(
+                          card: card,
+                          isFaceUp: isFlipped,
+                          width: 100,
+                          height: 170,
+                          index: index,
+                          isSelected: isInspected,
+                          deckTheme: state.deckTheme,
+                          onTap: () => notifier.flipCard(index),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      TarotCardWidget(
-                        card: card,
-                        isFaceUp: isFlipped,
-                        width: 90,
-                        height: 155,
-                        index: index,
-                        isSelected: isInspected,
-                        deckTheme: state.deckTheme,
-                        onTap: () => notifier.flipCard(index),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
 

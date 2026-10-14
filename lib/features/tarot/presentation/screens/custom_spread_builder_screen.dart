@@ -65,14 +65,19 @@ class _CustomSpreadBuilderScreenState extends ConsumerState<CustomSpreadBuilderS
             ],
           ),
         ),
-        child: ListView.builder(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 88),
-          physics: const BouncingScrollPhysics(),
-          itemCount: spreads.length,
-          itemBuilder: (context, index) {
-            final spread = spreads[index];
-            return _buildSpreadCard(context, spread, index);
-          },
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 880),
+            child: ListView.builder(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 88),
+              physics: const BouncingScrollPhysics(),
+              itemCount: spreads.length,
+              itemBuilder: (context, index) {
+                final spread = spreads[index];
+                return _buildSpreadCard(context, spread, index);
+              },
+            ),
+          ),
         ),
       ),
     );

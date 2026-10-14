@@ -104,9 +104,12 @@ class _RuneCastingScreenState extends State<RuneCastingScreen> {
             ],
           ),
         ),
-        child: Column(
-          children: [
-            // Spread selector
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 880),
+            child: Column(
+              children: [
+                // Spread selector
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
@@ -332,28 +335,35 @@ class _RuneCastingScreenState extends State<RuneCastingScreen> {
             ),
 
             // Bottom cast button
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.goldBright,
-                    foregroundColor: AppColors.backgroundDeep,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 6,
-                  ),
-                  onPressed: _isCasting ? null : _castRunesFromPouch,
-                  icon: const Icon(Icons.auto_awesome, size: 18),
-                  label: Text(
-                    _castRunes.isEmpty ? 'CAST THE RUNES' : 'CAST AGAIN',
-                    style: GoogleFonts.cinzel(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 380),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.goldBright,
+                          foregroundColor: AppColors.backgroundDeep,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 6,
+                        ),
+                        onPressed: _isCasting ? null : _castRunesFromPouch,
+                        icon: const Icon(Icons.auto_awesome, size: 18),
+                        label: Text(
+                          _castRunes.isEmpty ? 'CAST THE RUNES' : 'CAST AGAIN',
+                          style: GoogleFonts.cinzel(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -362,8 +372,10 @@ class _RuneCastingScreenState extends State<RuneCastingScreen> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  ),
+);
+}
 
   Widget _buildRuneStone(Rune rune, bool isFlipped) {
     return Container(

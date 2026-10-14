@@ -64,7 +64,10 @@ class _ReadingsHistoryScreenState extends ConsumerState<ReadingsHistoryScreen> {
       ),
       body: MysticBackground(
         altarTheme: state.altarTheme,
-        child: Column(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 920),
+            child: Column(
           children: [
             const SizedBox(height: 100),
 
@@ -168,7 +171,9 @@ class _ReadingsHistoryScreenState extends ConsumerState<ReadingsHistoryScreen> {
           ],
         ),
       ),
-    );
+    ),
+  ),
+);
   }
 
   Widget _buildEmptyState(BuildContext context) {

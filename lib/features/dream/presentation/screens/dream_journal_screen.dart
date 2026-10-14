@@ -65,8 +65,11 @@ class _DreamJournalScreenState extends ConsumerState<DreamJournalScreen> {
             ],
           ),
         ),
-        child: dreams.isEmpty
-            ? Center(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 880),
+            child: dreams.isEmpty
+                ? Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32),
                   child: Column(
@@ -140,6 +143,8 @@ class _DreamJournalScreenState extends ConsumerState<DreamJournalScreen> {
                   return _buildDreamCard(context, dream, index);
                 },
               ),
+            ),
+          ),
       ),
     );
   }

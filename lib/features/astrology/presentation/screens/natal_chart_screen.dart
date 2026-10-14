@@ -51,7 +51,10 @@ class NatalChartScreen extends ConsumerWidget {
             ],
           ),
         ),
-        child: SingleChildScrollView(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 880),
+            child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
           physics: const BouncingScrollPhysics(),
           child: Column(
@@ -86,8 +89,10 @@ class NatalChartScreen extends ConsumerWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  ),
+);
+}
 
   Widget _buildMandalaHeader(NatalChart chart) {
     return GlassContainer(

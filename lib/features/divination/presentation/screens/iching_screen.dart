@@ -108,7 +108,10 @@ class _IChingScreenState extends State<IChingScreen> {
             ],
           ),
         ),
-        child: Column(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 880),
+            child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
@@ -407,38 +410,47 @@ class _IChingScreenState extends State<IChingScreen> {
             ),
 
             // Bottom Toss Button
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.goldBright,
-                    foregroundColor: AppColors.backgroundDeep,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 6,
-                  ),
-                  onPressed: _isFlipping
-                      ? null
-                      : (_lines.length < 6 ? _tossCoins : _resetToss),
-                  icon: const Icon(Icons.change_circle_outlined, size: 18),
-                  label: Text(
-                    _lines.length < 6 ? 'TOSS THREE BRONZE COINS' : 'COMMENCE NEW TOSS',
-                    style: GoogleFonts.cinzel(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 380),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.goldBright,
+                          foregroundColor: AppColors.backgroundDeep,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 6,
+                        ),
+                        onPressed: _isFlipping
+                            ? null
+                            : (_lines.length < 6 ? _tossCoins : _resetToss),
+                        icon: const Icon(Icons.change_circle_outlined, size: 18),
+                        label: Text(
+                          _lines.length < 6 ? 'TOSS THREE BRONZE COINS' : 'COMMENCE NEW TOSS',
+                          style: GoogleFonts.cinzel(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ],
+            ],
+          ),
         ),
       ),
-    );
+    ),
+  );
   }
 }

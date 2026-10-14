@@ -152,13 +152,29 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
     ReadingState state,
     ReadingNotifier notifier,
   ) {
-    return GlassContainer(
-      width: double.infinity,
-      borderRadius: 26,
-      fillColor: AppColors.backgroundMidnight.withValues(alpha: 0.7),
-      borderColor: AppColors.glassBorder,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-      child: Column(
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 460),
+      child: GlassContainer(
+        width: double.infinity,
+        borderRadius: 26,
+        fillColor: const Color(0xFF13101E).withValues(alpha: 0.82),
+        borderColor: AppColors.goldBright.withValues(alpha: 0.35),
+        borderWidth: 1.2,
+        shadows: [
+          BoxShadow(
+            color: AppColors.goldBright.withValues(alpha: 0.12),
+            blurRadius: 28,
+            spreadRadius: 1,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.55),
+            blurRadius: 32,
+            offset: const Offset(0, 12),
+          ),
+        ],
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+        child: Column(
         children: [
           // If no cards are dealt yet: show Deck Pile on Altar
           if (!state.hasDrawnCards) ...[
@@ -437,8 +453,9 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
           ],
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildQuickPortalChip(
     BuildContext context, {

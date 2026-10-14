@@ -4,22 +4,48 @@ import '../../../../core/constants/app_colors.dart';
 
 class AltarClothWidget extends StatelessWidget {
   final Widget child;
+  final double minHeight;
 
-  const AltarClothWidget({super.key, required this.child});
+  const AltarClothWidget({
+    super.key,
+    required this.child,
+    this.minHeight = 360,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // Concentric Sacred Altar Geometry
-        Positioned.fill(
-          child: CustomPaint(
-            painter: _AltarMandalaPainter(),
+    return ConstrainedBox(
+      constraints: BoxConstraints(minHeight: minHeight),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Underlying subtle gold radial glow
+          Container(
+            width: 500,
+            height: 380,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  AppColors.goldBright.withValues(alpha: 0.08),
+                  AppColors.backgroundViolet.withValues(alpha: 0.04),
+                  Colors.transparent,
+                ],
+                stops: const [0.0, 0.55, 1.0],
+              ),
+            ),
           ),
-        ),
-        child,
-      ],
+
+          // Concentric Sacred Altar Geometry
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _AltarMandalaPainter(),
+            ),
+          ),
+
+          child,
+        ],
+      ),
     );
   }
 }
@@ -28,51 +54,66 @@ class _AltarMandalaPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final maxRadius = min(size.width, size.height) * 0.46;
+    final maxRadius = max(min(size.width, size.height) * 0.48, 190.0);
 
     final outerPaint = Paint()
-      ..color = AppColors.goldBright.withValues(alpha: 0.12)
+      ..color = AppColors.goldBright.withValues(alpha: 0.22)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2;
+      ..strokeWidth = 1.4;
+
+    final midPaint = Paint()
+      ..color = AppColors.goldBright.withValues(alpha: 0.14)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0;
 
     final innerPaint = Paint()
       ..color = AppColors.goldBright.withValues(alpha: 0.08)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.8;
 
-    // Outer Circle
+    final dotPaint = Paint()
+      ..color = AppColors.goldBright.withValues(alpha: 0.45)
+      ..style = PaintingStyle.fill;
+
+    // Outer Circle & Sub-ring
     canvas.drawCircle(center, maxRadius, outerPaint);
+    canvas.drawCircle(center, maxRadius * 0.94, innerPaint);
 
     // Inner Concentric Circles
-    canvas.drawCircle(center, maxRadius * 0.78, innerPaint);
-    canvas.drawCircle(center, maxRadius * 0.52, innerPaint);
+    canvas.drawCircle(center, maxRadius * 0.74, midPaint);
+    canvas.drawCircle(center, maxRadius * 0.50, innerPaint);
     canvas.drawCircle(center, maxRadius * 0.28, innerPaint);
 
-    // 12 Astrological Radial Rays
-    for (int i = 0; i < 12; i++) {
-      final angle = (i * 30) * (pi / 180);
+    // 24 Astrological & Cardinal Radial Rays
+    for (int i = 0; i < 24; i++) {
+      final isMajor = i % 2 == 0;
+      final angle = (i * 15) * (pi / 180);
+      final rStart = maxRadius * (isMajor ? 0.28 : 0.50);
       final p1 = Offset(
-        center.dx + cos(angle) * (maxRadius * 0.28),
-        center.dy + sin(angle) * (maxRadius * 0.28),
+        center.dx + cos(angle) * rStart,
+        center.dy + sin(angle) * rStart,
       );
       final p2 = Offset(
-        center.dx + cos(angle) * maxRadius,
-        center.dy + sin(angle) * maxRadius,
+        center.dx + cos(angle) * (isMajor ? maxRadius : maxRadius * 0.94),
+        center.dy + sin(angle) * (isMajor ? maxRadius : maxRadius * 0.94),
       );
-      canvas.drawLine(p1, p2, innerPaint);
+      canvas.drawLine(p1, p2, isMajor ? midPaint : innerPaint);
 
-      // Star point nodes
-      final nodePos = Offset(
-        center.dx + cos(angle) * (maxRadius * 0.78),
-        center.dy + sin(angle) * (maxRadius * 0.78),
-      );
-      canvas.drawCircle(
-        nodePos,
-        2.0,
-        Paint()
-          ..color = AppColors.goldBright.withValues(alpha: 0.25)
-          ..style = PaintingStyle.fill,
-      );
+      // Star point nodes on middle ring
+      if (isMajor) {
+        final nodePos = Offset(
+          center.dx + cos(angle) * (maxRadius * 0.74),
+          center.dy + sin(angle) * (maxRadius * 0.74),
+        );
+        canvas.drawCircle(nodePos, (i % 6 == 0) ? 2.6 : 1.6, dotPaint);
+
+        // Outer rim diamonds
+        final rimPos = Offset(
+          center.dx + cos(angle) * maxRadius,
+          center.dy + sin(angle) * maxRadius,
+        );
+        canvas.drawCircle(rimPos, 2.0, dotPaint);
+      }
     }
   }
 
