@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/services/external_launch_service.dart';
 import '../../auth/presentation/auth_notifier.dart';
 import '../../monetization/presentation/widgets/starlight_offering_modal.dart';
 import '../../tarot/presentation/widgets/glass_container.dart';
@@ -441,6 +442,21 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                 const SizedBox(width: 4),
                 const Text('✦', style: TextStyle(color: AppColors.goldMuted, fontSize: 11)),
               ],
+            ),
+            TextButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop();
+                ExternalLaunchService.openLiveReader(context);
+              },
+              icon: const Icon(Icons.record_voice_over_outlined, size: 14, color: AppColors.goldBright),
+              label: Text(
+                'Prefer a real human reading? Talk to a live person on whispers26.com ↗',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 10,
+                  color: AppColors.goldMuted,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
             ),
           ],
         ),

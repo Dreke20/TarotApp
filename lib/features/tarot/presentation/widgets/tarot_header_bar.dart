@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/services/external_launch_service.dart';
 import '../../../auth/presentation/auth_notifier.dart';
 import '../../../auth/presentation/profile_dialog.dart';
 import '../../domain/altar_theme.dart';
@@ -43,9 +45,9 @@ class TarotHeaderBar extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
-            child: Row(
-              children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
                 GestureDetector(
                   onTap: () => ProfileDialog.show(context),
                   child: Container(
@@ -71,11 +73,10 @@ class TarotHeaderBar extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -123,14 +124,59 @@ class TarotHeaderBar extends ConsumerWidget {
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
+                ],
+              ),
+          const SizedBox(width: 8),
 
-          // Action Toolbar: Themes, Pro, Journal
-          Row(
-            children: [
+          // Action Toolbar: Live Reader, Themes, Soundscape, Streaks, Codex, Journal
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              reverse: true,
+              physics: const BouncingScrollPhysics(),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Talk to a Live Person (whispers26.com) Button
+                  InkWell(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      ExternalLaunchService.openLiveReader(context);
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.goldBright.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.goldBright.withValues(alpha: 0.45),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.record_voice_over_outlined,
+                            color: AppColors.goldBright,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'LIVE READER',
+                            style: GoogleFonts.cinzel(
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.goldBright,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
               // Theme Switcher Menu
               PopupMenuButton<String>(
                 icon: const Icon(Icons.palette_outlined, color: AppColors.goldBright, size: 20),
@@ -255,6 +301,9 @@ class TarotHeaderBar extends ConsumerWidget {
                         MaterialPageRoute(builder: (_) => const TarotLensScreen()),
                       );
                       break;
+                    case 'live_reader':
+                      ExternalLaunchService.openLiveReader(context);
+                      break;
                   }
                 },
                 itemBuilder: (context) => [
@@ -340,6 +389,26 @@ class TarotHeaderBar extends ConsumerWidget {
                       ],
                     ),
                   ),
+                  const PopupMenuDivider(),
+                  PopupMenuItem(
+                    value: 'live_reader',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.record_voice_over_outlined, color: AppColors.goldBright, size: 16),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Talk to a Live Person',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.goldBright,
+                          ),
+                        ),
+                        const Spacer(),
+                        const Icon(Icons.open_in_new, size: 12, color: AppColors.goldBright),
+                      ],
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(width: 4),
@@ -410,8 +479,10 @@ class TarotHeaderBar extends ConsumerWidget {
               ),
             ],
           ),
-        ],
+        ),
       ),
-    );
+    ],
+  ),
+);
   }
 }

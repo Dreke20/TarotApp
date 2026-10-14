@@ -7,6 +7,7 @@ import '../../../../core/services/celestial_voice_service.dart';
 import '../../domain/reading.dart';
 import '../notifiers/reading_notifier.dart';
 import 'glass_container.dart';
+import 'live_reader_card.dart';
 import 'social_share_card.dart';
 import 'tarot_card_widget.dart';
 
@@ -106,24 +107,29 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.auto_awesome,
-                      color: AppColors.goldBright,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'ORACLE\'S PROPHECY',
-                      style: GoogleFonts.cinzel(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.auto_awesome,
                         color: AppColors.goldBright,
-                        letterSpacing: 1.5,
+                        size: 18,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          'ORACLE\'S PROPHECY',
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.cinzel(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.goldBright,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Row(
                   children: [
@@ -591,7 +597,11 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 18),
+
+                    // Connect with a real human intuitive reader
+                    const LiveReaderCard(),
+                    const SizedBox(height: 12),
                   ],
                 ),
               ),
