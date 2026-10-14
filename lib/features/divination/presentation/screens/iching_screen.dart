@@ -103,7 +103,8 @@ class _IChingScreenState extends State<IChingScreen> {
             center: const Alignment(0, -0.2),
             radius: 1.2,
             colors: [
-              const Color(0xFF20162A),
+              AppColors.goldCandle.withValues(alpha: 0.05),
+              AppColors.backgroundMidnight,
               AppColors.backgroundDeep,
             ],
           ),
@@ -418,26 +419,42 @@ class _IChingScreenState extends State<IChingScreen> {
                     constraints: const BoxConstraints(maxWidth: 380),
                     child: SizedBox(
                       width: double.infinity,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.goldBright,
-                          foregroundColor: AppColors.backgroundDeep,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 6,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: _isFlipping ? null : AppColors.goldButtonGradient,
+                          color: _isFlipping ? AppColors.goldMuted : null,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.goldMetallic.withValues(alpha: 0.35),
+                              blurRadius: 18,
+                              spreadRadius: 1,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        onPressed: _isFlipping
-                            ? null
-                            : (_lines.length < 6 ? _tossCoins : _resetToss),
-                        icon: const Icon(Icons.change_circle_outlined, size: 18),
-                        label: Text(
-                          _lines.length < 6 ? 'TOSS THREE BRONZE COINS' : 'COMMENCE NEW TOSS',
-                          style: GoogleFonts.cinzel(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.5,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            foregroundColor: const Color(0xFF09080C),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          onPressed: _isFlipping
+                              ? null
+                              : (_lines.length < 6 ? _tossCoins : _resetToss),
+                          icon: const Icon(Icons.change_circle_outlined, size: 18, color: Color(0xFF09080C)),
+                          label: Text(
+                            _lines.length < 6 ? '✦ TOSS THREE BRONZE COINS ✦' : '✦ COMMENCE NEW TOSS ✦',
+                            style: GoogleFonts.cinzel(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.4,
+                              color: const Color(0xFF09080C),
+                            ),
                           ),
                         ),
                       ),

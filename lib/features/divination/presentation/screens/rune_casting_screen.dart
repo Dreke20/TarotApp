@@ -99,7 +99,8 @@ class _RuneCastingScreenState extends State<RuneCastingScreen> {
             center: const Alignment(0, -0.3),
             radius: 1.2,
             colors: [
-              AppColors.backgroundViolet.withValues(alpha: 0.6),
+              AppColors.goldCandle.withValues(alpha: 0.05),
+              AppColors.backgroundMidnight,
               AppColors.backgroundDeep,
             ],
           ),
@@ -343,24 +344,40 @@ class _RuneCastingScreenState extends State<RuneCastingScreen> {
                     constraints: const BoxConstraints(maxWidth: 380),
                     child: SizedBox(
                       width: double.infinity,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.goldBright,
-                          foregroundColor: AppColors.backgroundDeep,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 6,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: _isCasting ? null : AppColors.goldButtonGradient,
+                          color: _isCasting ? AppColors.goldMuted : null,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.goldMetallic.withValues(alpha: 0.35),
+                              blurRadius: 18,
+                              spreadRadius: 1,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        onPressed: _isCasting ? null : _castRunesFromPouch,
-                        icon: const Icon(Icons.auto_awesome, size: 18),
-                        label: Text(
-                          _castRunes.isEmpty ? 'CAST THE RUNES' : 'CAST AGAIN',
-                          style: GoogleFonts.cinzel(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.5,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            foregroundColor: const Color(0xFF09080C),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          onPressed: _isCasting ? null : _castRunesFromPouch,
+                          icon: const Icon(Icons.auto_awesome, size: 18, color: Color(0xFF09080C)),
+                          label: Text(
+                            _castRunes.isEmpty ? '✦ CAST THE RUNES ✦' : '✦ CAST AGAIN ✦',
+                            style: GoogleFonts.cinzel(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.5,
+                              color: const Color(0xFF09080C),
+                            ),
                           ),
                         ),
                       ),

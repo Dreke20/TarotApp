@@ -370,35 +370,51 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
             // Subscribe Button
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.goldBright,
-                  foregroundColor: AppColors.backgroundDeep,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 6,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: _isSubmitting ? null : AppColors.goldButtonGradient,
+                  color: _isSubmitting ? AppColors.goldMuted : null,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.goldMetallic.withValues(alpha: 0.35),
+                      blurRadius: 18,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                onPressed: _isSubmitting ? null : _handleUpgrade,
-                child: _isSubmitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.backgroundDeep),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    foregroundColor: const Color(0xFF09080C),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  onPressed: _isSubmitting ? null : _handleUpgrade,
+                  child: _isSubmitting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFF09080C)),
+                          ),
+                        )
+                      : Text(
+                          '✦ UPGRADE TO ORACLE PRO ✦',
+                          style: GoogleFonts.cinzel(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.5,
+                            color: const Color(0xFF09080C),
+                          ),
                         ),
-                      )
-                    : Text(
-                        'UPGRADE TO ORACLE PRO',
-                        style: GoogleFonts.cinzel(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
+                ),
               ),
             ),
           ],

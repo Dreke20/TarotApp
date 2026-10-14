@@ -43,81 +43,89 @@ class TarotHeaderBar extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () => ProfileDialog.show(context),
-                child: Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const RadialGradient(
-                      colors: [AppColors.goldBright, AppColors.cosmicSurface],
+          Expanded(
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () => ProfileDialog.show(context),
+                  child: Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const RadialGradient(
+                        colors: [AppColors.goldBright, AppColors.cosmicSurface],
+                      ),
+                      border: Border.all(color: AppColors.goldBright, width: 1.2),
                     ),
-                    border: Border.all(color: AppColors.goldBright, width: 1.2),
-                  ),
-                  child: Center(
-                    child: Text(
-                      authProfile?.zodiacSign?.substring(0, 2).toUpperCase() ?? '★',
-                      style: GoogleFonts.cinzel(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.backgroundDeep,
+                    child: Center(
+                      child: Text(
+                        authProfile?.zodiacSign?.substring(0, 2).toUpperCase() ?? '★',
+                        style: GoogleFonts.cinzel(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.backgroundDeep,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        'ORACULUM',
-                        style: GoogleFonts.cinzel(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.goldBright,
-                          letterSpacing: 2.2,
-                        ),
-                      ),
-                      if (isPro) ...[
-                        const SizedBox(width: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                          decoration: BoxDecoration(
-                            color: AppColors.goldBright,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            'PRO',
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'ORACULUM',
                             style: GoogleFonts.cinzel(
-                              fontSize: 8,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.backgroundDeep,
+                              color: AppColors.goldBright,
+                              letterSpacing: 2.0,
                             ),
                           ),
+                          if (isPro) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                              decoration: BoxDecoration(
+                                color: AppColors.goldBright,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'PRO',
+                                style: GoogleFonts.cinzel(
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.backgroundDeep,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      Text(
+                        authProfile?.zodiacSign != null
+                            ? 'ALIGNED WITH ${authProfile!.zodiacSign!.toUpperCase()}'
+                            : 'WHISPERS & WARNINGS',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.cinzel(
+                          fontSize: 8,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.goldMuted,
+                          letterSpacing: 1.2,
                         ),
-                      ],
+                      ),
                     ],
                   ),
-                  Text(
-                    authProfile?.zodiacSign != null
-                        ? 'ALIGNED WITH ${authProfile!.zodiacSign!.toUpperCase()}'
-                        : 'AI TAROT SANCTUARY',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 8,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.etherealLavender,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
 
           // Action Toolbar: Themes, Pro, Journal

@@ -3,46 +3,46 @@ import 'package:flutter/material.dart';
 enum AltarTheme {
   midnightNebula(
     id: 'midnight_nebula',
-    title: 'Midnight Nebula',
-    primaryColor: Color(0xFF160D3D),
-    secondaryColor: Color(0xFFBCA7F8),
+    title: 'Whispers & Warnings',
+    primaryColor: Color(0xFFD4AF37),
+    secondaryColor: Color(0xFFFFAE42),
     backgroundGradient: LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: [Color(0xFF060314), Color(0xFF0D0729), Color(0xFF170D42), Color(0xFF09041A)],
+      colors: [Color(0xFF020203), Color(0xFF08070B), Color(0xFF120F17), Color(0xFF030304)],
     ),
   ),
   celestialVoid(
     id: 'celestial_void',
-    title: 'Obsidian Void',
-    primaryColor: Color(0xFF151522),
-    secondaryColor: Color(0xFF8E9AAF),
+    title: 'The Alignment Void',
+    primaryColor: Color(0xFFF3DEAB),
+    secondaryColor: Color(0xFFC5A059),
     backgroundGradient: LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: [Color(0xFF040406), Color(0xFF0B0B11), Color(0xFF11111B), Color(0xFF050508)],
+      colors: [Color(0xFF010102), Color(0xFF060508), Color(0xFF0D0B10), Color(0xFF020202)],
     ),
   ),
   emeraldSanctuary(
     id: 'emerald_sanctuary',
-    title: 'Emerald Grove',
-    primaryColor: Color(0xFF0D2818),
-    secondaryColor: Color(0xFF52B788),
+    title: 'Sacred Solitary',
+    primaryColor: Color(0xFF8BB381),
+    secondaryColor: Color(0xFFD4AF37),
     backgroundGradient: LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: [Color(0xFF041009), Color(0xFF082013), Color(0xFF0E331F), Color(0xFF05140C)],
+      colors: [Color(0xFF030805), Color(0xFF07120B), Color(0xFF0B1B10), Color(0xFF020604)],
     ),
   ),
   amethystTemple(
     id: 'amethyst_temple',
-    title: 'Amethyst Shrine',
-    primaryColor: Color(0xFF2C0E37),
-    secondaryColor: Color(0xFFE07A5F),
+    title: 'Gilded Velvet',
+    primaryColor: Color(0xFFFFAE42),
+    secondaryColor: Color(0xFFD4AF37),
     backgroundGradient: LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: [Color(0xFF120317), Color(0xFF21072B), Color(0xFF330B42), Color(0xFF120317)],
+      colors: [Color(0xFF07040A), Color(0xFF110A17), Color(0xFF190E22), Color(0xFF060308)],
     ),
   );
 

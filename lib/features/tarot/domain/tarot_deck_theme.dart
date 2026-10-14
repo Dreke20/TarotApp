@@ -3,38 +3,38 @@ import 'package:flutter/material.dart';
 enum TarotDeckTheme {
   classic(
     id: 'classic',
-    title: 'Celestial Classic',
-    subtitle: 'Midnight violet with sacred gold foil filigree',
+    title: 'Whispers & Warnings',
+    subtitle: 'Obsidian velvet with imperial metallic gold foil',
     backGradient: LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Color(0xFF261458), Color(0xFF150A36), Color(0xFF0C0521)],
+      colors: [Color(0xFF1E1A25), Color(0xFF110F16), Color(0xFF070609)],
     ),
-    accentColor: Color(0xFFFFD56B),
+    accentColor: Color(0xFFD4AF37),
     isPremium: false,
   ),
   luminary(
     id: 'luminary',
-    title: 'Ethereal Luminary',
-    subtitle: 'Pure celestial starlight and radiant platinum-gold',
+    title: 'The Alignment Gold',
+    subtitle: 'Warm champagne starlight and candlelight amber',
     backGradient: LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Color(0xFF382375), Color(0xFF20134F), Color(0xFF110730)],
+      colors: [Color(0xFF282330), Color(0xFF17141C), Color(0xFF0B090F)],
     ),
-    accentColor: Color(0xFF6DECFE),
+    accentColor: Color(0xFFF3DEAB),
     isPremium: true,
   ),
   obsidian(
     id: 'obsidian',
     title: 'Obsidian Mystery',
-    subtitle: 'Deep volcanic obsidian stone with crimson astral runes',
+    subtitle: 'Deep volcanic obsidian stone with antique brass runes',
     backGradient: LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Color(0xFF21152B), Color(0xFF140D1C), Color(0xFF0A040F)],
+      colors: [Color(0xFF16141B), Color(0xFF0E0C12), Color(0xFF050507)],
     ),
-    accentColor: Color(0xFFFF5252),
+    accentColor: Color(0xFFC5A059),
     isPremium: true,
   );
 

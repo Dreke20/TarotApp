@@ -53,7 +53,7 @@ class TarotApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Oraculum • AI Tarot',
+      title: 'Whispers & Warnings • Oraculum',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       home: const TarotTableScreen(),

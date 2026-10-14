@@ -67,8 +67,8 @@ class _MysticBackgroundState extends State<MysticBackground>
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          widget.altarTheme.primaryColor.withValues(alpha: 0.8),
-                          widget.altarTheme.primaryColor.withValues(alpha: 0.2),
+                          widget.altarTheme.primaryColor.withValues(alpha: 0.14),
+                          widget.altarTheme.primaryColor.withValues(alpha: 0.03),
                           Colors.transparent,
                         ],
                       ),
@@ -76,7 +76,7 @@ class _MysticBackgroundState extends State<MysticBackground>
                   ),
                 ),
 
-                // Bottom left luminous nebula
+                // Bottom left luminous candlelight aura
                 Positioned(
                   bottom: -60 - sin(t * pi) * 25,
                   left: -80 + cos(t * pi) * 20,
@@ -87,8 +87,8 @@ class _MysticBackgroundState extends State<MysticBackground>
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          widget.altarTheme.primaryColor.withValues(alpha: 0.9),
-                          widget.altarTheme.secondaryColor.withValues(alpha: 0.2),
+                          widget.altarTheme.secondaryColor.withValues(alpha: 0.16),
+                          widget.altarTheme.primaryColor.withValues(alpha: 0.03),
                           Colors.transparent,
                         ],
                       ),

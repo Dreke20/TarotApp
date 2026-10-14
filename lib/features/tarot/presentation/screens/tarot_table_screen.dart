@@ -157,7 +157,7 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
       child: GlassContainer(
         width: double.infinity,
         borderRadius: 26,
-        fillColor: const Color(0xFF13101E).withValues(alpha: 0.82),
+        fillColor: AppColors.backgroundMidnight.withValues(alpha: 0.90),
         borderColor: AppColors.goldBright.withValues(alpha: 0.35),
         borderWidth: 1.2,
         shadows: [
@@ -168,8 +168,8 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.55),
-            blurRadius: 32,
+            color: Colors.black.withValues(alpha: 0.65),
+            blurRadius: 36,
             offset: const Offset(0, 12),
           ),
         ],
@@ -179,7 +179,7 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
           // If no cards are dealt yet: show Deck Pile on Altar
           if (!state.hasDrawnCards) ...[
             Text(
-              'THE SACRED DECK (${state.deckTheme.title.toUpperCase()})',
+              '✦ THE SACRED DECK (${state.deckTheme.title.toUpperCase()}) ✦',
               style: GoogleFonts.cinzel(
                 fontSize: 12.5,
                 fontWeight: FontWeight.bold,
@@ -189,7 +189,7 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
             ),
             const SizedBox(height: 6),
             Text(
-              'Focus your intent, breathe deeply, and invite cosmic guidance',
+              'Focus your intent, breathe deeply, and invite the sacred alignment',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
                 color: AppColors.textMuted,
@@ -211,34 +211,51 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
               runSpacing: 10,
               alignment: WrapAlignment.center,
               children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.goldBright,
-                    foregroundColor: AppColors.backgroundDeep,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 13),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 6,
-                    shadowColor: AppColors.goldBright.withValues(alpha: 0.4),
-                  ),
-                  onPressed:
-                      state.isShuffling ? null : () => notifier.startReading(),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.auto_awesome, size: 16),
-                      const SizedBox(width: 6),
-                      Text(
-                        state.isShuffling ? 'SHUFFLING...' : 'CONSULT ORACLE',
-                        style: GoogleFonts.cinzel(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        ),
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: state.isShuffling ? null : AppColors.goldButtonGradient,
+                    color: state.isShuffling ? AppColors.goldMuted : null,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.goldMetallic.withValues(alpha: 0.35),
+                        blurRadius: 18,
+                        spreadRadius: 1,
+                        offset: const Offset(0, 4),
                       ),
                     ],
+                  ),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      foregroundColor: const Color(0xFF09080C),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 22, vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    onPressed:
+                        state.isShuffling ? null : () => notifier.startReading(),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('✦', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF09080C))),
+                        const SizedBox(width: 8),
+                        Text(
+                          state.isShuffling ? 'SHUFFLING...' : 'CONSULT ORACLE',
+                          style: GoogleFonts.cinzel(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.5,
+                            color: const Color(0xFF09080C),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text('✦', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF09080C))),
+                      ],
+                    ),
                   ),
                 ),
                 OutlinedButton(
@@ -422,32 +439,48 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                 onPressed: () => notifier.revealAllCards(),
               ),
             ] else if (state.currentReading != null) ...[
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.goldBright,
-                  foregroundColor: AppColors.backgroundDeep,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: AppColors.goldButtonGradient,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.goldMetallic.withValues(alpha: 0.35),
+                      blurRadius: 18,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                icon: const Icon(Icons.auto_stories, size: 18),
-                label: Text(
-                  'VIEW ORACLE\'S PROPHECY',
-                  style: GoogleFonts.cinzel(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    foregroundColor: const Color(0xFF09080C),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 26, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
+                  icon: const Icon(Icons.auto_stories, size: 18, color: Color(0xFF09080C)),
+                  label: Text(
+                    '✦ VIEW ORACLE\'S PROPHECY ✦',
+                    style: GoogleFonts.cinzel(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.4,
+                      color: const Color(0xFF09080C),
+                    ),
+                  ),
+                  onPressed: () {
+                    ReadingResultSheet.show(
+                      context,
+                      reading: state.currentReading!,
+                      onNewReading: () => notifier.resetTable(),
+                    );
+                  },
                 ),
-                onPressed: () {
-                  ReadingResultSheet.show(
-                    context,
-                    reading: state.currentReading!,
-                    onNewReading: () => notifier.resetTable(),
-                  );
-                },
               ),
             ],
           ],
