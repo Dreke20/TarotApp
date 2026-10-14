@@ -10,10 +10,11 @@ class TarotDeckService {
 
   TarotDeckService({Random? random}) : _random = random ?? Random();
 
-  /// Asset map linking card IDs (e.g. 'wands_ace') to local asset paths
+  /// Asset map linking card IDs (e.g. 'wands_ace') to local asset paths.
+  /// All card artwork ships as `.jpg` under `assets/cards/`.
   static final Map<String, String> cardAssets = {
     for (final card in TarotCardData.allCards)
-      card.id: 'assets/cards/${card.id}.png',
+      card.id: 'assets/cards/${card.id}.jpg',
   };
 
   /// Returns a fresh full standard 78-card deck
@@ -42,7 +43,7 @@ class TarotDeckService {
     return list.map((card) {
       final isReversed =
           allowReversals && (_random.nextDouble() < reversalChance);
-      final asset = cardAssets[card.id] ?? 'assets/cards/${card.id}.png';
+      final asset = cardAssets[card.id] ?? 'assets/cards/${card.id}.jpg';
       return card.copyWith(
         isReversed: isReversed,
         assetPath: asset,

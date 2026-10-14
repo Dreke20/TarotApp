@@ -24,8 +24,13 @@ timeline
                           : Ethereal Voice Prophecy Narration
     Phase 5 (Completed ✅) : Oracle Pro Paywall & Membership Modal
                           : Social Story Card Export Engine
-    Phase 6 (Next)        : iOS App Store & Google Play Build
-                          : Scheduled Morning Push Notifications
+    Phase 6 (Completed ✅) : Morning Push Notifications & Offline Storage
+                          : Android Release Hardening & Store Metadata
+    Phase 7 (Completed ✅) : Voice Narration & Ambient Soundscapes
+                          : Cut the Deck Ritual & Expanded Spreads
+                          : Lunar Tracker & Daily Streaks
+    Next                  : Full Minor Arcana Artwork (56 Cards)
+                          : iOS App Store Build
 ```
 
 ---
