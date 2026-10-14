@@ -30,6 +30,12 @@ class SensoryService {
     HapticFeedback.lightImpact();
   }
 
+  /// Tremor vibration during rune casting or coin shaking
+  void shuffleTremorHaptic() {
+    if (!hapticsEnabled) return;
+    HapticFeedback.vibrate();
+  }
+
   /// Success or completion resonance
   void completionHaptic() {
     if (!hapticsEnabled) return;

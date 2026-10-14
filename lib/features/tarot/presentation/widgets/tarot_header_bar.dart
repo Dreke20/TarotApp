@@ -10,6 +10,8 @@ import '../notifiers/reading_notifier.dart';
 import '../notifiers/reading_state.dart';
 import '../screens/readings_history_screen.dart';
 import '../screens/tarot_codex_screen.dart';
+import '../../../divination/presentation/screens/rune_casting_screen.dart';
+import '../../../divination/presentation/screens/iching_screen.dart';
 import 'ambient_audio_button.dart';
 import 'glass_container.dart';
 import 'streak_badge.dart';
@@ -193,6 +195,68 @@ class TarotHeaderBar extends ConsumerWidget {
               // Ambient Meditative Soundscape Button
               const AmbientAudioButton(),
               const SizedBox(width: 6),
+
+              // Divination Sanctuary Switcher (Runes & I Ching)
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.explore_outlined, color: AppColors.goldBright, size: 20),
+                tooltip: 'Sacred Divination Systems',
+                color: AppColors.backgroundMidnight,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(color: AppColors.glassBorder),
+                ),
+                onSelected: (val) {
+                  if (val == 'runes') {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const RuneCastingScreen()),
+                    );
+                  } else if (val == 'iching') {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const IChingScreen()),
+                    );
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    enabled: false,
+                    child: Text(
+                      'ORACLE SANCTUARIES',
+                      style: GoogleFonts.cinzel(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.goldBright,
+                      ),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'runes',
+                    child: Row(
+                      children: [
+                        const Text('ᚦ', style: TextStyle(fontSize: 16, color: AppColors.goldBright)),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Elder Futhark Runes',
+                          style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'iching',
+                    child: Row(
+                      children: [
+                        const Text('☯', style: TextStyle(fontSize: 16, color: AppColors.goldBright)),
+                        const SizedBox(width: 8),
+                        Text(
+                          'I Ching (Book of Changes)',
+                          style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 4),
 
               // Sacred Tarot Codex Action Button
               GlassContainer(

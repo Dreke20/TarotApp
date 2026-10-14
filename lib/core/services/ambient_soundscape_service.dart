@@ -7,7 +7,10 @@ part 'ambient_soundscape_service.g.dart';
 enum SoundscapeTrack {
   celestialDrone('Celestial Drone', 'https://actions.google.com/sounds/v1/science_fiction/space_ambience_hum.ogg'),
   tibetanBowls('Sacred Chime', 'https://actions.google.com/sounds/v1/ambiences/wind_chimes_breeze.ogg'),
-  sacredWind('Astral Breeze', 'https://actions.google.com/sounds/v1/weather/wind_howl.ogg');
+  sacredWind('Astral Breeze', 'https://actions.google.com/sounds/v1/weather/wind_howl.ogg'),
+  solfeggio432('432 Hz Cosmic Harmony', 'https://actions.google.com/sounds/v1/science_fiction/low_frequency_hum.ogg'),
+  solfeggio528('528 Hz Miracle & Heart', 'https://actions.google.com/sounds/v1/science_fiction/force_field_loop.ogg'),
+  solfeggio741('741 Hz Intuition Awakening', 'https://actions.google.com/sounds/v1/science_fiction/alien_beacon_loop.ogg');
 
   final String title;
   final String url;

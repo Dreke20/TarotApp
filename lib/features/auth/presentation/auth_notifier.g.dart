@@ -86,7 +86,7 @@ final class AuthNotifierProvider
   }
 }
 
-String _$authNotifierHash() => r'45c0505fa12acbb990a2620c8a3b03da33e103f4';
+String _$authNotifierHash() => r'6e096a02ffcd341272d983b641a7c0a98950b02e';
 
 /// Session + seeker profile state. Generated provider: [authProvider].
 
@@ -146,4 +146,4 @@ final class IsProUserProvider extends $FunctionalProvider<bool, bool, bool>
   }
 }
 
-String _$isProUserHash() => r'930f6cebaaec700ffdf0abfbc4beed085145edbd';
+String _$isProUserHash() => r'6ed0149900b9943665f2255ca6cdebf753ed197b';
