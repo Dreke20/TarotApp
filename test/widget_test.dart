@@ -11,6 +11,8 @@ import 'package:tarot_app/features/divination/data/rune_data.dart';
 import 'package:tarot_app/features/divination/data/iching_data.dart';
 import 'package:tarot_app/features/dream/data/jungian_symbol_data.dart';
 import 'package:tarot_app/features/astrology/data/ephemeris_calculator.dart';
+import 'package:tarot_app/core/services/admob_service.dart';
+import 'package:tarot_app/features/monetization/presentation/monetization_state.dart';
 import 'package:tarot_app/main.dart';
 
 void main() {
@@ -171,6 +173,26 @@ void main() {
       expect(chart.dominantElement, 'Water');
       expect(chart.waterPercent, greaterThan(0.0));
       expect(chart.soulArchetype.isNotEmpty, isTrue);
+    });
+
+    test('MonetizationState tracks starlight pass tokens and handles offerings', () {
+      const initial = MonetizationState();
+      expect(initial.starlightPassTokens, 0);
+      expect(initial.hasStarlightPass, isFalse);
+
+      final withTokens = initial.copyWith(starlightPassTokens: 2);
+      expect(withTokens.hasStarlightPass, isTrue);
+      expect(withTokens.starlightPassTokens, 2);
+
+      final consumed = withTokens.copyWith(starlightPassTokens: withTokens.starlightPassTokens - 1);
+      expect(consumed.starlightPassTokens, 1);
+      expect(consumed.hasStarlightPass, isTrue);
+    });
+
+    test('AdMobService provides singleton instance and initialization flags', () {
+      final admob = AdMobService.instance;
+      expect(admob, isNotNull);
+      expect(admob.isNativeSupported, isA<bool>());
     });
   });
 

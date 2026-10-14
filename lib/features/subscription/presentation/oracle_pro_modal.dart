@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../auth/presentation/auth_notifier.dart';
+import '../../monetization/presentation/widgets/starlight_offering_modal.dart';
 import '../../tarot/presentation/widgets/glass_container.dart';
 
 class OracleProModal extends ConsumerStatefulWidget {
@@ -416,6 +417,30 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                         ),
                 ),
               ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('✦', style: TextStyle(color: AppColors.goldMuted, fontSize: 11)),
+                const SizedBox(width: 4),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    StarlightOfferingModal.show(context);
+                  },
+                  child: Text(
+                    'Prefer free? Offer celestial incense (Watch an ad for 1 Pass)',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 10.5,
+                      color: AppColors.goldBright,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                const Text('✦', style: TextStyle(color: AppColors.goldMuted, fontSize: 11)),
+              ],
             ),
           ],
         ),

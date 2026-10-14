@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/constants/app_theme.dart';
+import 'core/services/admob_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/supabase/supabase_config.dart';
 import 'features/tarot/presentation/screens/tarot_table_screen.dart';
@@ -38,6 +39,13 @@ Future<void> main() async {
     await notificationService.initialize();
   } catch (e) {
     debugPrint('Notification service setup note: $e');
+  }
+
+  // Initialize Google Mobile Ads (AdMob)
+  try {
+    await AdMobService.instance.initialize();
+  } catch (e) {
+    debugPrint('AdMob initialization note: $e');
   }
 
   runApp(

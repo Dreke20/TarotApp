@@ -8,6 +8,7 @@ import '../../domain/tarot_card.dart';
 import '../notifiers/reading_notifier.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/tarot_card_widget.dart';
+import '../../../monetization/presentation/widgets/mystic_ad_banner.dart';
 
 /// The Sacred Tarot Codex: Interactive Compendium & Gallery of all 78 Cards
 class TarotCodexScreen extends ConsumerStatefulWidget {
@@ -450,6 +451,8 @@ class _TarotCodexScreenState extends ConsumerState<TarotCodexScreen> {
                           },
                         ),
                 ),
+                // Balanced AdMob Sanctuary Banner (hides for Pro users)
+                const MysticAdBanner(),
               ],
             ),
           ),

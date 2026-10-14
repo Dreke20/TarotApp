@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../auth/presentation/auth_notifier.dart';
-import '../../../subscription/presentation/oracle_pro_modal.dart';
 import '../../domain/spread_type.dart';
 import '../notifiers/reading_notifier.dart';
 import '../notifiers/reading_state.dart';
@@ -26,6 +25,8 @@ import '../../../divination/presentation/screens/iching_screen.dart';
 import '../../../divination/presentation/screens/rune_casting_screen.dart';
 import '../../../dream/presentation/screens/dream_journal_screen.dart';
 import '../../../lens/presentation/screens/tarot_lens_screen.dart';
+import '../../../monetization/presentation/monetization_notifier.dart';
+import '../../../monetization/presentation/widgets/starlight_offering_modal.dart';
 
 /// The central Tarot Altar Table where cards are shuffled, drawn, flipped in 3D,
 /// and synthesized by the AI Oracle with multi-deck themes, Celtic Cross, and astrological alignment.
@@ -67,7 +68,10 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
         ReadingResultSheet.show(
           context,
           reading: current.currentReading!,
-          onNewReading: () => notifier.resetTable(),
+          onNewReading: () {
+            ref.read(monetizationProvider.notifier).showPostReadingAdIfEligible(isPro: isPro);
+            notifier.resetTable();
+          },
         );
       }
     });
@@ -106,10 +110,26 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                           SpreadSelector(
                             selectedSpread: state.spreadType,
                             onSpreadChanged: (type) {
-                              if (!isPro &&
-                                  type != SpreadType.dailyGuidance &&
-                                  type != SpreadType.threeFates) {
-                                OracleProModal.show(context);
+                              final isProSpread = type != SpreadType.dailyGuidance &&
+                                  type != SpreadType.threeFates;
+                              if (!isPro && isProSpread) {
+                                final monetization = ref.read(monetizationProvider);
+                                if (monetization.hasStarlightPass) {
+                                  ref.read(monetizationProvider.notifier).consumeStarlightPass();
+                                  notifier.setSpreadType(type);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('✦ Starlight Pass consumed. Enjoy ${type.title}! ✦'),
+                                      backgroundColor: AppColors.backgroundMidnight,
+                                    ),
+                                  );
+                                } else {
+                                  StarlightOfferingModal.show(
+                                    context,
+                                    requestedSpread: type,
+                                    onUnlocked: () => notifier.setSpreadType(type),
+                                  );
+                                }
                               } else {
                                 notifier.setSpreadType(type);
                               }
@@ -409,7 +429,11 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                   tooltip: 'Reset Table',
                   icon:
                       const Icon(Icons.refresh, color: AppColors.textSecondary),
-                  onPressed: () => notifier.resetTable(),
+                  onPressed: () {
+                    final isPro = ref.read(isProUserProvider);
+                    ref.read(monetizationProvider.notifier).showPostReadingAdIfEligible(isPro: isPro);
+                    notifier.resetTable();
+                  },
                 ),
               ],
             ),

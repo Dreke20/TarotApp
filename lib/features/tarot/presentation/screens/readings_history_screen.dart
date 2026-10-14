@@ -8,6 +8,7 @@ import '../notifiers/reading_notifier.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/mystic_background.dart';
 import '../widgets/reading_result_sheet.dart';
+import '../../../monetization/presentation/widgets/mystic_ad_banner.dart';
 
 /// Screen listing past tarot readings retrieved from Supabase with search and favorite filters.
 class ReadingsHistoryScreen extends ConsumerStatefulWidget {
@@ -168,6 +169,8 @@ class _ReadingsHistoryScreenState extends ConsumerState<ReadingsHistoryScreen> {
                       },
                     ),
             ),
+            // Balanced AdMob Sanctuary Banner (hides for Pro users)
+            const MysticAdBanner(),
           ],
         ),
       ),
