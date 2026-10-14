@@ -3,12 +3,16 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/auth/domain/user_profile.dart';
 import '../../features/tarot/domain/reading.dart';
+import '../../features/dream/domain/dream_entry.dart';
+import '../../features/tarot/domain/custom_spread.dart';
 
 part 'storage_service.g.dart';
 
 class StorageService {
   static const String _keyReadings = 'oraculum_readings_cache_v1';
   static const String _keyProfile = 'oraculum_profile_cache_v1';
+  static const String _keyDreams = 'oraculum_dreams_cache_v1';
+  static const String _keyCustomSpreads = 'oraculum_custom_spreads_cache_v1';
   static const String _keyNotificationHour = 'oraculum_notif_hour';
   static const String _keyNotificationMinute = 'oraculum_notif_minute';
   static const String _keyNotificationEnabled = 'oraculum_notif_enabled';
@@ -55,6 +59,46 @@ class StorageService {
       return UserProfile.fromJson(jsonDecode(raw) as Map<String, dynamic>);
     } catch (_) {
       return null;
+    }
+  }
+
+  // --- DREAMS CACHE ---
+  Future<void> saveDreams(List<DreamEntry> dreams) async {
+    final prefs = await _getPrefs();
+    final jsonList = dreams.map((d) => d.toJson()).toList();
+    await prefs.setString(_keyDreams, jsonEncode(jsonList));
+  }
+
+  Future<List<DreamEntry>> loadDreams() async {
+    final prefs = await _getPrefs();
+    final raw = prefs.getString(_keyDreams);
+    if (raw == null || raw.isEmpty) return [];
+
+    try {
+      final List<dynamic> list = jsonDecode(raw);
+      return list.map((item) => DreamEntry.fromJson(item as Map<String, dynamic>)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  // --- CUSTOM SPREADS CACHE ---
+  Future<void> saveCustomSpreads(List<CustomSpread> spreads) async {
+    final prefs = await _getPrefs();
+    final jsonList = spreads.map((s) => s.toJson()).toList();
+    await prefs.setString(_keyCustomSpreads, jsonEncode(jsonList));
+  }
+
+  Future<List<CustomSpread>> loadCustomSpreads() async {
+    final prefs = await _getPrefs();
+    final raw = prefs.getString(_keyCustomSpreads);
+    if (raw == null || raw.isEmpty) return [];
+
+    try {
+      final List<dynamic> list = jsonDecode(raw);
+      return list.map((item) => CustomSpread.fromJson(item as Map<String, dynamic>)).toList();
+    } catch (_) {
+      return [];
     }
   }
 

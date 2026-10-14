@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../notifiers/reading_notifier.dart';
 import 'glass_container.dart';
+import 'voice_invocation_modal.dart';
 
 /// Cosmic inquiry search bar with curated prompt suggestion chips.
 class OracleQuestionBar extends StatelessWidget {
@@ -60,6 +61,19 @@ class OracleQuestionBar extends StatelessWidget {
                     notifier.setQuestion('');
                   },
                 ),
+              IconButton(
+                icon: const Icon(Icons.mic_none, size: 20, color: AppColors.goldBright),
+                tooltip: 'Sacred Voice Invocation',
+                onPressed: () {
+                  VoiceInvocationModal.show(
+                    context,
+                    onQuestionSpoken: (spoken) {
+                      controller.text = spoken;
+                      notifier.setQuestion(spoken);
+                    },
+                  );
+                },
+              ),
             ],
           ),
         ),

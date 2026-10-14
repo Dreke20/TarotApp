@@ -12,6 +12,11 @@ import '../screens/readings_history_screen.dart';
 import '../screens/tarot_codex_screen.dart';
 import '../../../divination/presentation/screens/rune_casting_screen.dart';
 import '../../../divination/presentation/screens/iching_screen.dart';
+import '../../../dream/presentation/screens/dream_journal_screen.dart';
+import '../screens/custom_spread_builder_screen.dart';
+import '../../../astrology/presentation/screens/natal_chart_screen.dart';
+import '../../../collective/presentation/screens/collective_sanctuary_screen.dart';
+import '../../../lens/presentation/screens/tarot_lens_screen.dart';
 import 'ambient_audio_button.dart';
 import 'glass_container.dart';
 import 'streak_badge.dart';
@@ -206,25 +211,54 @@ class TarotHeaderBar extends ConsumerWidget {
                   side: const BorderSide(color: AppColors.glassBorder),
                 ),
                 onSelected: (val) {
-                  if (val == 'runes') {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const RuneCastingScreen()),
-                    );
-                  } else if (val == 'iching') {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const IChingScreen()),
-                    );
+                  switch (val) {
+                    case 'runes':
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const RuneCastingScreen()),
+                      );
+                      break;
+                    case 'iching':
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const IChingScreen()),
+                      );
+                      break;
+                    case 'dreams':
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const DreamJournalScreen()),
+                      );
+                      break;
+                    case 'spreads':
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const CustomSpreadBuilderScreen()),
+                      );
+                      break;
+                    case 'astrology':
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const NatalChartScreen()),
+                      );
+                      break;
+                    case 'collective':
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const CollectiveSanctuaryScreen()),
+                      );
+                      break;
+                    case 'lens':
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const TarotLensScreen()),
+                      );
+                      break;
                   }
                 },
                 itemBuilder: (context) => [
                   PopupMenuItem(
                     enabled: false,
                     child: Text(
-                      'ORACLE SANCTUARIES',
+                      'SACRED SANCTUARIES',
                       style: GoogleFonts.cinzel(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         color: AppColors.goldBright,
+                        letterSpacing: 1.0,
                       ),
                     ),
                   ),
@@ -234,10 +268,7 @@ class TarotHeaderBar extends ConsumerWidget {
                       children: [
                         const Text('ᚦ', style: TextStyle(fontSize: 16, color: AppColors.goldBright)),
                         const SizedBox(width: 8),
-                        Text(
-                          'Elder Futhark Runes',
-                          style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary),
-                        ),
+                        Text('Elder Futhark Runes', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
                       ],
                     ),
                   ),
@@ -247,10 +278,57 @@ class TarotHeaderBar extends ConsumerWidget {
                       children: [
                         const Text('☯', style: TextStyle(fontSize: 16, color: AppColors.goldBright)),
                         const SizedBox(width: 8),
-                        Text(
-                          'I Ching (Book of Changes)',
-                          style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary),
-                        ),
+                        Text('I Ching Book of Changes', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'dreams',
+                    child: Row(
+                      children: [
+                        const Text('🌙', style: TextStyle(fontSize: 15)),
+                        const SizedBox(width: 8),
+                        Text('Astral Dream Journal', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'spreads',
+                    child: Row(
+                      children: [
+                        const Text('📜', style: TextStyle(fontSize: 15)),
+                        const SizedBox(width: 8),
+                        Text("Seeker's Grimoire (Spreads)", style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'astrology',
+                    child: Row(
+                      children: [
+                        const Text('🪐', style: TextStyle(fontSize: 15)),
+                        const SizedBox(width: 8),
+                        Text('Natal Ephemeris & Chart', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'collective',
+                    child: Row(
+                      children: [
+                        const Text('✨', style: TextStyle(fontSize: 15)),
+                        const SizedBox(width: 8),
+                        Text('Collective Consciousness', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'lens',
+                    child: Row(
+                      children: [
+                        const Text('🔍', style: TextStyle(fontSize: 15)),
+                        const SizedBox(width: 8),
+                        Text('Real-World Tarot Lens', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
                       ],
                     ),
                   ),

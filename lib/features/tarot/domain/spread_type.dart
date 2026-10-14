@@ -72,6 +72,26 @@ enum SpreadType {
       'III. The Karmic Wound',
       'IV. Gateway to Integration',
     ],
+  ),
+  wheelOfTheYear(
+    id: 'wheel_of_the_year',
+    title: 'Wheel of the Year',
+    subtitle: '12 cards corresponding to the 12 Astrological Houses and seasonal cosmic sabbats',
+    cardCount: 12,
+    positionTitles: [
+      '1st House: Aries • The Self & Vitality',
+      '2nd House: Taurus • Wealth & Grounding',
+      '3rd House: Gemini • Communication & Mind',
+      '4th House: Cancer • Ancestry & Sanctuary',
+      '5th House: Leo • Passion, Joy & Creation',
+      '6th House: Virgo • Sacred Service & Health',
+      '7th House: Libra • Partnerships & Mirrors',
+      '8th House: Scorpio • Metamorphosis & Rebirth',
+      '9th House: Sagittarius • Philosophy & Horizon',
+      '10th House: Capricorn • Legacy & Ambition',
+      '11th House: Aquarius • Community & Hopes',
+      '12th House: Pisces • Transcendent Unconscious',
+    ],
   );
 
   const SpreadType({

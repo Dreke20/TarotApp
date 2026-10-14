@@ -7,6 +7,10 @@ import 'package:tarot_app/features/auth/domain/user_profile.dart';
 import 'package:tarot_app/features/tarot/data/tarot_deck_service.dart';
 import 'package:tarot_app/features/tarot/domain/oracle_message.dart';
 import 'package:tarot_app/features/tarot/domain/spread_type.dart';
+import 'package:tarot_app/features/divination/data/rune_data.dart';
+import 'package:tarot_app/features/divination/data/iching_data.dart';
+import 'package:tarot_app/features/dream/data/jungian_symbol_data.dart';
+import 'package:tarot_app/features/astrology/data/ephemeris_calculator.dart';
 import 'package:tarot_app/main.dart';
 
 void main() {
@@ -121,6 +125,52 @@ void main() {
       expect(lunar.phase.symbol.isNotEmpty, isTrue);
       expect(lunar.illuminationPercent, inInclusiveRange(0.0, 100.0));
       expect(lunar.moonZodiac.isNotEmpty, isTrue);
+    });
+
+    test('Wheel of the Year 12-House Spread draws 12 cards with zodiac houses', () {
+      final service = TarotDeckService();
+      final wheel = service.drawSpread(spreadType: SpreadType.wheelOfTheYear);
+      expect(wheel.length, 12);
+      expect(wheel[0].positionName, contains('1st House'));
+      expect(wheel[11].positionName, contains('12th House'));
+    });
+
+    test('Elder Futhark Runes dataset contains all 24 sacred stones across 3 Aetts', () {
+      expect(RuneData.allRunes.length, 24);
+      final uniqueIds = RuneData.allRunes.map((r) => r.id).toSet();
+      expect(uniqueIds.length, 24);
+      expect(RuneData.allRunes.where((r) => r.aett == "Freya's Aett").length, 8);
+      expect(RuneData.allRunes.where((r) => r.aett == "Heimdall's Aett").length, 8);
+      expect(RuneData.allRunes.where((r) => r.aett == "Tyr's Aett").length, 8);
+    });
+
+    test('I Ching dataset provides primary hexagrams with 6 binary lines', () {
+      expect(IChingData.primaryHexagrams.isNotEmpty, isTrue);
+      for (final hex in IChingData.primaryHexagrams) {
+        expect(hex.lines.length, 6);
+        expect(hex.name.isNotEmpty, isTrue);
+        expect(hex.chineseCharacter.isNotEmpty, isTrue);
+      }
+    });
+
+    test('Jungian Archetypes catalog links dream symbols to corresponding Tarot cards', () {
+      expect(JungianArchetypes.allSymbols.length, greaterThanOrEqualTo(10));
+      final water = JungianArchetypes.findByKey('water');
+      expect(water.tarotCardName, 'The Moon');
+      final tower = JungianArchetypes.findByKey('tower');
+      expect(tower.tarotCardName, 'The Tower');
+    });
+
+    test('EphemerisCalculator generates 8 planetary placements and elemental balance', () {
+      final chart = EphemerisCalculator.calculateChart(
+        sunSign: 'Scorpio',
+        moonSign: 'Pisces',
+        risingSign: 'Cancer',
+      );
+      expect(chart.placements.length, 8);
+      expect(chart.dominantElement, 'Water');
+      expect(chart.waterPercent, greaterThan(0.0));
+      expect(chart.soulArchetype.isNotEmpty, isTrue);
     });
   });
 
