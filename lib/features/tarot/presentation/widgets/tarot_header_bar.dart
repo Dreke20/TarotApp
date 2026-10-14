@@ -128,15 +128,83 @@ class TarotHeaderBar extends ConsumerWidget {
               ),
           const SizedBox(width: 8),
 
-          // Action Toolbar: Live Reader, Themes, Soundscape, Streaks, Codex, Journal
+          // Action Toolbar: Live Reader, Codex, Journal, Themes, Soundscape, Streaks, Sanctuaries
           Expanded(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              reverse: true,
+              reverse: false,
               physics: const BouncingScrollPhysics(),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Sacred Tarot Codex Action Button
+                  GlassContainer(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    borderRadius: 12,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const TarotCodexScreen(),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.style_outlined,
+                          size: 14,
+                          color: AppColors.goldBright,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'CODEX',
+                          style: GoogleFonts.cinzel(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.goldBright,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+
+                  // Sacred Journal Action Button
+                  GlassContainer(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    borderRadius: 12,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const ReadingsHistoryScreen(),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.auto_stories,
+                          size: 14,
+                          color: AppColors.goldBright,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'JOURNAL',
+                          style: GoogleFonts.cinzel(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.goldBright,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+
                   // Talk to a Live Person (whispers26.com) Button
                   InkWell(
                     onTap: () {
@@ -410,72 +478,6 @@ class TarotHeaderBar extends ConsumerWidget {
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(width: 4),
-
-              // Sacred Tarot Codex Action Button
-              GlassContainer(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                borderRadius: 14,
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const TarotCodexScreen(),
-                    ),
-                  );
-                },
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.style_outlined,
-                      size: 15,
-                      color: AppColors.goldBright,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      'CODEX',
-                      style: GoogleFonts.cinzel(
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.goldBright,
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-
-              // Sacred Journal Action Button
-              GlassContainer(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                borderRadius: 14,
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const ReadingsHistoryScreen(),
-                    ),
-                  );
-                },
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.auto_stories,
-                      size: 15,
-                      color: AppColors.goldBright,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      'JOURNAL',
-                      style: GoogleFonts.cinzel(
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.goldBright,
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ],
           ),
