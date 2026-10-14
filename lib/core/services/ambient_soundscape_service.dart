@@ -1,6 +1,8 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'ambient_soundscape_service.g.dart';
 
 enum SoundscapeTrack {
   celestialDrone('Celestial Drone', 'https://actions.google.com/sounds/v1/science_fiction/space_ambience_hum.ogg'),
@@ -36,7 +38,8 @@ class AmbientAudioState {
   }
 }
 
-class AmbientAudioNotifier extends Notifier<AmbientAudioState> {
+@Riverpod(keepAlive: true)
+class AmbientAudioNotifier extends _$AmbientAudioNotifier {
   final AudioPlayer _player = AudioPlayer();
 
   @override
@@ -81,7 +84,3 @@ class AmbientAudioNotifier extends Notifier<AmbientAudioState> {
   }
 }
 
-final ambientAudioProvider =
-    NotifierProvider<AmbientAudioNotifier, AmbientAudioState>(
-  AmbientAudioNotifier.new,
-);

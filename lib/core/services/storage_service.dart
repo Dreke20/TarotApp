@@ -1,8 +1,10 @@
 import 'dart:convert';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/auth/domain/user_profile.dart';
 import '../../features/tarot/domain/reading.dart';
+
+part 'storage_service.g.dart';
 
 class StorageService {
   static const String _keyReadings = 'oraculum_readings_cache_v1';
@@ -77,6 +79,5 @@ class StorageService {
   }
 }
 
-final storageServiceProvider = Provider<StorageService>((ref) {
-  return StorageService();
-});
+@Riverpod(keepAlive: true)
+StorageService storageService(Ref ref) => StorageService();

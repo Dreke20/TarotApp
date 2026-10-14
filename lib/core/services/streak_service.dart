@@ -1,5 +1,7 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+part 'streak_service.g.dart';
 
 class StreakService {
   static const String _keyLastDate = 'oraculum_last_reading_date';
@@ -64,6 +66,5 @@ class StreakService {
   }
 }
 
-final streakProvider = FutureProvider<int>((ref) async {
-  return StreakService.getStreak();
-});
+@Riverpod(keepAlive: true)
+Future<int> streak(Ref ref) => StreakService.getStreak();

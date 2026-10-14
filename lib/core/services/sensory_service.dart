@@ -1,5 +1,7 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'sensory_service.g.dart';
 
 class SensoryService {
   bool soundEnabled;
@@ -47,6 +49,5 @@ class SensoryService {
   }
 }
 
-final sensoryServiceProvider = Provider<SensoryService>((ref) {
-  return SensoryService();
-});
+@Riverpod(keepAlive: true)
+SensoryService sensoryService(Ref ref) => SensoryService();

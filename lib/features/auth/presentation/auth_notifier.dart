@@ -1,42 +1,27 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/supabase/supabase_client.dart';
 import '../data/auth_repository.dart';
-import '../domain/user_profile.dart';
+import 'auth_state.dart';
 
-class AuthState {
-  final UserProfile? profile;
-  final bool isLoading;
-  final String? errorMessage;
+export 'auth_state.dart';
 
-  const AuthState({
-    this.profile,
-    this.isLoading = false,
-    this.errorMessage,
-  });
+part 'auth_notifier.g.dart';
 
-  bool get isAuthenticated => profile != null;
-  bool get isPro => profile?.isPro ?? false;
-
-  AuthState copyWith({
-    UserProfile? profile,
-    bool? isLoading,
-    String? errorMessage,
-  }) {
-    return AuthState(
-      profile: profile ?? this.profile,
-      isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage,
-    );
-  }
+@Riverpod(keepAlive: true)
+AuthRepository authRepository(Ref ref) {
+  final client = ref.watch(supabaseClientProvider);
+  return AuthRepository(client);
 }
 
-class AuthNotifier extends Notifier<AuthState> {
+/// Session + seeker profile state. Generated provider: [authProvider].
+@Riverpod(keepAlive: true)
+class AuthNotifier extends _$AuthNotifier {
   late AuthRepository _repository;
 
   @override
   AuthState build() {
     _repository = ref.watch(authRepositoryProvider);
-    Future.microtask(() => loadProfile());
+    Future.microtask(loadProfile);
     return const AuthState();
   }
 
@@ -63,7 +48,8 @@ class AuthNotifier extends Notifier<AuthState> {
   Future<void> signUp(String email, String password, String displayName) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      final profile = await _repository.signUpWithEmail(email, password, displayName);
+      final profile =
+          await _repository.signUpWithEmail(email, password, displayName);
       state = state.copyWith(profile: profile, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -75,38 +61,48 @@ class AuthNotifier extends Notifier<AuthState> {
     String? moonSign,
     String? risingSign,
   }) async {
-    if (state.profile == null) return;
-    final updated = state.profile!.copyWith(
+    final current = state.profile;
+    if (current == null) return;
+    final updated = current.copyWith(
       zodiacSign: sunSign,
       moonSign: moonSign,
       risingSign: risingSign,
     );
-    await _repository.updateProfile(updated);
-    state = state.copyWith(profile: updated);
+    try {
+      await _repository.updateProfile(updated);
+      state = state.copyWith(profile: updated, errorMessage: null);
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
+    }
   }
 
   Future<void> setProStatus(bool isPro) async {
-    if (state.profile == null) return;
-    final updated = state.profile!.copyWith(isPro: isPro);
-    await _repository.updateProfile(updated);
-    state = state.copyWith(profile: updated);
+    final current = state.profile;
+    if (current == null) return;
+    final updated = current.copyWith(isPro: isPro);
+    try {
+      await _repository.updateProfile(updated);
+      state = state.copyWith(profile: updated, errorMessage: null);
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
+    }
   }
 
   Future<void> signOut() async {
-    await _repository.signOut();
+    try {
+      await _repository.signOut();
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
+    }
     await loadProfile();
   }
 }
 
-final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  final client = ref.watch(supabaseClientProvider);
-  return AuthRepository(client);
-});
+@riverpod
+bool isProUser(Ref ref) {
+  return ref.watch(authProvider).isPro;
+}
 
-final authNotifierProvider = NotifierProvider<AuthNotifier, AuthState>(() {
-  return AuthNotifier();
-});
+/// Backwards compatibility alias for the generated [authProvider].
+final authNotifierProvider = authProvider;
 
-final isProUserProvider = Provider<bool>((ref) {
-  return ref.watch(authNotifierProvider).isPro;
-});
