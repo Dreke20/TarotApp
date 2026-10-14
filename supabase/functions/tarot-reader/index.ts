@@ -29,6 +29,41 @@ interface TarotRequest {
   chat_history?: { role: string; content: string }[];
 }
 
+const CANDIDATE_MODELS = [
+  "gemini-3.1-flash-lite",
+  "gemini-3.8-flash",
+  "gemini-3.5-flash",
+  "gemini-flash-latest",
+];
+
+async function callGemini(
+  apiKey: string,
+  payload: Record<string, unknown>
+): Promise<string | null> {
+  for (const model of CANDIDATE_MODELS) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) return text;
+      } else {
+        const errText = await res.text();
+        console.warn(`Model ${model} returned ${res.status}: ${errText.slice(0, 120)}`);
+      }
+    } catch (err) {
+      console.warn(`Error invoking ${model}:`, err);
+    }
+  }
+  return null;
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -63,25 +98,20 @@ serve(async (req) => {
 
         historyParts.push({
           role: "user",
-          parts: [{ text: follow_up_prompt }],
+          parts: [
+            {
+              text: `${systemPrompt}\n\nSeeker Inquiry: "${follow_up_prompt}"`,
+            },
+          ],
         });
 
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: historyParts,
-              generationConfig: { temperature: 0.75 },
-            }),
-          }
-        );
+        const text = await callGemini(geminiApiKey, {
+          contents: historyParts,
+          generationConfig: { temperature: 0.75 },
+        });
 
-        if (response.ok) {
-          const data = await response.json();
-          followUpAnswer =
-            data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+        if (text) {
+          followUpAnswer = text.trim();
         }
       }
 
@@ -154,36 +184,37 @@ Provide your reading in strictly valid JSON format matching this schema:
 
     let aiResponseText = "";
     if (geminiApiKey) {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [
-              {
-                role: "user",
-                parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }],
-              },
-            ],
-            generationConfig: {
-              temperature: 0.75,
-              responseMimeType: "application/json",
-            },
-          }),
-        }
-      );
+      const text = await callGemini(geminiApiKey, {
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.75,
+          responseMimeType: "application/json",
+        },
+      });
 
-      if (response.ok) {
-        const data = await response.json();
-        const candidate = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (candidate) {
-          aiResponseText = candidate;
+      if (text) {
+        let cleaned = text.trim();
+        if (cleaned.startsWith("```json")) {
+          cleaned = cleaned.replace(/^```json\s*/, "").replace(/```$/, "").trim();
+        } else if (cleaned.startsWith("```")) {
+          cleaned = cleaned.replace(/^```\s*/, "").replace(/```$/, "").trim();
+        }
+        try {
+          // Verify valid JSON
+          JSON.parse(cleaned);
+          aiResponseText = cleaned;
+        } catch (e) {
+          console.warn("Failed to parse Gemini response as JSON:", e);
         }
       }
     }
 
-    // Fallback if API key is not yet set
+    // Fallback if API key is not yet set or model fails
     if (!aiResponseText) {
       const firstCardName =
         typeof drawn_cards[0] === "string"
