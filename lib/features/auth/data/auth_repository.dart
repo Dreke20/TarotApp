@@ -70,9 +70,17 @@ class AuthRepository {
     _localProfile = profile;
     await _storage.saveProfile(profile);
 
-    if (_supabase != null && SupabaseConfig.isConfigured) {
+    final authUserId = _supabase?.auth.currentUser?.id;
+    if (_supabase != null &&
+        SupabaseConfig.isConfigured &&
+        authUserId != null &&
+        authUserId == profile.id) {
       try {
-        await _supabase.from('profiles').upsert(profile.toJson());
+        // `is_pro` is server-owned (guarded by a DB trigger); never send it.
+        final payload = Map<String, Object?>.from(profile.toJson())
+          ..remove('is_pro')
+          ..removeWhere((key, value) => key == 'created_at' && value == null);
+        await _supabase.from('profiles').upsert(payload);
       } catch (e) {
         debugPrint('Error updating profile in Supabase: $e');
       }

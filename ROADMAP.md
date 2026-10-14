@@ -105,6 +105,7 @@ timeline
    - [x] Applied PostgreSQL migration with `profiles` and `readings` tables and strict Row Level Security.
    - [x] Deployed `tarot-reader` Edge Function with Gemini inference and conversational follow-up chat.
    - [x] Configured encrypted `GEMINI_API_KEY` secret in Supabase Cloud with resilient multi-model failover (`gemini-3.1-flash-lite`, `gemini-3.8-flash`).
+   - [x] **Security hardening (`20261014000000_harden_rls_and_sync_schema.sql`):** owner-only RLS on `profiles` & `readings`, synced missing columns (`moon_sign`, `rising_sign`, `is_pro`, `notes`, `is_favorite`), and a server-side trigger preventing clients from self-granting `is_pro`. Guest readings now stay on-device.
 2. **Card Art Asset Pipeline (Completed ✅):**
    - [x] Generated 22 custom high-resolution Major Arcana artworks in 2:3 tarot ratio under `assets/cards/`.
    - [x] Generated Minor Arcana elemental masterworks (`wands_ace.jpg`, `cups_ace.jpg`).

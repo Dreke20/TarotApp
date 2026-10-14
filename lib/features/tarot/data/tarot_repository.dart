@@ -142,7 +142,10 @@ class TarotRepository {
     _localReadings.insert(0, reading);
     await _storage.saveReadings(_localReadings);
 
-    if (_supabase != null && SupabaseConfig.isConfigured) {
+    // Guest readings stay on-device; only signed-in seekers sync to the cloud.
+    if (_supabase != null &&
+        SupabaseConfig.isConfigured &&
+        reading.userId != null) {
       try {
         await _supabase.from('readings').insert({
           'id': reading.id,
@@ -214,15 +217,17 @@ class TarotRepository {
       }
     }
 
-    if (_supabase != null && SupabaseConfig.isConfigured) {
+    final currentUid = userId ?? _supabase?.auth.currentUser?.id;
+
+    // Guests read only from the on-device mirror; RLS restricts cloud rows
+    // to their owner, so there is nothing to fetch without a signed-in user.
+    if (_supabase != null && SupabaseConfig.isConfigured && currentUid != null) {
       try {
-        var query = _supabase.from('readings').select();
-        final currentUid = userId ?? _supabase.auth.currentUser?.id;
-        if (currentUid != null) {
-          query = query.eq('user_id', currentUid);
-        }
-        final List<dynamic> response =
-            await query.order('created_at', ascending: false);
+        final List<dynamic> response = await _supabase
+            .from('readings')
+            .select()
+            .eq('user_id', currentUid)
+            .order('created_at', ascending: false);
 
         final remote = response
             .map((data) => Reading.fromJson(data as Map<String, dynamic>))
