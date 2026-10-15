@@ -13,6 +13,9 @@ import 'package:tarot_app/features/dream/data/jungian_symbol_data.dart';
 import 'package:tarot_app/features/astrology/data/ephemeris_calculator.dart';
 import 'package:tarot_app/core/services/admob_service.dart';
 import 'package:tarot_app/features/monetization/presentation/monetization_state.dart';
+import 'package:tarot_app/features/subscription/domain/subscription_plan.dart';
+import 'package:tarot_app/features/subscription/presentation/subscription_state.dart';
+import 'package:tarot_app/features/subscription/data/in_app_purchase_service.dart';
 import 'package:tarot_app/main.dart';
 
 void main() {
@@ -193,6 +196,37 @@ void main() {
       final admob = AdMobService.instance;
       expect(admob, isNotNull);
       expect(admob.isNativeSupported, isA<bool>());
+    });
+
+    test('SubscriptionPlan enum contains valid Play Billing / StoreKit product identifiers', () {
+      expect(SubscriptionPlan.allProductIds.contains('oracle_pro_yearly'), isTrue);
+      expect(SubscriptionPlan.allProductIds.contains('oracle_pro_monthly'), isTrue);
+      expect(SubscriptionPlan.allProductIds.contains('oracle_pro_lifetime'), isTrue);
+      expect(SubscriptionPlan.fromId('oracle_pro_yearly'), SubscriptionPlan.yearly);
+      expect(SubscriptionPlan.fromId('oracle_pro_monthly'), SubscriptionPlan.monthly);
+      expect(SubscriptionPlan.yearly.defaultPrice, '\$29.99 / yr');
+    });
+
+    test('SubscriptionState maintains immutable plan pricing and defaults', () {
+      const state = SubscriptionState();
+      expect(state.selectedPlan, SubscriptionPlan.yearly);
+      expect(state.isAvailable, isFalse);
+      expect(state.isLoading, isFalse);
+      expect(state.priceFor(SubscriptionPlan.yearly), '\$29.99 / yr');
+
+      final withLocalized = state.copyWith(
+        localizedPrices: {'oracle_pro_yearly': '€27.99 / yr'},
+      );
+      expect(withLocalized.priceFor(SubscriptionPlan.yearly), '€27.99 / yr');
+      expect(withLocalized.priceFor(SubscriptionPlan.monthly), '\$4.99 / mo');
+    });
+
+    test('InAppPurchaseService instantiates with clean stream defaults', () {
+      final service = InAppPurchaseService();
+      expect(service, isNotNull);
+      expect(service.isAvailable, isFalse);
+      expect(service.products, isEmpty);
+      service.dispose();
     });
   });
 

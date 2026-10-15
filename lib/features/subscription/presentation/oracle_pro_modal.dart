@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/services/external_launch_service.dart';
-import '../../auth/presentation/auth_notifier.dart';
 import '../../monetization/presentation/widgets/starlight_offering_modal.dart';
 import '../../tarot/presentation/widgets/glass_container.dart';
+import '../domain/subscription_plan.dart';
+import 'subscription_notifier.dart';
 
+/// Modal paywall and plan selector for unlocking Oracle Pro with native In-App Purchases.
 class OracleProModal extends ConsumerStatefulWidget {
   const OracleProModal({super.key});
 
@@ -24,8 +26,6 @@ class OracleProModal extends ConsumerStatefulWidget {
 }
 
 class _OracleProModalState extends ConsumerState<OracleProModal> {
-  bool _isAnnual = true;
-  bool _isSubmitting = false;
   bool _showPromoField = false;
   final TextEditingController _promoController = TextEditingController();
 
@@ -35,99 +35,33 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
     super.dispose();
   }
 
-  Future<void> _handleUpgrade() async {
-    setState(() => _isSubmitting = true);
-    final notifier = ref.read(authNotifierProvider.notifier);
-    final success = await notifier.activatePro(
-      action: 'subscribe',
-      plan: _isAnnual ? 'yearly' : 'monthly',
-    );
-    if (!mounted) return;
-    setState(() => _isSubmitting = false);
-
-    if (success) {
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✨ Welcome to Oracle Pro! All celestial mysteries are unlocked.'),
-          backgroundColor: AppColors.cosmicSurface,
-        ),
-      );
-    } else {
-      final error = ref.read(authNotifierProvider).errorMessage ??
-          'Subscription could not be verified by the celestial server.';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: Colors.red.shade900,
-        ),
-      );
-    }
-  }
-
-  Future<void> _handleRedeemPromo() async {
-    final code = _promoController.text.trim();
-    if (code.isEmpty) return;
-
-    setState(() => _isSubmitting = true);
-    final notifier = ref.read(authNotifierProvider.notifier);
-    final success = await notifier.activatePro(
-      action: 'redeem_promo',
-      promoCode: code,
-    );
-    if (!mounted) return;
-    setState(() => _isSubmitting = false);
-
-    if (success) {
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('✨ Celestial code "$code" redeemed! Welcome to Oracle Pro.'),
-          backgroundColor: AppColors.cosmicSurface,
-        ),
-      );
-    } else {
-      final error = ref.read(authNotifierProvider).errorMessage ??
-          'Invalid or expired celestial code.';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: Colors.red.shade900,
-        ),
-      );
-    }
-  }
-
-  Future<void> _handleRestore() async {
-    setState(() => _isSubmitting = true);
-    final notifier = ref.read(authNotifierProvider.notifier);
-    final success = await notifier.activatePro(
-      action: 'restore_purchase',
-    );
-    if (!mounted) return;
-    setState(() => _isSubmitting = false);
-
-    if (success) {
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✨ Oracle Pro purchases restored successfully.'),
-          backgroundColor: AppColors.cosmicSurface,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('No active Oracle Pro subscription found to restore.'),
-          backgroundColor: Colors.red.shade900,
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
+    final subState = ref.watch(subscriptionNotifierProvider);
+    final subNotifier = ref.read(subscriptionNotifierProvider.notifier);
+
+    // Listen to purchase events & notifications
+    ref.listen<SubscriptionState>(subscriptionNotifierProvider, (previous, next) {
+      if (next.successMessage != null && next.successMessage != previous?.successMessage) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('✨ ${next.successMessage!}'),
+            backgroundColor: AppColors.cosmicSurface,
+          ),
+        );
+        subNotifier.clearMessages();
+      } else if (next.errorMessage != null && next.errorMessage != previous?.errorMessage) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.errorMessage!),
+            backgroundColor: Colors.red.shade900,
+          ),
+        );
+        subNotifier.clearMessages();
+      }
+    });
 
     return Container(
       constraints: BoxConstraints(
@@ -254,30 +188,31 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                       title: 'Ethereal Voice Narration',
                       description: 'Listen to spoken prophecies channeled by celestial sound synthesis.',
                     ),
+                    _buildFeatureRow(
+                      icon: Icons.block,
+                      title: '100% Ad-Free Sanctuary',
+                      description: 'Zero ads, banners, or offerings across all divination tools.',
+                    ),
                     const SizedBox(height: 18),
 
-                    // Plan selection cards
+                    // Plan selection cards with dynamic localized store prices
                     Row(
                       children: [
                         Expanded(
                           child: _buildPlanCard(
-                            isAnnual: true,
-                            title: 'ANNUAL PLAN',
-                            price: '\$29.99 / yr',
-                            savings: 'SAVE 50%',
-                            isSelected: _isAnnual,
-                            onTap: () => setState(() => _isAnnual = true),
+                            plan: SubscriptionPlan.yearly,
+                            price: subState.priceFor(SubscriptionPlan.yearly),
+                            isSelected: subState.selectedPlan == SubscriptionPlan.yearly,
+                            onTap: () => subNotifier.selectPlan(SubscriptionPlan.yearly),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: _buildPlanCard(
-                            isAnnual: false,
-                            title: 'MONTHLY',
-                            price: '\$4.99 / mo',
-                            savings: null,
-                            isSelected: !_isAnnual,
-                            onTap: () => setState(() => _isAnnual = false),
+                            plan: SubscriptionPlan.monthly,
+                            price: subState.priceFor(SubscriptionPlan.monthly),
+                            isSelected: subState.selectedPlan == SubscriptionPlan.monthly,
+                            onTap: () => subNotifier.selectPlan(SubscriptionPlan.monthly),
                           ),
                         ),
                       ],
@@ -339,7 +274,9 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            onPressed: _isSubmitting ? null : _handleRedeemPromo,
+                            onPressed: subState.isSubmitting
+                                ? null
+                                : () => subNotifier.redeemPromoCode(_promoController.text),
                             child: Text(
                               'APPLY',
                               style: GoogleFonts.cinzel(
@@ -355,7 +292,9 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
 
                     // Restore Purchases Link
                     TextButton(
-                      onPressed: _isSubmitting ? null : _handleRestore,
+                      onPressed: subState.isSubmitting
+                          ? null
+                          : () => subNotifier.restorePurchases(),
                       child: Text(
                         'Restore Previous Purchases',
                         style: GoogleFonts.plusJakartaSans(
@@ -374,8 +313,8 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
               width: double.infinity,
               child: Container(
                 decoration: BoxDecoration(
-                  gradient: _isSubmitting ? null : AppColors.goldButtonGradient,
-                  color: _isSubmitting ? AppColors.goldMuted : null,
+                  gradient: subState.isSubmitting ? null : AppColors.goldButtonGradient,
+                  color: subState.isSubmitting ? AppColors.goldMuted : null,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -396,8 +335,10 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  onPressed: _isSubmitting ? null : _handleUpgrade,
-                  child: _isSubmitting
+                  onPressed: subState.isSubmitting
+                      ? null
+                      : () => subNotifier.purchaseSelectedPlan(),
+                  child: subState.isSubmitting
                       ? const SizedBox(
                           width: 20,
                           height: 20,
@@ -513,10 +454,8 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
   }
 
   Widget _buildPlanCard({
-    required bool isAnnual,
-    required String title,
+    required SubscriptionPlan plan,
     required String price,
-    required String? savings,
     required bool isSelected,
     required VoidCallback onTap,
   }) {
@@ -535,7 +474,7 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (savings != null)
+            if (plan.savings != null)
               Container(
                 margin: const EdgeInsets.only(bottom: 6),
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -544,7 +483,7 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  savings,
+                  plan.savings!,
                   style: GoogleFonts.cinzel(
                     fontSize: 8,
                     fontWeight: FontWeight.bold,
@@ -553,7 +492,7 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                 ),
               ),
             Text(
-              title,
+              plan.title,
               style: GoogleFonts.cinzel(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,

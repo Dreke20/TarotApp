@@ -142,6 +142,9 @@ class AuthRepository {
     String action = 'subscribe',
     String plan = 'yearly',
     String? promoCode,
+    String? receipt,
+    String? productId,
+    String? source,
   }) async {
     if (_supabase != null && SupabaseConfig.isConfigured) {
       final user = _supabase.auth.currentUser;
@@ -153,6 +156,10 @@ class AuthRepository {
             'plan': plan,
             if (promoCode != null && promoCode.trim().isNotEmpty)
               'promo_code': promoCode.trim(),
+            if (receipt != null && receipt.trim().isNotEmpty)
+              'receipt': receipt.trim(),
+            'product_id': ?productId,
+            'source': ?source,
           },
         );
         if (res.status == 200) {

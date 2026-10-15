@@ -80,6 +80,9 @@ class AuthNotifier extends _$AuthNotifier {
     String action = 'subscribe',
     String plan = 'yearly',
     String? promoCode,
+    String? receipt,
+    String? productId,
+    String? source,
   }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
@@ -87,6 +90,9 @@ class AuthNotifier extends _$AuthNotifier {
         action: action,
         plan: plan,
         promoCode: promoCode,
+        receipt: receipt,
+        productId: productId,
+        source: source,
       );
       state = state.copyWith(profile: profile, isLoading: false);
       return true;
