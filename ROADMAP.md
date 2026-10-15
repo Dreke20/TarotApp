@@ -29,7 +29,7 @@ timeline
     Phase 7 (Completed ✅) : Voice Narration & Ambient Soundscapes
                           : Cut the Deck Ritual & Expanded Spreads
                           : Lunar Tracker & Daily Streaks
-    Next                  : Full Minor Arcana Artwork (56 Cards)
+    Next                  : Minor Arcana Artwork (48/78 Complete: Wands 14/14, Cups 12/14)
                           : iOS App Store Build
 ```
 
@@ -106,9 +106,11 @@ timeline
    - [x] Deployed `tarot-reader` Edge Function with Gemini inference and conversational follow-up chat.
    - [x] Configured encrypted `GEMINI_API_KEY` secret in Supabase Cloud with resilient multi-model failover (`gemini-3.1-flash-lite`, `gemini-3.8-flash`).
    - [x] **Security hardening (`20261014000000_harden_rls_and_sync_schema.sql`):** owner-only RLS on `profiles` & `readings`, synced missing columns (`moon_sign`, `rising_sign`, `is_pro`, `notes`, `is_favorite`), and a server-side trigger preventing clients from self-granting `is_pro`. Guest readings now stay on-device.
-2. **Card Art Asset Pipeline (Completed ✅):**
+2. **Card Art Asset Pipeline (In Progress - 48 / 78 Cards Completed):**
    - [x] Generated 22 custom high-resolution Major Arcana artworks in 2:3 tarot ratio under `assets/cards/`.
-   - [x] Generated Minor Arcana elemental masterworks (`wands_ace.jpg`, `cups_ace.jpg`).
+   - [x] **Suit of Wands (Complete - 14/14):** `wands_ace` through `wands_10`, `wands_page`, `wands_knight`, `wands_queen`, `wands_king` in luxury gothic gold aesthetic.
+   - [x] **Suit of Cups (In Progress - 12/14):** `cups_ace` through `cups_10`, `cups_page`, `cups_knight` completed. (Remaining: Queen & King of Cups).
+   - [ ] **Suits of Swords & Pentacles (0/28):** Scheduled for upcoming generation batches.
    - [x] Built the Sacred Tarot Codex (`TarotCodexScreen`) with full deck encyclopedia, search, filtering, and high-res modal inspector.
 3. **Git Repository Setup (Completed ✅):**
    - [x] Initialized Git and pushed production releases to `https://github.com/Dreke20/TarotApp.git` on `main`.
