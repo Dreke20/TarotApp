@@ -24,28 +24,31 @@ Step into the celestial sanctuary. **Astral Guidance** reimagines ancient divina
 
 Whether you seek clarity on love, career, crossroads, or personal awakening, Astral Guidance casts light upon the unseen currents of your life.
 
-### 🔮 SACRED ENGINE & SPREADS
+### 🔮 SACRED SPREADS & DIVINATION SANCTUARIES
 • **Daily Guidance (1 Card):** Align with the morning energies and receive a focal archetype for your day.
 • **The Three Fates (3 Cards):** Trace your path across Time—Past Roots, Present Crossroads, and Unfolding Future Trajectory.
-• **The Celtic Cross (10 Cards):** The definitive matrix of transformation. Examine Heart, Obstacle, Root, Crown, Environment, Hopes, and Final Culmination with our interactive card rail and position inspector.
+• **The Celtic Cross (10 Cards):** The definitive matrix of transformation. Examine Heart, Obstacle, Root, Crown, Environment, Hopes, and Final Culmination.
+• **Wheel of the Year (12 Cards):** Master 12-house astrological spread channeling seasonal sabbats and the zodiac wheel.
+• **Custom Spread Grimoire:** Forge your own 1-to-10 card layouts with personalized position intentions.
+• **Elder Futhark Runic Sanctuary:** Cast all 24 sacred Norse runes across Freya's, Heimdall's, and Tyr's Aetts with Merkstave (inverted) wisdom.
+• **I Ching Book of Changes:** Cast sacred ancient bronze coins to generate yin/yang lines and divine from all 64 classical hexagrams.
 
-### 🌌 ASTROLOGICAL ALIGNMENT
-Harmonize every prophecy with your cosmic blueprint. Configure your **Sun, Moon, and Rising signs** to receive personalized interpretations tailored to your elemental balance (Fire, Water, Air, Earth).
+### 🌌 NATAL EPHEMERIS & ASTROLOGICAL ALIGNMENT
+• **Full Natal Chart:** Calculate 8 planetary placements (Sun, Moon, Rising, Mercury, Venus, Mars, Jupiter, Saturn) and elemental balance (Fire, Earth, Air, Water).
+• **Real-Time Lunar Ephemeris:** Real-time lunar phase tracking, illumination percentages, and zodiac transit banners.
 
-### ✨ TACTILE GLASSMORPHISM & 3D ARTISTRY
+### ✨ TACTILE GLASSMORPHISM & SENSORY IMMERSION
 • **True 3D Perspective Card Flips:** Turn cards with realistic depth, gold foil filigree, and celestial geometry.
 • **Multi-Deck Artistry:** Choose between *Celestial Classic*, *Ethereal Luminary*, and *Obsidian Mystery*.
-• **Custom Altar Themes:** Meditate upon the *Midnight Nebula*, *Obsidian Void*, *Emerald Grove*, or *Amethyst Shrine*.
-• **Spatial Sensory Immersion:** Feel tactile tremors while shuffling the deck and hear gentle chimes as destinies unveil.
+• **Custom Altar Themes:** Meditate upon *Midnight Nebula*, *Obsidian Void*, *Emerald Grove*, or *Amethyst Shrine*.
+• **Solfeggio Soundscapes:** Ambient meditative audio featuring 432Hz (Miracle Tone), 528Hz (Transformation), and 741Hz (Intuition Awakening).
 
-### 💬 DIALOGUE WITH THE ORACLE
-Go beyond static card definitions. Engage in conversational multi-turn dialogue directly with the AI Oracle to ask follow-up questions about specific placements.
-
-### 📖 THE SACRED JOURNAL
-• Maintain an encrypted archive of every past reading.
-• Record personal reflection notes and epiphanies.
-• Star favorite revelations and search by card archetype or query.
-• Export beautiful 9:16 story cards to share with your circle.
+### 💬 CONVERSATIONAL ORACLE & SACRED CODEX
+• **Multi-Turn Oracle Dialogue:** Ask follow-up inquiries directly to the Oracle with contextual awareness.
+• **Sacred Tarot Codex:** Searchable encyclopedia of the entire 78-card deck with high-resolution inspection.
+• **Astral Dream Journal & Jungian Decoder:** Transcribe nightly visions and uncover hidden tarot archetypes.
+• **Live Reader Portal:** Connect with live human master psychics and intuitive readers at Whispers & Warnings (whispers26.com).
+• **The Sacred Journal:** Encrypted reading archive, personal reflections, favorite stars, and 9:16 Instagram Story export.
 
 Breathe deeply. Focus your intent. The cards await your inquiry.
 ```
@@ -53,7 +56,7 @@ Breathe deeply. Focus your intent. The cards await your inquiry.
 ---
 
 ## 🔑 Search Keywords & ASO Strategy
-`tarot, ai tarot, tarot cards, celtic cross, horoscope, astrology, zodiac, birth chart, gemini ai, daily guidance, psychic reading, fortune teller, spiritual journal, mindfulness, divination`
+`tarot, ai tarot, tarot cards, celtic cross, horoscope, astrology, zodiac, birth chart, gemini ai, daily guidance, psychic reading, runes, elder futhark, i ching, fortune teller, spiritual journal, mindfulness, divination, solfeggio, dream journal`
 
 ---
 
