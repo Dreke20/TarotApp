@@ -5,16 +5,41 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'ambient_soundscape_service.g.dart';
 
 enum SoundscapeTrack {
-  celestialDrone('Celestial Drone', 'https://actions.google.com/sounds/v1/science_fiction/space_ambience_hum.ogg'),
-  tibetanBowls('Sacred Chime', 'https://actions.google.com/sounds/v1/ambiences/wind_chimes_breeze.ogg'),
-  sacredWind('Astral Breeze', 'https://actions.google.com/sounds/v1/weather/wind_howl.ogg'),
-  solfeggio432('432 Hz Cosmic Harmony', 'https://actions.google.com/sounds/v1/science_fiction/low_frequency_hum.ogg'),
-  solfeggio528('528 Hz Miracle & Heart', 'https://actions.google.com/sounds/v1/science_fiction/force_field_loop.ogg'),
-  solfeggio741('741 Hz Intuition Awakening', 'https://actions.google.com/sounds/v1/science_fiction/alien_beacon_loop.ogg');
+  solfeggio432(
+    '432 Hz Cosmic Harmony',
+    'audio/solfeggio_432.wav',
+    'https://actions.google.com/sounds/v1/science_fiction/low_frequency_hum.ogg',
+  ),
+  solfeggio528(
+    '528 Hz Miracle & Heart',
+    'audio/solfeggio_528.wav',
+    'https://actions.google.com/sounds/v1/science_fiction/force_field_loop.ogg',
+  ),
+  solfeggio741(
+    '741 Hz Intuition Awakening',
+    'audio/solfeggio_741.wav',
+    'https://actions.google.com/sounds/v1/science_fiction/alien_beacon_loop.ogg',
+  ),
+  celestialDrone(
+    'Celestial Drone',
+    'audio/celestial_drone.wav',
+    'https://actions.google.com/sounds/v1/science_fiction/space_ambience_hum.ogg',
+  ),
+  tibetanBowls(
+    'Sacred Chime & Bowls',
+    'audio/tibetan_bowls.wav',
+    'https://actions.google.com/sounds/v1/ambiences/wind_chimes_breeze.ogg',
+  ),
+  sacredWind(
+    'Astral Breeze',
+    'audio/astral_breeze.wav',
+    'https://actions.google.com/sounds/v1/weather/wind_howl.ogg',
+  );
 
   final String title;
-  final String url;
-  const SoundscapeTrack(this.title, this.url);
+  final String assetPath;
+  final String fallbackUrl;
+  const SoundscapeTrack(this.title, this.assetPath, this.fallbackUrl);
 }
 
 class AmbientAudioState {
@@ -25,7 +50,7 @@ class AmbientAudioState {
   const AmbientAudioState({
     this.isPlaying = false,
     this.volume = 0.5,
-    this.track = SoundscapeTrack.celestialDrone,
+    this.track = SoundscapeTrack.solfeggio432,
   });
 
   AmbientAudioState copyWith({
@@ -47,43 +72,61 @@ class AmbientAudioNotifier extends _$AmbientAudioNotifier {
 
   @override
   AmbientAudioState build() {
-    _player.setReleaseMode(ReleaseMode.loop);
+    try {
+      _player.setReleaseMode(ReleaseMode.loop);
+    } catch (_) {}
+
     ref.onDispose(() {
-      _player.dispose();
+      try {
+        _player.dispose();
+      } catch (_) {}
     });
     return const AmbientAudioState();
   }
 
   Future<void> togglePlay() async {
     if (state.isPlaying) {
-      await _player.pause();
+      try {
+        await _player.pause();
+      } catch (_) {}
       state = state.copyWith(isPlaying: false);
     } else {
-      try {
-        await _player.setVolume(state.volume);
-        await _player.play(UrlSource(state.track.url));
-        state = state.copyWith(isPlaying: true);
-      } catch (e) {
-        debugPrint("Ambient audio playback warning: $e");
-      }
+      await _playTrack(state.track);
     }
   }
 
   Future<void> selectTrack(SoundscapeTrack newTrack) async {
     state = state.copyWith(track: newTrack);
     if (state.isPlaying) {
-      try {
-        await _player.stop();
-        await _player.play(UrlSource(newTrack.url));
-      } catch (e) {
-        debugPrint("Select track error: $e");
-      }
+      await _playTrack(newTrack);
     }
   }
 
   Future<void> setVolume(double volume) async {
     state = state.copyWith(volume: volume);
-    await _player.setVolume(volume);
+    try {
+      await _player.setVolume(volume);
+    } catch (_) {}
+  }
+
+  Future<void> _playTrack(SoundscapeTrack track) async {
+    try {
+      await _player.setVolume(state.volume);
+      // 1. Attempt instantaneous local asset playback
+      try {
+        await _player.play(AssetSource(track.assetPath));
+        state = state.copyWith(isPlaying: true);
+        return;
+      } catch (assetErr) {
+        debugPrint('[AmbientAudio] AssetSource failed, attempting fallback URL: $assetErr');
+      }
+
+      // 2. Fallback to remote network stream if local asset is unresolvable
+      await _player.play(UrlSource(track.fallbackUrl));
+      state = state.copyWith(isPlaying: true);
+    } catch (e) {
+      debugPrint('[AmbientAudio] Playback error: $e');
+      state = state.copyWith(isPlaying: false);
+    }
   }
 }
-

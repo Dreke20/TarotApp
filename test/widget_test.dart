@@ -16,6 +16,7 @@ import 'package:tarot_app/features/monetization/presentation/monetization_state.
 import 'package:tarot_app/features/subscription/domain/subscription_plan.dart';
 import 'package:tarot_app/features/subscription/presentation/subscription_state.dart';
 import 'package:tarot_app/features/subscription/data/in_app_purchase_service.dart';
+import 'package:tarot_app/core/services/ambient_soundscape_service.dart';
 import 'package:tarot_app/main.dart';
 
 void main() {
@@ -227,6 +228,28 @@ void main() {
       expect(service.isAvailable, isFalse);
       expect(service.products, isEmpty);
       service.dispose();
+    });
+
+    test('SoundscapeTrack catalog contains all 6 sacred Solfeggio and ambient loops', () {
+      expect(SoundscapeTrack.values.length, 6);
+      expect(SoundscapeTrack.solfeggio432.assetPath, 'audio/solfeggio_432.wav');
+      expect(SoundscapeTrack.solfeggio528.assetPath, 'audio/solfeggio_528.wav');
+      expect(SoundscapeTrack.solfeggio741.assetPath, 'audio/solfeggio_741.wav');
+      expect(SoundscapeTrack.celestialDrone.assetPath, 'audio/celestial_drone.wav');
+      expect(SoundscapeTrack.tibetanBowls.assetPath, 'audio/tibetan_bowls.wav');
+      expect(SoundscapeTrack.sacredWind.assetPath, 'audio/astral_breeze.wav');
+    });
+
+    test('AmbientAudioState manages volume and loop tracking', () {
+      const state = AmbientAudioState();
+      expect(state.isPlaying, isFalse);
+      expect(state.volume, 0.5);
+      expect(state.track, SoundscapeTrack.solfeggio432);
+
+      final playing = state.copyWith(isPlaying: true, volume: 0.8, track: SoundscapeTrack.solfeggio528);
+      expect(playing.isPlaying, isTrue);
+      expect(playing.volume, 0.8);
+      expect(playing.track, SoundscapeTrack.solfeggio528);
     });
   });
 

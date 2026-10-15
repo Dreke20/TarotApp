@@ -70,6 +70,34 @@ class AmbientAudioButton extends ConsumerWidget {
             ],
           ),
         ),
+        PopupMenuItem<SoundscapeTrack>(
+          enabled: false,
+          child: Row(
+            children: [
+              const Icon(Icons.volume_down, size: 15, color: AppColors.goldMuted),
+              Expanded(
+                child: SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    activeTrackColor: AppColors.goldBright,
+                    inactiveTrackColor: AppColors.glassBorder,
+                    thumbColor: AppColors.goldBright,
+                    trackHeight: 2,
+                    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                  ),
+                  child: Slider(
+                    value: audioState.volume,
+                    min: 0.0,
+                    max: 1.0,
+                    onChanged: (val) {
+                      notifier.setVolume(val);
+                    },
+                  ),
+                ),
+              ),
+              const Icon(Icons.volume_up, size: 15, color: AppColors.goldBright),
+            ],
+          ),
+        ),
         const PopupMenuDivider(),
         ...SoundscapeTrack.values.map(
           (track) => PopupMenuItem<SoundscapeTrack>(
