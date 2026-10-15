@@ -29,7 +29,7 @@ timeline
     Phase 7 (Completed ✅) : Voice Narration & Ambient Soundscapes
                           : Cut the Deck Ritual & Expanded Spreads
                           : Lunar Tracker & Daily Streaks
-    Next                  : Minor Arcana Artwork (48/78 Complete: Wands 14/14, Cups 12/14)
+    Next                  : Minor Arcana Artwork (60/78 Complete: Wands 14/14, Cups 14/14, Swords 10/14)
                           : iOS App Store Build
 ```
 
@@ -142,3 +142,11 @@ timeline
    - [x] **Celestial Starlight Offerings ([`StarlightOfferingModal`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/lib/features/monetization/presentation/widgets/starlight_offering_modal.dart)):** Balanced value exchange allowing free seekers to watch a rewarded video ad ("Offer Celestial Incense") to earn a Starlight Pass to unlock premium spreads (Celtic Cross, Heart of Two, Career Crossroads, Shadow Mirror, Wheel of the Year) without paying.
    - [x] **Collapsible Mystic Banners ([`MysticAdBanner`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/lib/features/monetization/presentation/widgets/mystic_ad_banner.dart)):** Gold-framed dark obsidian banner placed unobtrusively at the foot of secondary compendiums ([`TarotCodexScreen`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/lib/features/tarot/presentation/screens/tarot_codex_screen.dart) and [`ReadingsHistoryScreen`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/lib/features/tarot/presentation/screens/readings_history_screen.dart)), collapsible by the user, and never placed on the active tarot altar.
    - [x] **Absolute Pro Suppression:** When a seeker unlocks Oracle Pro (`isProUserProvider`), 100% of ads (banners, interstitials, and rewarded prompts) are suppressed and vanish across all screens.
+
+8. **Whispers and Warnings Luxury Gothic Minor Arcana Art Pipeline (In Progress 🎨 - 60/78 Cards Complete):**
+   - [x] **Major Arcana (22/22 Complete ✅):** Full 22 Major Arcana cards in obsidian black frame with 24k antique gold filigree and Roman numeral medallions.
+   - [x] **Suit of Wands (14/14 Complete ✅):** Ace through 10, Page, Knight, Queen, King depicting the sacred elemental fire of willpower, inspiration, and creative energy.
+   - [x] **Suit of Cups (14/14 Complete ✅):** Ace through 10, Page, Knight, Queen, King capturing the fluid elemental water of intuition, emotional depths, romantic harmony, and spiritual chalices.
+   - [x] **Suit of Swords (10/14 Complete ⚔️):** Ace through 10 complete depicting the sharp elemental air of intellect, truth, sorrow, mental respite, and clarity before dawn. (Court cards: Page, Knight, Queen, King pending next quota window).
+   - [ ] **Suit of Pentacles (0/14 Pending 🪙):** Elemental earth of material wealth, craftsmanship, manifestation, and heritage.
+
