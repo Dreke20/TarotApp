@@ -143,11 +143,11 @@ timeline
    - [x] **Collapsible Mystic Banners ([`MysticAdBanner`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/lib/features/monetization/presentation/widgets/mystic_ad_banner.dart)):** Gold-framed dark obsidian banner placed unobtrusively at the foot of secondary compendiums ([`TarotCodexScreen`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/lib/features/tarot/presentation/screens/tarot_codex_screen.dart) and [`ReadingsHistoryScreen`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/lib/features/tarot/presentation/screens/readings_history_screen.dart)), collapsible by the user, and never placed on the active tarot altar.
    - [x] **Absolute Pro Suppression:** When a seeker unlocks Oracle Pro (`isProUserProvider`), 100% of ads (banners, interstitials, and rewarded prompts) are suppressed and vanish across all screens.
 
-8. **Whispers and Warnings Luxury Gothic Minor Arcana Art Pipeline (In Progress 🎨 - 60/78 Cards Complete):**
+8. **Whispers and Warnings Luxury Gothic Minor Arcana Art Pipeline (In Progress 🎨 - 61/78 Cards Complete):**
    - [x] **Major Arcana (22/22 Complete ✅):** Full 22 Major Arcana cards in obsidian black frame with 24k antique gold filigree and Roman numeral medallions.
    - [x] **Suit of Wands (14/14 Complete ✅):** Ace through 10, Page, Knight, Queen, King depicting the sacred elemental fire of willpower, inspiration, and creative energy.
    - [x] **Suit of Cups (14/14 Complete ✅):** Ace through 10, Page, Knight, Queen, King capturing the fluid elemental water of intuition, emotional depths, romantic harmony, and spiritual chalices.
-   - [x] **Suit of Swords (10/14 Complete ⚔️):** Ace through 10 complete depicting the sharp elemental air of intellect, truth, sorrow, mental respite, and clarity before dawn. (Court cards: Page, Knight, Queen, King pending next quota window).
+   - [x] **Suit of Swords (11/14 Complete ⚔️):** Ace through 10 and Page of Swords complete, depicting the sharp elemental air of intellect, truth, sorrow, mental respite, and clarity before dawn. (Court cards: Knight, Queen, King pending next quota window).
    - [ ] **Suit of Pentacles (0/14 Pending 🪙):** Elemental earth of material wealth, craftsmanship, manifestation, and heritage.
 
 9. **Android Home Screen / Glance Widget (Completed ✅):**
