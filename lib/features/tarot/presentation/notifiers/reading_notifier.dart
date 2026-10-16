@@ -11,6 +11,7 @@ import '../../domain/reading.dart';
 import '../../domain/spread_type.dart';
 import '../../domain/tarot_card.dart';
 import '../../domain/tarot_deck_theme.dart';
+import '../../services/tarot_widget_service.dart';
 import 'reading_state.dart';
 
 part 'reading_notifier.g.dart';
@@ -220,6 +221,15 @@ class ReadingNotifier extends _$ReadingNotifier {
 
       await StreakService.recordReadingToday();
       ref.invalidate(streakProvider);
+
+      // Synchronize newly drawn card to Android home screen widget
+      if (state.drawnCards.isNotEmpty) {
+        final primaryCard = state.drawnCards.first;
+        ref.read(tarotWidgetServiceProvider).updateHomeScreenWidget(
+          card: primaryCard,
+          isReversed: primaryCard.isReversed,
+        );
+      }
     } catch (e) {
       state = state.copyWith(
         isConsultingOracle: false,

@@ -30,7 +30,30 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Home Screen Widget Launch Intent Filter -->
+            <intent-filter>
+                <action android:name="es.antonborri.home_widget.action.LAUNCH" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="oraculum" />
+            </intent-filter>
         </activity>
+
+        <!-- Oraculum Daily Tarot & Moon Phase Home Screen Widget -->
+        <receiver
+            android:name=".OraculumWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/oraculum_widget_info" />
+        </receiver>
+
         <!-- Google Mobile Ads App ID (AdMob sample test ID) -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

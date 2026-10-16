@@ -7,6 +7,7 @@ import 'core/services/admob_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/supabase/supabase_config.dart';
 import 'features/tarot/presentation/screens/tarot_table_screen.dart';
+import 'features/tarot/services/tarot_widget_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +47,14 @@ Future<void> main() async {
     await AdMobService.instance.initialize();
   } catch (e) {
     debugPrint('AdMob initialization note: $e');
+  }
+
+  // Initialize and synchronize Android Home Screen Widget (Daily Card & Moon Phase)
+  try {
+    final widgetService = TarotWidgetService();
+    await widgetService.updateHomeScreenWidget();
+  } catch (e) {
+    debugPrint('Home widget initialization note: $e');
   }
 
   runApp(

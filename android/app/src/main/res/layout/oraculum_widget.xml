@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_bg"
+    android:padding="12dp">
+
+    <!-- Top Header: Brand & Live Moon Phase Badge -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="✦ ORACULUM"
+            android:textColor="#E0C068"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/widget_gold_badge"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/widget_moon_phase"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🌙 Moon Phase"
+                android:textColor="#EAD9AB"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Main Card Content Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:layout_marginTop="6dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/widget_card_icon"
+            android:layout_width="44dp"
+            android:layout_height="66dp"
+            android:src="@mipmap/ic_launcher"
+            android:scaleType="fitCenter"
+            android:contentDescription="Daily Tarot Card" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/widget_card_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Daily Tarot Card"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/widget_card_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MAJOR ARCANA • COSMIC MIRROR"
+                android:textColor="#C5A059"
+                android:textSize="9.5sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.04"
+                android:maxLines="1" />
+
+            <TextView
+                android:id="@+id/widget_card_meaning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Divine celestial guidance illuminates your path today."
+                android:textColor="#B3A9C9"
+                android:textSize="10.5sp"
+                android:maxLines="2"
+                android:ellipsize="end" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Bottom Action Button: Enter Astral Altar -->
+    <TextView
+        android:id="@+id/widget_action_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/widget_gold_button"
+        android:gravity="center"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:text="✦ CONSULT DAILY ORACLE ✦"
+        android:textColor="#F3E5AB"
+        android:textSize="10.5sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.06" />
+</LinearLayout>

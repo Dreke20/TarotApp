@@ -150,3 +150,11 @@ timeline
    - [x] **Suit of Swords (10/14 Complete ⚔️):** Ace through 10 complete depicting the sharp elemental air of intellect, truth, sorrow, mental respite, and clarity before dawn. (Court cards: Page, Knight, Queen, King pending next quota window).
    - [ ] **Suit of Pentacles (0/14 Pending 🪙):** Elemental earth of material wealth, craftsmanship, manifestation, and heritage.
 
+9. **Android Home Screen / Glance Widget (Completed ✅):**
+   - [x] **Native AppWidget Architecture:** Built [`OraculumWidgetProvider`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/android/app/src/main/kotlin/com/tarotapp/tarot_app/OraculumWidgetProvider.kt) with RemoteViews layout in luxury obsidian gradient and antique gold borders (`widget_bg.xml`, `widget_gold_badge.xml`, `widget_gold_button.xml`).
+   - [x] **Live Ephemeris & Moon Phase Display:** Synchronizes live lunar phase, illumination percentage, and moon zodiac sign calculated via [`LunarCalculator`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/lib/core/utils/lunar_calculator.dart).
+   - [x] **Deterministic & Active Daily Tarot Card:** Dynamically binds today's daily card title, arcana, element, and upright/reversed meaning, updating automatically when new readings are performed on the altar.
+   - [x] **Deep Linking Direct to Altar:** Tap actions on the widget container or action button launch the app directly into the Astral Guidance altar via `oraculum://daily`.
+   - [x] **Resilient Flutter Service ([`TarotWidgetService`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/lib/features/tarot/services/tarot_widget_service.dart)):** Safe platform channel abstraction with automatic initialization on app startup in `main.dart` and 100% test coverage without native runtime dependencies.
+
+
