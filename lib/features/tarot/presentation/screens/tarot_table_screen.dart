@@ -33,6 +33,10 @@ import '../../../monetization/presentation/widgets/starlight_offering_modal.dart
 import '../../../altar/presentation/widgets/crystal_grid_overlay.dart';
 import '../../../altar/presentation/widgets/smoke_purification_modal.dart';
 import '../../../altar/presentation/widgets/sacred_breathing_modal.dart';
+import '../../../altar/presentation/widgets/altar_cloth_selector_modal.dart';
+import '../widgets/card_back_selector_modal.dart';
+import '../../../meditation/presentation/screens/pathworking_sanctuary_screen.dart';
+import '../../../notifications/presentation/widgets/cosmic_notification_modal.dart';
 
 /// The central Tarot Altar Table where cards are shuffled, drawn, flipped in 3D,
 /// and synthesized by the AI Oracle with multi-deck themes, Celtic Cross, and astrological alignment.
@@ -514,6 +518,43 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => const TarotLensScreen()),
                     ),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickPortalChip(
+                    context,
+                    glyph: '🧘',
+                    title: 'Pathworkings',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => PathworkingSanctuaryScreen(
+                          onIntentionAnchored: (intention) {
+                            _questionController.text = intention;
+                            notifier.setQuestion(intention);
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickPortalChip(
+                    context,
+                    glyph: '🧵',
+                    title: 'Altar Cloths',
+                    onTap: () => AltarClothSelectorModal.show(context),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickPortalChip(
+                    context,
+                    glyph: '🎴',
+                    title: 'Card Backs',
+                    onTap: () => CardBackSelectorModal.show(context),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickPortalChip(
+                    context,
+                    glyph: '🔔',
+                    title: 'Horary Alerts',
+                    onTap: () => CosmicNotificationModal.show(context),
                   ),
                 ],
               ),

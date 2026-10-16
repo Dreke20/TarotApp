@@ -24,6 +24,10 @@ import '../screens/seekers_chronicle_screen.dart';
 import '../../../altar/presentation/widgets/crystal_grid_sheet.dart';
 import '../../../altar/presentation/widgets/smoke_purification_modal.dart';
 import '../../../altar/presentation/widgets/sacred_breathing_modal.dart';
+import '../../../altar/presentation/widgets/altar_cloth_selector_modal.dart';
+import 'card_back_selector_modal.dart';
+import '../../../meditation/presentation/screens/pathworking_sanctuary_screen.dart';
+import '../../../notifications/presentation/widgets/cosmic_notification_modal.dart';
 import 'ambient_audio_button.dart';
 import 'glass_container.dart';
 import 'oracle_persona_selector_modal.dart';
@@ -390,7 +394,11 @@ class TarotHeaderBar extends ConsumerWidget {
                   side: const BorderSide(color: AppColors.glassBorder),
                 ),
                 onSelected: (value) {
-                  if (value.startsWith('deck:')) {
+                  if (value == 'card_backs') {
+                    CardBackSelectorModal.show(context);
+                  } else if (value == 'altar_cloths') {
+                    AltarClothSelectorModal.show(context);
+                  } else if (value.startsWith('deck:')) {
                     final themeId = value.replaceFirst('deck:', '');
                     final theme = TarotDeckTheme.values.firstWhere((t) => t.id == themeId);
                     notifier.setDeckTheme(theme);
@@ -401,6 +409,41 @@ class TarotHeaderBar extends ConsumerWidget {
                   }
                 },
                 itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'card_backs',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.style, size: 16, color: AppColors.goldBright),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Card Back Geometry',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.goldBright,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'altar_cloths',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.table_restaurant, size: 16, color: AppColors.goldBright),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Consecrated Altar Cloths',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.goldBright,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuDivider(),
                   PopupMenuItem(
                     enabled: false,
                     child: Text(
@@ -521,6 +564,20 @@ class TarotHeaderBar extends ConsumerWidget {
                       break;
                     case 'breathe':
                       SacredBreathingModal.show(context);
+                      break;
+                    case 'pathworking':
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => PathworkingSanctuaryScreen(
+                            onIntentionAnchored: (intention) {
+                              notifier.setQuestion(intention);
+                            },
+                          ),
+                        ),
+                      );
+                      break;
+                    case 'notifications':
+                      CosmicNotificationModal.show(context);
                       break;
                     case 'live_reader':
                       ExternalLaunchService.openLiveReader(context);
@@ -657,6 +714,26 @@ class TarotHeaderBar extends ConsumerWidget {
                         const Text('🫁', style: TextStyle(fontSize: 15)),
                         const SizedBox(width: 8),
                         Text('4-7-8 Breath Centering', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'pathworking',
+                    child: Row(
+                      children: [
+                        const Text('🧘', style: TextStyle(fontSize: 15)),
+                        const SizedBox(width: 8),
+                        Text('Archetypal Pathworkings', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'notifications',
+                    child: Row(
+                      children: [
+                        const Text('🔔', style: TextStyle(fontSize: 15)),
+                        const SizedBox(width: 8),
+                        Text('Cosmic Horary Reminders', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
                       ],
                     ),
                   ),

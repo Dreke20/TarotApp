@@ -5,7 +5,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/constants/app_theme.dart';
 import 'core/services/admob_service.dart';
-import 'core/services/notification_service.dart';
+import 'features/notifications/data/notification_settings_store.dart';
+import 'features/notifications/data/sanctuary_notification_service.dart';
 import 'core/supabase/supabase_config.dart';
 import 'features/onboarding/presentation/screens/sacred_initiation_screen.dart';
 import 'features/tarot/presentation/screens/tarot_table_screen.dart';
@@ -36,10 +37,13 @@ Future<void> main() async {
     }
   }
 
-  // Initialize Daily Notification Service
+  // Refresh the rolling window of sanctuary notifications (daily guidance,
+  // lunar peaks, Sabbat eves) for seekers who have opted in.
   try {
-    final notificationService = NotificationService();
-    await notificationService.initialize();
+    if (await NotificationSettingsStore.isConfigured()) {
+      final settings = await NotificationSettingsStore.load();
+      await SanctuaryNotificationService.instance.syncSchedule(settings);
+    }
   } catch (e) {
     debugPrint('Notification service setup note: $e');
   }

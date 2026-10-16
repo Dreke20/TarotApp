@@ -2,10 +2,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/holographic_foil_card.dart';
 import '../../domain/tarot_card.dart';
 import '../../domain/tarot_deck_theme.dart';
+import '../notifiers/card_back_notifier.dart';
+import 'card_back_design_painter.dart';
 
 /// Interactive 3D Flippable Tarot Card with sacred geometry styling,
 /// gold foil borders, and dynamic orientation handling.
@@ -121,55 +124,63 @@ class _TarotCardWidgetState extends State<TarotCardWidget>
   }
 
   Widget _buildCardBack() {
-    return Container(
-      width: widget.width,
-      height: widget.height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        gradient: widget.deckTheme.backGradient,
-        border: Border.all(
-          color: widget.isSelected
-              ? widget.deckTheme.accentColor
-              : widget.deckTheme.accentColor.withValues(alpha: 0.6),
-          width: widget.isSelected ? 2.0 : 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: widget.isSelected
-                ? widget.deckTheme.accentColor.withValues(alpha: 0.4)
-                : Colors.black.withValues(alpha: 0.45),
-            blurRadius: widget.isSelected ? 18 : 12,
-            spreadRadius: widget.isSelected ? 2 : 0,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Inner ornamental border
-          Container(
-            margin: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: widget.deckTheme.accentColor.withValues(alpha: 0.35),
-                width: 0.8,
-              ),
+    return Consumer(
+      builder: (context, ref, child) {
+        final cardBack = ref.watch(cardBackProvider);
+        return Container(
+          width: widget.width,
+          height: widget.height,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            gradient: widget.deckTheme.backGradient,
+            border: Border.all(
+              color: widget.isSelected
+                  ? widget.deckTheme.accentColor
+                  : widget.deckTheme.accentColor.withValues(alpha: 0.6),
+              width: widget.isSelected ? 2.0 : 1.5,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: widget.isSelected
+                    ? widget.deckTheme.accentColor.withValues(alpha: 0.4)
+                    : Colors.black.withValues(alpha: 0.45),
+                blurRadius: widget.isSelected ? 18 : 12,
+                spreadRadius: widget.isSelected ? 2 : 0,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Inner ornamental border
+              Container(
+                margin: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: widget.deckTheme.accentColor.withValues(alpha: 0.35),
+                    width: 0.8,
+                  ),
+                ),
+              ),
 
-          // Celestial center geometry
-          Positioned.fill(
-            child: Padding(
-              padding: const EdgeInsets.all(7.0),
-              child: CustomPaint(
-                painter: CardBackPatternPainter(accentColor: widget.deckTheme.accentColor),
+              // Celestial center geometry
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.all(7.0),
+                  child: CustomPaint(
+                    painter: CardBackDesignPainter(
+                      design: cardBack,
+                      customAccent: widget.deckTheme.accentColor,
+                    ),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

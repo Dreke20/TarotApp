@@ -6,31 +6,9 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/lunar_calculator.dart';
-import '../../../tarot/domain/spread_type.dart';
 import '../../../tarot/presentation/notifiers/reading_notifier.dart';
 import '../../../tarot/presentation/widgets/glass_container.dart';
-
-class SabbatEvent {
-  final String name;
-  final String dateDescription;
-  final int month;
-  final int day;
-  final String seasonalTheme;
-  final String recommendedSpreadTitle;
-  final SpreadType spreadType;
-  final String ritualFocus;
-
-  const SabbatEvent({
-    required this.name,
-    required this.dateDescription,
-    required this.month,
-    required this.day,
-    required this.seasonalTheme,
-    required this.recommendedSpreadTitle,
-    required this.spreadType,
-    required this.ritualFocus,
-  });
-}
+import '../../domain/sabbat_calendar.dart';
 
 /// The Celestial Lunar Almanac & Astrological Sabbat Sanctuary
 class LunarAlmanacScreen extends ConsumerStatefulWidget {
@@ -44,89 +22,6 @@ class _LunarAlmanacScreenState extends ConsumerState<LunarAlmanacScreen> {
   late DateTime _selectedMonth;
   late DateTime _selectedDay;
 
-  static const List<SabbatEvent> _sabbats = [
-    SabbatEvent(
-      name: 'Samhain',
-      dateDescription: 'October 31',
-      month: 10,
-      day: 31,
-      seasonalTheme: 'Thinning Veil & Ancestral Communion',
-      recommendedSpreadTitle: 'Shadow Mirror (5 Cards)',
-      spreadType: SpreadType.shadowMirror,
-      ritualFocus: 'Deep shadow integration, releasing past cycle karma, and ancestral wisdom.',
-    ),
-    SabbatEvent(
-      name: 'Yule',
-      dateDescription: 'December 21',
-      month: 12,
-      day: 21,
-      seasonalTheme: 'Winter Solstice & Rebirth of the Light',
-      recommendedSpreadTitle: 'Three Fates (3 Cards)',
-      spreadType: SpreadType.threeFates,
-      ritualFocus: 'Solitary stillness, seed setting in the dark, and honoring the reborn sun.',
-    ),
-    SabbatEvent(
-      name: 'Imbolc',
-      dateDescription: 'February 1 - 2',
-      month: 2,
-      day: 1,
-      seasonalTheme: 'Awakening Hearth & Sacred Purification',
-      recommendedSpreadTitle: 'Daily Guidance (1 Card)',
-      spreadType: SpreadType.dailyGuidance,
-      ritualFocus: 'Purification of the spiritual altar, clarifying intentions for the coming spring.',
-    ),
-    SabbatEvent(
-      name: 'Ostara',
-      dateDescription: 'March 20 - 21',
-      month: 3,
-      day: 20,
-      seasonalTheme: 'Spring Equinox & Elemental Equilibrium',
-      recommendedSpreadTitle: 'Celtic Cross (10 Cards)',
-      spreadType: SpreadType.celticCross,
-      ritualFocus: 'Equal light and dark, blooming potential, and broad strategic life navigation.',
-    ),
-    SabbatEvent(
-      name: 'Beltane',
-      dateDescription: 'May 1',
-      month: 5,
-      day: 1,
-      seasonalTheme: 'Sacred Fire & Passionate Union',
-      recommendedSpreadTitle: 'Heart of Two (5 Cards)',
-      spreadType: SpreadType.heartOfTwo,
-      ritualFocus: 'Fertility of heart, divine partner synastry, and creative fire manifestation.',
-    ),
-    SabbatEvent(
-      name: 'Litha',
-      dateDescription: 'June 20 - 21',
-      month: 6,
-      day: 21,
-      seasonalTheme: 'Summer Solstice & Zenith of Radiance',
-      recommendedSpreadTitle: 'Wheel of the Year (12 Houses)',
-      spreadType: SpreadType.wheelOfTheYear,
-      ritualFocus: 'Peak personal power, celebrating abundance, and mapping the 12 cosmic houses.',
-    ),
-    SabbatEvent(
-      name: 'Lughnasadh',
-      dateDescription: 'August 1',
-      month: 8,
-      day: 1,
-      seasonalTheme: 'First Grain Harvest & Gratitude',
-      recommendedSpreadTitle: 'Career Crossroads (5 Cards)',
-      spreadType: SpreadType.careerCrossroads,
-      ritualFocus: 'Reaping initial rewards of dedicated labor, skill mastery, and generosity.',
-    ),
-    SabbatEvent(
-      name: 'Mabon',
-      dateDescription: 'September 21 - 22',
-      month: 9,
-      day: 21,
-      seasonalTheme: 'Autumn Equinox & Second Harvest',
-      recommendedSpreadTitle: 'Three Fates (3 Cards)',
-      spreadType: SpreadType.threeFates,
-      ritualFocus: 'Restoring cosmic equilibrium, preserving wisdom for the darker half of the year.',
-    ),
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -135,23 +30,13 @@ class _LunarAlmanacScreenState extends ConsumerState<LunarAlmanacScreen> {
     _selectedDay = now;
   }
 
-  SabbatEvent _getNextSabbat() {
-    final now = DateTime.now();
-    for (final s in _sabbats) {
-      final sabbatDate = DateTime(now.year, s.month, s.day);
-      if (sabbatDate.isAfter(now) || (sabbatDate.month == now.month && sabbatDate.day == now.day)) {
-        return s;
-      }
-    }
-    return _sabbats.first; // Rolls over to Samhain next year
-  }
-
   @override
   Widget build(BuildContext context) {
     final todayLunar = LunarCalculator.getTodayLunarInfo(_selectedDay);
-    final nextSabbat = _getNextSabbat();
-    final sabbatDate = DateTime(DateTime.now().year, nextSabbat.month, nextSabbat.day);
-    final daysUntilSabbat = sabbatDate.difference(DateTime.now()).inDays.clamp(0, 365);
+    final now = DateTime.now();
+    final nextOccurrence = SabbatCalendar.next(now);
+    final nextSabbat = nextOccurrence.event;
+    final daysUntilSabbat = nextOccurrence.daysFrom(now);
 
     return Scaffold(
       backgroundColor: AppColors.backgroundMidnight,

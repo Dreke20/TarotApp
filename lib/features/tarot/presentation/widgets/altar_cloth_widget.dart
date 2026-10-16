@@ -1,8 +1,11 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../altar/presentation/notifiers/altar_cloth_notifier.dart';
+import '../../../altar/presentation/widgets/altar_cloth_painter.dart';
 
-class AltarClothWidget extends StatelessWidget {
+class AltarClothWidget extends ConsumerWidget {
   final Widget child;
   final double minHeight;
 
@@ -13,12 +16,24 @@ class AltarClothWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activeCloth = ref.watch(altarClothProvider);
+
     return ConstrainedBox(
       constraints: BoxConstraints(minHeight: minHeight),
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // Consecrated Altar Cloth Drape
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: CustomPaint(
+                painter: AltarClothPainter(cloth: activeCloth),
+              ),
+            ),
+          ),
+
           // Underlying subtle gold radial glow
           Container(
             width: 500,
@@ -39,7 +54,7 @@ class AltarClothWidget extends StatelessWidget {
           // Concentric Sacred Altar Geometry
           Positioned.fill(
             child: CustomPaint(
-              painter: _AltarMandalaPainter(),
+              painter: const _AltarMandalaPainter(),
             ),
           ),
 
@@ -51,6 +66,8 @@ class AltarClothWidget extends StatelessWidget {
 }
 
 class _AltarMandalaPainter extends CustomPainter {
+  const _AltarMandalaPainter();
+
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);

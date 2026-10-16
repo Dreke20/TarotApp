@@ -4,6 +4,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'sensory_service.g.dart';
 
 class SensoryService {
+  static final SensoryService instance = SensoryService();
+
   bool soundEnabled;
   bool hapticsEnabled;
 
