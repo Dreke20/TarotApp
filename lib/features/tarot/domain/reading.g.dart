@@ -19,6 +19,15 @@ _Reading _$ReadingFromJson(Map<String, dynamic> json) => _Reading(
   advice: json['advice'] as String?,
   notes: json['notes'] as String? ?? '',
   isFavorite: json['is_favorite'] as bool? ?? false,
+  journeyRecall: json['journey_recall'] as String?,
+  elementalChemistry: json['elemental_chemistry'] as String?,
+  cosmicWeather: json['cosmic_weather'] as String?,
+  scryingPrompts:
+      (json['scrying_prompts'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
+  personaId: json['persona_id'] as String?,
   createdAt: DateTime.parse(json['created_at'] as String),
 );
 
@@ -33,5 +42,10 @@ Map<String, dynamic> _$ReadingToJson(_Reading instance) => <String, dynamic>{
   'advice': instance.advice,
   'notes': instance.notes,
   'is_favorite': instance.isFavorite,
+  'journey_recall': instance.journeyRecall,
+  'elemental_chemistry': instance.elementalChemistry,
+  'cosmic_weather': instance.cosmicWeather,
+  'scrying_prompts': instance.scryingPrompts,
+  'persona_id': instance.personaId,
   'created_at': instance.createdAt.toIso8601String(),
 };

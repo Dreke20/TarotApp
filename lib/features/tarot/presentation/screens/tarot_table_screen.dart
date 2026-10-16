@@ -33,14 +33,21 @@ import '../../../monetization/presentation/widgets/starlight_offering_modal.dart
 /// The central Tarot Altar Table where cards are shuffled, drawn, flipped in 3D,
 /// and synthesized by the AI Oracle with multi-deck themes, Celtic Cross, and astrological alignment.
 class TarotTableScreen extends ConsumerStatefulWidget {
-  const TarotTableScreen({super.key});
+  final String? initialQuestion;
+  final SpreadType? initialSpread;
+
+  const TarotTableScreen({
+    super.key,
+    this.initialQuestion,
+    this.initialSpread,
+  });
 
   @override
   ConsumerState<TarotTableScreen> createState() => _TarotTableScreenState();
 }
 
 class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
-  final TextEditingController _questionController = TextEditingController();
+  late final TextEditingController _questionController;
 
   final List<String> _quickPrompts = const [
     'What energy surrounds my path today?',
@@ -49,6 +56,17 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
     'Where should I focus my creative willpower?',
     'What does the Celtic Cross reveal for my year ahead?',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _questionController = TextEditingController(text: widget.initialQuestion ?? '');
+    if (widget.initialSpread != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(readingNotifierProvider.notifier).setSpread(widget.initialSpread!);
+      });
+    }
+  }
 
   @override
   void dispose() {

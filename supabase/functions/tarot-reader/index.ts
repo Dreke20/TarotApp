@@ -27,6 +27,17 @@ interface TarotRequest {
   };
   follow_up_prompt?: string;
   chat_history?: { role: string; content: string }[];
+  oracle_persona?: string;
+  recent_journey_context?: string[];
+  recurring_cards?: string[];
+  cosmic_weather?: {
+    moon_phase?: string;
+    moon_illumination?: string;
+    moon_zodiac?: string;
+    planetary_transits?: string;
+  };
+  elemental_chemistry?: string;
+  dream_narrative?: string;
 }
 
 const CANDIDATE_MODELS = [
@@ -79,15 +90,37 @@ serve(async (req) => {
       seeker_astrology,
       follow_up_prompt,
       chat_history,
+      oracle_persona,
+      recent_journey_context,
+      recurring_cards,
+      cosmic_weather,
+      elemental_chemistry,
+      dream_narrative,
     } = body;
 
     const geminiApiKey =
       Deno.env.get("GEMINI_API_KEY") || Deno.env.get("VERTEX_AI_API_KEY");
 
+    // Dynamic Oracle Persona Voice
+    let personaPrompt =
+      "You speak as The High Priestess: ethereal, poetic, deeply intuitive, revealing subtle subconscious currents beneath the veil.";
+    if (oracle_persona === "hermit") {
+      personaPrompt =
+        "You speak as The Hermit: quiet gravitas, patient introspection, timeless stoic philosophical wisdom, solitary contemplation.";
+    } else if (oracle_persona === "empress") {
+      personaPrompt =
+        "You speak as The Empress: warm maternal compassion, unconditional self-worth, blooming abundance, gentle emotional healing.";
+    } else if (oracle_persona === "magician") {
+      personaPrompt =
+        "You speak as The Magician: sharp incisive focus, empowering alchemical action, commanding clarity, and tactical manifestation steps.";
+    } else if (oracle_persona === "shadow_mirror") {
+      personaPrompt =
+        "You speak as The Shadow Mirror: raw, psychologically rigorous truth, confronting ego traps, unintegrated shadows, and uncomfortable honesty.";
+    }
+
     // 1. Follow-up conversational question mode
     if (follow_up_prompt) {
-      const systemPrompt =
-        "You are a mystical, empathetic tarot reader holding space for a seeker. Answer their follow-up inquiry specifically in context of the cards previously revealed. Offer poetic yet grounded wisdom.";
+      const systemPrompt = `${personaPrompt} Answer this seeker inquiry in direct context of the cards previously revealed. Offer poetic yet actionable wisdom.`;
 
       let followUpAnswer = "";
       if (geminiApiKey) {
@@ -150,26 +183,53 @@ serve(async (req) => {
       .join("\n");
 
     const astroDetails = seeker_astrology
-      ? `\nSeeker Astrological Placements: Sun in ${
+      ? `\nSeeker Natal Astrology: Sun in ${
           seeker_astrology.sun || "Unknown"
         }, Moon in ${seeker_astrology.moon || "Unknown"}, Rising in ${
           seeker_astrology.rising || "Unknown"
-        }. Weave these elements into your synthesis.`
+        }.`
       : "";
 
-    const systemPrompt =
-      "You are a mystical, empathetic tarot reader. Interpret these cards specifically for the seeker's inquiry. Focus on the relationship between the card positions, elemental alchemy, and cosmic resonance.";
+    const journeyDetails =
+      recent_journey_context && recent_journey_context.length > 0
+        ? `\nRecent Seeker Inquiries & History: ${recent_journey_context.join(" | ")}`
+        : "";
+
+    const recurringDetails =
+      recurring_cards && recurring_cards.length > 0
+        ? `\nRecurring 'Stalker' Cards Drawn Recently: ${recurring_cards.join(", ")}. Acknowledge why these patterns repeat.`
+        : "";
+
+    const weatherDetails = cosmic_weather
+      ? `\nLive Cosmic Weather: Moon in ${cosmic_weather.moon_zodiac || "current sky"} (${
+          cosmic_weather.moon_phase || "Moon"
+        }, ${cosmic_weather.moon_illumination || "illumination"}). Transits: ${
+          cosmic_weather.planetary_transits || "cosmic alignment"
+        }.`
+      : "";
+
+    const synergyDetails = elemental_chemistry
+      ? `\nElemental Composition & Alchemy: ${elemental_chemistry}. Analyze the chemical reaction between the dominant elements.`
+      : "";
+
+    const dreamContext = dream_narrative
+      ? `\nJungian Dream Narrative: "${dream_narrative}". Synthesize the dream's subconscious archetypes into this reading.`
+      : "";
+
+    const systemPrompt = `You are a legendary spiritual Oracle. ${personaPrompt}
+Analyze the cards through the lens of card interplay, directional tension, elemental dignities, and the seeker's personal destiny path.`;
 
     const userPrompt = `
-Seeker Inquiry: "${user_question || "What guidance does the cosmos have for me at this juncture?"}"
-Spread Selected: "${spread_type || "Custom Spread"}"${astroDetails}
+Seeker Question: "${user_question || "What guidance does the cosmos have for me at this juncture?"}"
+Spread Type: "${spread_type || "Custom Spread"}"${astroDetails}${weatherDetails}${synergyDetails}${journeyDetails}${recurringDetails}${dreamContext}
+
 Drawn Cards:
 ${cardsDescription}
 
 Provide your reading in strictly valid JSON format matching this schema:
 {
-  "summary": "A poetic 1-2 sentence distillation of the reading's core energy",
-  "interpretation": "A deep, cohesive narrative linking all drawn cards together in response to the seeker's question, highlighting the transition between positions",
+  "summary": "A poetic 1-2 sentence distillation of the reading's core energy matching your persona voice",
+  "interpretation": "A deep narrative linking all drawn cards together in response to the seeker's question, highlighting the transition between positions, card gaze, and tensions",
   "card_insights": [
     {
       "card_name": "Card name",
@@ -178,7 +238,15 @@ Provide your reading in strictly valid JSON format matching this schema:
     }
   ],
   "advice": "Empathetic, actionable guidance for the seeker moving forward",
-  "astrological_note": "A celestial/elemental resonance note aligning with the seeker's energies"
+  "astrological_note": "A celestial/elemental resonance note aligning with the seeker's energies",
+  "journey_recall": "1-2 sentences weaving past readings or recurring cards into this moment, explaining why the cycle has returned or evolved",
+  "elemental_chemistry": "Specific synthesis of how the elements (Fire, Water, Air, Earth) interact in this spread (e.g. steam, conflagration, or grounded oasis)",
+  "cosmic_weather": "How the current live Moon phase and cosmic transits transmute or amplify the message of these cards",
+  "scrying_prompts": [
+    "Specific follow-up question 1",
+    "Specific follow-up question 2",
+    "Specific follow-up question 3"
+  ]
 }
 `;
 
@@ -205,7 +273,6 @@ Provide your reading in strictly valid JSON format matching this schema:
           cleaned = cleaned.replace(/^```\s*/, "").replace(/```$/, "").trim();
         }
         try {
-          // Verify valid JSON
           JSON.parse(cleaned);
           aiResponseText = cleaned;
         } catch (e) {
@@ -241,6 +308,18 @@ Provide your reading in strictly valid JSON format matching this schema:
           seeker_astrology?.sun
             ? `Harmonized with your ${seeker_astrology.sun} essence and cosmic vitality.`
             : "The elemental dance between fire and water is highlighted in your celestial sky.",
+        journey_recall: recurring_cards && recurring_cards.length > 0
+          ? `The reappearance of ${recurring_cards.join(", ")} indicates an unintegrated threshold seeking your full surrender.`
+          : "Your path deepens with each reading; the cards acknowledge the steady awakening of your inner sight.",
+        elemental_chemistry: elemental_chemistry || "Fire meeting Water: volatile creative passion calling for grounded stillness.",
+        cosmic_weather: cosmic_weather
+          ? `Under the ${cosmic_weather.moon_phase} in ${cosmic_weather.moon_zodiac}, the veil between intuition and manifestation thins.`
+          : "The celestial heavens align to support clear reflection and spiritual clarity.",
+        scrying_prompts: [
+          `How can I best embody the counsel of ${firstCardName}?`,
+          "What hidden obstacle or fear must I surrender this week?",
+          "What sacred ritual will harmonize my path before the next moon phase?",
+        ],
       });
     }
 

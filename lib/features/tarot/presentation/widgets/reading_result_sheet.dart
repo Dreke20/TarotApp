@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/services/celestial_voice_service.dart';
+import '../../domain/oracle_persona.dart';
 import '../../domain/reading.dart';
 import '../notifiers/reading_notifier.dart';
 import 'glass_container.dart';
@@ -76,6 +77,12 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
     final state = ref.watch(readingNotifierProvider);
     final notifier = ref.read(readingNotifierProvider.notifier);
     final reading = state.currentReading ?? widget.reading;
+    final persona = reading.personaId != null
+        ? OraclePersona.all.firstWhere(
+            (p) => p.id == reading.personaId,
+            orElse: () => OraclePersona.highPriestess,
+          )
+        : null;
 
     return Container(
       constraints: BoxConstraints(
@@ -111,22 +118,39 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                 Expanded(
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.auto_awesome,
-                        color: AppColors.goldBright,
-                        size: 18,
+                      Icon(
+                        persona?.icon ?? Icons.auto_awesome,
+                        color: persona?.accentColor ?? AppColors.goldBright,
+                        size: 20,
                       ),
                       const SizedBox(width: 8),
                       Flexible(
-                        child: Text(
-                          'ORACLE\'S PROPHECY',
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.cinzel(
-                            fontSize: 14.5,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.goldBright,
-                            letterSpacing: 1.2,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'ORACLE\'S PROPHECY',
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.cinzel(
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.goldBright,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            if (persona != null)
+                              Text(
+                                persona.name.toUpperCase(),
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: persona.accentColor,
+                                  letterSpacing: 0.8,
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     ],
@@ -360,6 +384,114 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                       const SizedBox(height: 18),
                     ],
 
+                    // Sacred Journey Recall Callout
+                    if (reading.journeyRecall != null && reading.journeyRecall!.isNotEmpty) ...[
+                      GlassContainer(
+                        padding: const EdgeInsets.all(12),
+                        borderRadius: 14,
+                        fillColor: AppColors.purpleDeep.withValues(alpha: 0.35),
+                        borderColor: AppColors.etherealLavender.withValues(alpha: 0.4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.history_edu,
+                              color: AppColors.etherealLavender,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'SACRED JOURNEY RECALL',
+                                    style: GoogleFonts.cinzel(
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.etherealLavender,
+                                      letterSpacing: 1.1,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    reading.journeyRecall!,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 12,
+                                      color: AppColors.textPrimary,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                    ],
+
+                    // Elemental Chemistry & Cosmic Weather Matrix
+                    if (reading.elementalChemistry != null || reading.cosmicWeather != null) ...[
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          if (reading.cosmicWeather != null && reading.cosmicWeather!.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: AppColors.glassFillStrong,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: AppColors.goldBright.withValues(alpha: 0.3)),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.nightlight_round, size: 13, color: AppColors.goldBright),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    reading.cosmicWeather!,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 11,
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          if (reading.elementalChemistry != null && reading.elementalChemistry!.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: AppColors.glassFill,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: AppColors.goldBright.withValues(alpha: 0.35)),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.auto_awesome, size: 12, color: AppColors.goldBright),
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: Text(
+                                      reading.elementalChemistry!,
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.goldBright,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                    ],
+
                     // Full Interpretation Narrative
                     Text(
                       'CELESTIAL SYNTHESIS',
@@ -494,6 +626,47 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                         }).toList(),
                       ),
                       const SizedBox(height: 8),
+                    ],
+
+                    // Dynamic Scrying Prompts
+                    if (reading.scryingPrompts.isNotEmpty) ...[
+                      Text(
+                        'DIVINE INQUIRIES',
+                        style: GoogleFonts.cinzel(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.goldBright,
+                          letterSpacing: 1.1,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: reading.scryingPrompts.map((prompt) {
+                          return ActionChip(
+                            avatar: const Icon(Icons.auto_awesome, size: 12, color: AppColors.goldBright),
+                            label: Text(
+                              prompt,
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 11,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            backgroundColor: AppColors.glassFillStrong,
+                            side: BorderSide(color: AppColors.goldBright.withValues(alpha: 0.3)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            onPressed: state.isAskingFollowUp
+                                ? null
+                                : () {
+                                    _followUpController.text = prompt;
+                                    notifier.askOracleFollowUp(prompt);
+                                    _followUpController.clear();
+                                  },
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 10),
                     ],
 
                     // Follow-up Input Box

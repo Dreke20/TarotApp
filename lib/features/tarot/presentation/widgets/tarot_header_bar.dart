@@ -20,8 +20,10 @@ import '../../../astrology/presentation/screens/natal_chart_screen.dart';
 import '../../../astrology/presentation/screens/lunar_almanac_screen.dart';
 import '../../../collective/presentation/screens/collective_sanctuary_screen.dart';
 import '../../../lens/presentation/screens/tarot_lens_screen.dart';
+import '../screens/seekers_chronicle_screen.dart';
 import 'ambient_audio_button.dart';
 import 'glass_container.dart';
+import 'oracle_persona_selector_modal.dart';
 import 'streak_badge.dart';
 
 /// Top sacred header bar displaying Seeker astrological badge, Pro indicator,
@@ -241,6 +243,72 @@ class TarotHeaderBar extends ConsumerWidget {
                   ),
                   const SizedBox(width: 6),
 
+                  // Oracle Persona Switcher Action Button
+                  GlassContainer(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    borderRadius: 12,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      OraclePersonaSelectorModal.show(context);
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.face_retouching_natural,
+                          size: 14,
+                          color: AppColors.goldBright,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'ORACLE',
+                          style: GoogleFonts.cinzel(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.goldBright,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+
+                  // The Seeker's Chronicle Action Button
+                  GlassContainer(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    borderRadius: 12,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const SeekersChronicleScreen(),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.menu_book,
+                          size: 14,
+                          color: AppColors.goldBright,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'CHRONICLE',
+                          style: GoogleFonts.cinzel(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.goldBright,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+
                   // Talk to a Live Person (whispers26.com) Button
                   InkWell(
                     onTap: () {
@@ -405,6 +473,14 @@ class TarotHeaderBar extends ConsumerWidget {
                         MaterialPageRoute(builder: (_) => const TarotLensScreen()),
                       );
                       break;
+                    case 'chronicle':
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const SeekersChronicleScreen()),
+                      );
+                      break;
+                    case 'persona':
+                      OraclePersonaSelectorModal.show(context);
+                      break;
                     case 'live_reader':
                       ExternalLaunchService.openLiveReader(context);
                       break;
@@ -490,6 +566,26 @@ class TarotHeaderBar extends ConsumerWidget {
                         const Text('🔍', style: TextStyle(fontSize: 15)),
                         const SizedBox(width: 8),
                         Text('Real-World Tarot Lens', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'chronicle',
+                    child: Row(
+                      children: [
+                        const Text('📜', style: TextStyle(fontSize: 15)),
+                        const SizedBox(width: 8),
+                        Text("The Seeker's Chronicle", style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'persona',
+                    child: Row(
+                      children: [
+                        const Text('👁️', style: TextStyle(fontSize: 15)),
+                        const SizedBox(width: 8),
+                        Text('Archetypal Oracle Personas', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
                       ],
                     ),
                   ),

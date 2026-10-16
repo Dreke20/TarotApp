@@ -17,6 +17,11 @@ abstract class Reading with _$Reading {
     String? advice,
     @Default('') String notes,
     @JsonKey(name: 'is_favorite') @Default(false) bool isFavorite,
+    @JsonKey(name: 'journey_recall') String? journeyRecall,
+    @JsonKey(name: 'elemental_chemistry') String? elementalChemistry,
+    @JsonKey(name: 'cosmic_weather') String? cosmicWeather,
+    @JsonKey(name: 'scrying_prompts') @Default([]) List<String> scryingPrompts,
+    @JsonKey(name: 'persona_id') String? personaId,
     @JsonKey(name: 'created_at') required DateTime createdAt,
   }) = _Reading;
 

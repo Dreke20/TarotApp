@@ -8,6 +8,7 @@ import '../../../tarot/presentation/widgets/glass_container.dart';
 import '../../data/jungian_symbol_data.dart';
 import '../../domain/dream_entry.dart';
 import '../notifiers/dream_notifier.dart';
+import '../widgets/dream_oracle_modal.dart';
 
 class DreamJournalScreen extends ConsumerStatefulWidget {
   const DreamJournalScreen({super.key});
@@ -309,6 +310,31 @@ class _DreamJournalScreenState extends ConsumerState<DreamJournalScreen> {
                 ),
               ),
             ],
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 38,
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.goldBright,
+                  side: BorderSide(color: AppColors.goldBright.withValues(alpha: 0.5)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  backgroundColor: AppColors.goldBright.withValues(alpha: 0.08),
+                ),
+                icon: const Icon(Icons.auto_awesome, size: 15, color: AppColors.goldBright),
+                label: Text(
+                  'SCRY DREAM WITH AI ALTAR',
+                  style: GoogleFonts.cinzel(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+                onPressed: () {
+                  DreamOracleModal.show(context, dream: dream);
+                },
+              ),
+            ),
           ],
         ),
       ),

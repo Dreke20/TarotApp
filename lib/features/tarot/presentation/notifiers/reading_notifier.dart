@@ -14,6 +14,7 @@ import '../../domain/tarot_card.dart';
 import '../../domain/tarot_deck_theme.dart';
 import '../../services/tarot_widget_service.dart';
 import '../../../monetization/presentation/monetization_notifier.dart';
+import 'oracle_persona_notifier.dart';
 import 'reading_state.dart';
 
 part 'reading_notifier.g.dart';
@@ -51,6 +52,9 @@ class ReadingNotifier extends _$ReadingNotifier {
       selectedInspectIndex: null,
     );
   }
+
+  /// Alias for setSpreadType
+  void setSpread(SpreadType type) => setSpreadType(type);
 
   /// Switch the active card deck style
   void setDeckTheme(TarotDeckTheme theme) {
@@ -200,17 +204,27 @@ class ReadingNotifier extends _$ReadingNotifier {
     };
 
     try {
+      final activePersona = ref.read(oraclePersonaNotifierProvider);
+
       final oracleData = await _repository.consultOracle(
         question: state.question,
         spreadType: state.spreadType,
         drawnCards: state.drawnCards,
         astrologyInfo: astrologyInfo,
+        persona: activePersona,
       );
 
       final interpretation = oracleData['interpretation'] as String? ??
           'The cosmos whispers in silence.';
       final summary = oracleData['summary'] as String?;
       final advice = oracleData['advice'] as String?;
+      final journeyRecall = oracleData['journey_recall'] as String?;
+      final elementalChemistry = oracleData['elemental_chemistry'] as String?;
+      final cosmicWeather = oracleData['cosmic_weather'] as String?;
+      final scryingPrompts = (oracleData['scrying_prompts'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          <String>[];
 
       final savedReading = await _repository.saveReading(
         question: state.question,
@@ -219,6 +233,11 @@ class ReadingNotifier extends _$ReadingNotifier {
         interpretation: interpretation,
         summary: summary,
         advice: advice,
+        journeyRecall: journeyRecall,
+        elementalChemistry: elementalChemistry,
+        cosmicWeather: cosmicWeather,
+        scryingPrompts: scryingPrompts,
+        personaId: activePersona.id,
       );
 
       final updatedHistory = List<Reading>.of(state.history)

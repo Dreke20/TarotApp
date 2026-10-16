@@ -25,6 +25,7 @@ class AppColors {
   static const Color goldCandle = Color(0xFFFFAE42); // Warm Candlelight Amber Glow
   static const Color starlightCyan = Color(0xFFF6E8C3); // Soft Celestial Starlight Ivory
   static const Color etherealLavender = Color(0xFFC5A059); // Harmonized to Antique Gold
+  static const Color purpleDeep = Color(0xFF1E1430); // Deep mystical velvet purple
   static const Color backgroundDark = Color(0xFF030304);
   static const Color cardSurface = Color(0xFF17151D);
 
