@@ -23,6 +23,7 @@ import '../../../lens/presentation/screens/tarot_lens_screen.dart';
 import '../screens/seekers_chronicle_screen.dart';
 import '../../../altar/presentation/widgets/crystal_grid_sheet.dart';
 import '../../../altar/presentation/widgets/smoke_purification_modal.dart';
+import '../../../altar/presentation/widgets/sacred_breathing_modal.dart';
 import 'ambient_audio_button.dart';
 import 'glass_container.dart';
 import 'oracle_persona_selector_modal.dart';
@@ -518,6 +519,9 @@ class TarotHeaderBar extends ConsumerWidget {
                     case 'crystals':
                       CrystalGridSheet.show(context);
                       break;
+                    case 'breathe':
+                      SacredBreathingModal.show(context);
+                      break;
                     case 'live_reader':
                       ExternalLaunchService.openLiveReader(context);
                       break;
@@ -643,6 +647,16 @@ class TarotHeaderBar extends ConsumerWidget {
                         const Text('🔮', style: TextStyle(fontSize: 15)),
                         const SizedBox(width: 8),
                         Text('Sacred Crystal Grid', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'breathe',
+                    child: Row(
+                      children: [
+                        const Text('🫁', style: TextStyle(fontSize: 15)),
+                        const SizedBox(width: 8),
+                        Text('4-7-8 Breath Centering', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
                       ],
                     ),
                   ),

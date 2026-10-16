@@ -10,6 +10,7 @@ import '../../domain/tarot_card.dart';
 import '../notifiers/reading_notifier.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/tarot_card_widget.dart';
+import '../notifiers/oracle_persona_notifier.dart';
 import '../../../monetization/presentation/widgets/mystic_ad_banner.dart';
 
 /// The Sacred Tarot Codex: Interactive Compendium & Gallery of all 78 Cards
@@ -218,6 +219,7 @@ class _TarotCodexScreenState extends ConsumerState<TarotCodexScreen> {
                             builder: (context, setModalState) {
                               final voice = CelestialVoiceService.instance;
                               final isSpeaking = voice.isPlaying;
+                              final activePersona = ref.watch(oraclePersonaNotifierProvider);
                               return GestureDetector(
                                 onTap: () async {
                                   HapticFeedback.lightImpact();
@@ -233,7 +235,7 @@ class _TarotCodexScreenState extends ConsumerState<TarotCodexScreen> {
                                     };
                                     final text =
                                         '${card.name}. Arcana: ${card.arcana}. Element: ${card.element ?? "Cosmic"}. Upright wisdom: ${card.meaningUpright}. Inverted wisdom: ${card.meaningReversed}.';
-                                    await voice.speak(text);
+                                    await voice.speak(text, persona: activePersona);
                                   }
                                 },
                                 child: Container(
@@ -242,12 +244,12 @@ class _TarotCodexScreenState extends ConsumerState<TarotCodexScreen> {
                                       horizontal: 14, vertical: 10),
                                   decoration: BoxDecoration(
                                     color: isSpeaking
-                                        ? AppColors.goldBright.withValues(alpha: 0.15)
+                                        ? activePersona.accentColor.withValues(alpha: 0.18)
                                         : AppColors.glassFillStrong,
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
                                       color: isSpeaking
-                                          ? AppColors.goldBright
+                                          ? activePersona.accentColor
                                           : AppColors.goldMuted.withValues(alpha: 0.4),
                                     ),
                                   ),
@@ -259,20 +261,20 @@ class _TarotCodexScreenState extends ConsumerState<TarotCodexScreen> {
                                             ? Icons.volume_up
                                             : Icons.record_voice_over,
                                         color: isSpeaking
-                                            ? AppColors.goldBright
+                                            ? activePersona.accentColor
                                             : AppColors.textSecondary,
                                         size: 16,
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
                                         isSpeaking
-                                            ? 'CHANNELING WISDOM...'
-                                            : 'SPEAK CARD WISDOM',
+                                            ? 'CHANNELING (${activePersona.name})...'
+                                            : 'SPEAK WISDOM (${activePersona.name})',
                                         style: GoogleFonts.cinzel(
-                                          fontSize: 11,
+                                          fontSize: 10.5,
                                           fontWeight: FontWeight.bold,
                                           color: isSpeaking
-                                              ? AppColors.goldBright
+                                              ? activePersona.accentColor
                                               : AppColors.textPrimary,
                                           letterSpacing: 1.0,
                                         ),

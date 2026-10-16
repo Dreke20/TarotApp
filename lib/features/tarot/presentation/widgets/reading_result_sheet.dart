@@ -249,19 +249,19 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                           await voice.stop();
                         } else {
                           final textToSpeak = "${reading.summary} ${reading.interpretation} Guidance: ${reading.advice}";
-                          await voice.speak(textToSpeak);
+                          await voice.speak(textToSpeak, persona: persona);
                         }
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
                           color: _isPlayingNarration
-                              ? AppColors.goldBright.withValues(alpha: 0.15)
+                              ? (persona?.accentColor.withValues(alpha: 0.18) ?? AppColors.goldBright.withValues(alpha: 0.15))
                               : AppColors.glassFill,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: _isPlayingNarration
-                                ? AppColors.goldBright
+                                ? (persona?.accentColor ?? AppColors.goldBright)
                                 : AppColors.glassBorder,
                           ),
                         ),
@@ -269,29 +269,35 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                           children: [
                             Icon(
                               _isPlayingNarration ? Icons.volume_up : Icons.volume_mute,
-                              color: _isPlayingNarration ? AppColors.goldBright : AppColors.textSecondary,
+                              color: _isPlayingNarration ? (persona?.accentColor ?? AppColors.goldBright) : AppColors.textSecondary,
                               size: 18,
                             ),
                             const SizedBox(width: 10),
-                            Text(
-                              _isPlayingNarration ? 'NARRATING PROPHECY...' : 'LISTEN TO CELESTIAL NARRATION',
-                              style: GoogleFonts.cinzel(
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.bold,
-                                color: _isPlayingNarration ? AppColors.goldBright : AppColors.textPrimary,
-                                letterSpacing: 1.0,
+                            Expanded(
+                              child: Text(
+                                _isPlayingNarration
+                                    ? 'NARRATING PROPHECY (${persona?.name ?? "ORACLE"})...'
+                                    : 'HEAR ${persona?.name ?? "ORACLE"} (${persona?.timbreTitle.toUpperCase() ?? "CELESTIAL HARMONY"})',
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.cinzel(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: _isPlayingNarration ? (persona?.accentColor ?? AppColors.goldBright) : AppColors.textPrimary,
+                                  letterSpacing: 0.8,
+                                ),
                               ),
                             ),
-                            const Spacer(),
-                            if (_isPlayingNarration)
-                              const SizedBox(
+                            if (_isPlayingNarration) ...[
+                              const SizedBox(width: 8),
+                              SizedBox(
                                 width: 14,
                                 height: 14,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation(AppColors.goldBright),
+                                  valueColor: AlwaysStoppedAnimation(persona?.accentColor ?? AppColors.goldBright),
                                 ),
                               ),
+                            ],
                           ],
                         ),
                       ),

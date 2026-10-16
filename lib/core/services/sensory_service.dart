@@ -72,6 +72,18 @@ class SensoryService {
     HapticFeedback.heavyImpact();
   }
 
+  /// Gentle haptic pulse when breath changes phase (Inhale, Hold, Exhale)
+  void breathPhaseHaptic() {
+    if (!hapticsEnabled) return;
+    HapticFeedback.mediumImpact();
+  }
+
+  /// Micro-tick for each second during meditation hold or inhale
+  void breathTickHaptic() {
+    if (!hapticsEnabled) return;
+    HapticFeedback.selectionClick();
+  }
+
   /// Sound effect when dealing/flipping cards
   void playCardFlipSound() {
     if (!soundEnabled) return;

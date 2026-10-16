@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -31,6 +32,7 @@ import '../../../monetization/presentation/monetization_notifier.dart';
 import '../../../monetization/presentation/widgets/starlight_offering_modal.dart';
 import '../../../altar/presentation/widgets/crystal_grid_overlay.dart';
 import '../../../altar/presentation/widgets/smoke_purification_modal.dart';
+import '../../../altar/presentation/widgets/sacred_breathing_modal.dart';
 
 /// The central Tarot Altar Table where cards are shuffled, drawn, flipped in 3D,
 /// and synthesized by the AI Oracle with multi-deck themes, Celtic Cross, and astrological alignment.
@@ -378,6 +380,49 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                     ],
                   ),
                 ),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.etherealLavender,
+                    side: BorderSide(
+                        color: AppColors.etherealLavender.withValues(alpha: 0.6),
+                        width: 1.2),
+                    backgroundColor: AppColors.glassFill,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 13),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    SacredBreathingModal.show(
+                      context,
+                      initialQuestion: _questionController.text,
+                      onIntentionSet: (intention) {
+                        if (intention.isNotEmpty) {
+                          _questionController.text = intention;
+                          notifier.setQuestion(intention);
+                        }
+                      },
+                    );
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.air, size: 16, color: AppColors.etherealLavender),
+                      const SizedBox(width: 6),
+                      Text(
+                        'CENTER BREATH',
+                        style: GoogleFonts.cinzel(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                          color: AppColors.etherealLavender,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
 
@@ -401,6 +446,22 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
               physics: const BouncingScrollPhysics(),
               child: Row(
                 children: [
+                  _buildQuickPortalChip(
+                    context,
+                    glyph: '🫁',
+                    title: '4-7-8 Breath',
+                    onTap: () => SacredBreathingModal.show(
+                      context,
+                      initialQuestion: _questionController.text,
+                      onIntentionSet: (intention) {
+                        if (intention.isNotEmpty) {
+                          _questionController.text = intention;
+                          notifier.setQuestion(intention);
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   _buildQuickPortalChip(
                     context,
                     glyph: 'ᚦ',
