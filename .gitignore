@@ -63,3 +63,7 @@ android/key.properties
 # Supabase CLI temp files
 supabase/.temp/
 
+# Binary artifacts
+*.apk
+*.aab
+
