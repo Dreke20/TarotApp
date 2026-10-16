@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/biometric_gate_barrier.dart';
+import '../../../auth/presentation/auth_notifier.dart';
+import '../../../monetization/presentation/widgets/starlight_offering_modal.dart';
 import '../../../tarot/presentation/widgets/glass_container.dart';
 import '../../data/jungian_symbol_data.dart';
 import '../../domain/dream_entry.dart';
@@ -18,6 +21,41 @@ class DreamJournalScreen extends ConsumerStatefulWidget {
 }
 
 class _DreamJournalScreenState extends ConsumerState<DreamJournalScreen> {
+  Future<void> _handleScryDream(DreamEntry dream) async {
+    final authProfile = ref.read(authNotifierProvider).profile;
+    final isPro = authProfile?.isPro ?? false;
+
+    if (isPro) {
+      DreamOracleModal.show(context, dream: dream);
+      return;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final todayStr = DateTime.now().toIso8601String().substring(0, 10);
+    final count = prefs.getInt('free_dream_scry_count_$todayStr') ?? 0;
+
+    if (count >= 1) {
+      if (!mounted) return;
+      StarlightOfferingModal.show(
+        context,
+        customFeatureTitle: 'ASTRAL DREAM SYNTHESIS',
+        customFeatureDescription:
+            'Free seekers receive 1 daily dream synthesis. Unlock this deeper Jungian interpretation with 1 Starlight Pass or upgrade to Oracle Pro for unlimited interpretations.',
+        onUnlocked: () async {
+          await prefs.setInt('free_dream_scry_count_$todayStr', count + 1);
+          if (mounted) {
+            DreamOracleModal.show(context, dream: dream);
+          }
+        },
+      );
+      return;
+    }
+
+    await prefs.setInt('free_dream_scry_count_$todayStr', count + 1);
+    if (!mounted) return;
+    DreamOracleModal.show(context, dream: dream);
+  }
+
   @override
   Widget build(BuildContext context) {
     final dreams = ref.watch(dreamProvider);
@@ -330,9 +368,7 @@ class _DreamJournalScreenState extends ConsumerState<DreamJournalScreen> {
                     letterSpacing: 1.0,
                   ),
                 ),
-                onPressed: () {
-                  DreamOracleModal.show(context, dream: dream);
-                },
+                onPressed: () => _handleScryDream(dream),
               ),
             ),
           ],

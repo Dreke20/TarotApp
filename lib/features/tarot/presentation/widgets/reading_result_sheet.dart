@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/services/celestial_voice_service.dart';
+import '../../../auth/presentation/auth_notifier.dart';
+import '../../../monetization/presentation/widgets/starlight_offering_modal.dart';
 import '../../domain/oracle_persona.dart';
 import '../../domain/reading.dart';
 import '../notifiers/reading_notifier.dart';
@@ -69,6 +71,34 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
     _followUpController.dispose();
     _notesController.dispose();
     super.dispose();
+  }
+
+  void _submitFollowUp(BuildContext context, String rawQuestion) {
+    final question = rawQuestion.trim();
+    if (question.isEmpty) return;
+
+    final authProfile = ref.read(authNotifierProvider).profile;
+    final isPro = authProfile?.isPro ?? false;
+    final state = ref.read(readingNotifierProvider);
+    final userQuestionsCount =
+        state.conversationHistory.where((m) => m.role == 'user').length;
+
+    if (!isPro && userQuestionsCount >= 2) {
+      StarlightOfferingModal.show(
+        context,
+        customFeatureTitle: 'DEEP CONVERSATIONAL SCRYING',
+        customFeatureDescription:
+            'You have completed your 2 free inquiries for this reading. Unlock further scrying with a Starlight Pass or upgrade to Oracle Pro for unlimited dialogue.',
+        onUnlocked: () {
+          ref.read(readingNotifierProvider.notifier).askOracleFollowUp(question);
+          _followUpController.clear();
+        },
+      );
+      return;
+    }
+
+    ref.read(readingNotifierProvider.notifier).askOracleFollowUp(question);
+    _followUpController.clear();
   }
 
   @override
@@ -727,16 +757,48 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                             onPressed: state.isAskingFollowUp
                                 ? null
-                                : () {
-                                    _followUpController.text = prompt;
-                                    notifier.askOracleFollowUp(prompt);
-                                    _followUpController.clear();
-                                  },
+                                : () => _submitFollowUp(context, prompt),
                           );
                         }).toList(),
                       ),
                       const SizedBox(height: 10),
                     ],
+
+                    // Free inquiry quota indicator for free tier seekers
+                    Builder(
+                      builder: (ctx) {
+                        final authProfile = ref.watch(authNotifierProvider).profile;
+                        final isPro = authProfile?.isPro ?? false;
+                        if (isPro) return const SizedBox.shrink();
+
+                        final userQuestionsCount =
+                            state.conversationHistory.where((m) => m.role == 'user').length;
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            children: [
+                              Icon(
+                                userQuestionsCount >= 2 ? Icons.lock_outline : Icons.stars,
+                                size: 12,
+                                color: userQuestionsCount >= 2 ? AppColors.goldBright : AppColors.goldMuted,
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                userQuestionsCount >= 2
+                                    ? 'Free inquiry limit reached (2/2). Starlight Pass or Pro required.'
+                                    : '${2 - userQuestionsCount} free inquiry remaining for this reading',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: userQuestionsCount >= 2 ? AppColors.goldBright : AppColors.goldMuted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
 
                     // Follow-up Input Box
                     Row(
@@ -763,6 +825,9 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                                 ),
                                 border: InputBorder.none,
                               ),
+                              onSubmitted: state.isAskingFollowUp
+                                  ? null
+                                  : (text) => _submitFollowUp(context, text),
                             ),
                           ),
                         ),
@@ -784,13 +849,7 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                               : const Icon(Icons.send, size: 18),
                           onPressed: state.isAskingFollowUp
                               ? null
-                              : () {
-                                  final text = _followUpController.text;
-                                  if (text.isNotEmpty) {
-                                    notifier.askOracleFollowUp(text);
-                                    _followUpController.clear();
-                                  }
-                                },
+                              : () => _submitFollowUp(context, _followUpController.text),
                         ),
                       ],
                     ),

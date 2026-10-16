@@ -7,6 +7,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/services/sensory_service.dart';
 import '../../tarot/data/tarot_repository.dart';
 import '../../tarot/presentation/widgets/glass_container.dart';
+import '../../subscription/presentation/oracle_pro_modal.dart';
 import 'auth_notifier.dart';
 
 class ProfileDialog extends ConsumerStatefulWidget {
@@ -129,32 +130,104 @@ class _ProfileDialogState extends ConsumerState<ProfileDialog> {
                       ],
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: profile?.isPro == true
-                          ? AppColors.goldBright.withValues(alpha: 0.2)
-                          : AppColors.glassFillStrong,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      OracleProModal.show(context);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
                         color: profile?.isPro == true
-                            ? AppColors.goldBright
-                            : AppColors.glassBorder,
+                            ? AppColors.goldBright.withValues(alpha: 0.2)
+                            : AppColors.glassFillStrong,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: profile?.isPro == true
+                              ? AppColors.goldBright
+                              : AppColors.glassBorder,
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      profile?.isPro == true ? 'ORACLE PRO' : 'FREE SEEKER',
-                      style: GoogleFonts.cinzel(
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                        color: profile?.isPro == true
-                            ? AppColors.goldBright
-                            : AppColors.etherealLavender,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (profile?.isPro != true) ...[
+                            const Icon(Icons.arrow_upward, size: 10, color: AppColors.goldBright),
+                            const SizedBox(width: 4),
+                          ],
+                          Text(
+                            profile?.isPro == true ? 'ORACLE PRO' : 'FREE SEEKER',
+                            style: GoogleFonts.cinzel(
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                              color: profile?.isPro == true
+                                  ? AppColors.goldBright
+                                  : AppColors.etherealLavender,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ],
               ),
+
+              if (profile?.isPro != true) ...[
+                const SizedBox(height: 14),
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    OracleProModal.show(context);
+                  },
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.goldBright.withValues(alpha: 0.16),
+                          AppColors.cosmicSurface.withValues(alpha: 0.35),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: AppColors.goldBright.withValues(alpha: 0.55),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.workspace_premium, color: AppColors.goldBright, size: 20),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'UPGRADE TO ORACLE PRO',
+                                style: GoogleFonts.cinzel(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.goldBright,
+                                  letterSpacing: 1.0,
+                                ),
+                              ),
+                              Text(
+                                'Unlimited multi-turn scrying, all 7 decks & zero ads.',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 10,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.arrow_forward_ios, size: 12, color: AppColors.goldBright),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 20),
 
               // Astrological Alignment Title

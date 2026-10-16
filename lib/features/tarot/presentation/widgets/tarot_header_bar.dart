@@ -28,6 +28,7 @@ import '../../../altar/presentation/widgets/altar_cloth_selector_modal.dart';
 import 'card_back_selector_modal.dart';
 import '../../../meditation/presentation/screens/pathworking_sanctuary_screen.dart';
 import '../../../notifications/presentation/widgets/cosmic_notification_modal.dart';
+import '../../../subscription/presentation/oracle_pro_modal.dart';
 import 'ambient_audio_button.dart';
 import 'glass_container.dart';
 import 'oracle_persona_selector_modal.dart';
@@ -147,6 +148,48 @@ class TarotHeaderBar extends ConsumerWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Oracle Pro Action Button (Direct Paywall Access)
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      OracleProModal.show(context);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: isPro
+                            ? AppColors.goldBright.withValues(alpha: 0.22)
+                            : AppColors.goldBright.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.goldBright.withValues(alpha: isPro ? 0.9 : 0.6),
+                          width: 1.1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            isPro ? Icons.workspace_premium : Icons.stars,
+                            size: 13,
+                            color: AppColors.goldBright,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            isPro ? 'ORACLE PRO' : 'GO PRO',
+                            style: GoogleFonts.cinzel(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.goldBright,
+                              letterSpacing: 1.1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+
                   // Sacred Tarot Codex Action Button
                   GlassContainer(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -401,6 +444,11 @@ class TarotHeaderBar extends ConsumerWidget {
                   } else if (value.startsWith('deck:')) {
                     final themeId = value.replaceFirst('deck:', '');
                     final theme = TarotDeckTheme.values.firstWhere((t) => t.id == themeId);
+                    if (theme.isPremium && !isPro) {
+                      HapticFeedback.lightImpact();
+                      OracleProModal.show(context);
+                      return;
+                    }
                     notifier.setDeckTheme(theme);
                   } else if (value.startsWith('altar:')) {
                     final themeId = value.replaceFirst('altar:', '');
@@ -457,14 +505,39 @@ class TarotHeaderBar extends ConsumerWidget {
                   ),
                   ...TarotDeckTheme.values.map((t) => PopupMenuItem(
                         value: 'deck:${t.id}',
-                        child: Text(
-                          t.title,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
-                            color: state.deckTheme == t
-                                ? AppColors.goldBright
-                                : AppColors.textPrimary,
-                          ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                t.title,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 12,
+                                  color: state.deckTheme == t
+                                      ? AppColors.goldBright
+                                      : AppColors.textPrimary,
+                                ),
+                              ),
+                            ),
+                            if (t.isPremium) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                                decoration: BoxDecoration(
+                                  color: AppColors.goldBright.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(color: AppColors.goldBright, width: 0.8),
+                                ),
+                                child: Text(
+                                  'PRO',
+                                  style: GoogleFonts.cinzel(
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.goldBright,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       )),
                   const PopupMenuDivider(),

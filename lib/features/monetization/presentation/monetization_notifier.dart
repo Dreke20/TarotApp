@@ -29,8 +29,8 @@ class MonetizationNotifier extends _$MonetizationNotifier {
     } catch (_) {}
   }
 
-  /// Consumes 1 Starlight Pass token when unlocking a premium spread or reading.
-  Future<bool> consumeStarlightPass() async {
+  /// Consumes 1 Starlight Pass token when unlocking a premium spread, extra follow-up, or dream vision.
+  Future<bool> consumeStarlightPass([String? reason]) async {
     if (state.starlightPassTokens <= 0) return false;
     final updatedTokens = state.starlightPassTokens - 1;
     state = state.copyWith(starlightPassTokens: updatedTokens);

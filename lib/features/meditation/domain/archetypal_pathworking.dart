@@ -23,6 +23,7 @@ class ArchetypalPathworking {
   final String description;
   final SoundscapeTrack track;
   final List<PathworkingStep> steps;
+  final bool isPremium;
 
   const ArchetypalPathworking({
     required this.id,
@@ -33,6 +34,7 @@ class ArchetypalPathworking {
     required this.description,
     required this.track,
     required this.steps,
+    this.isPremium = false,
   });
 
   String get soundscapeName => track.title;
@@ -50,6 +52,7 @@ class ArchetypalPathworking {
       description:
           'Stand upon the windswept precipice of potential. Dissolve the paralyzing fear of the unknown and surrender into primordial cosmic trust.',
       track: SoundscapeTrack.solfeggio432,
+      isPremium: false,
       steps: [
         PathworkingStep(
           title: 'The Edge of the Precipice',
@@ -86,6 +89,7 @@ class ArchetypalPathworking {
       description:
           'Pass between the black and white pillars of polarity. Enter the quiet water sanctuary of inner revelation and awaken your direct psychic gnosis.',
       track: SoundscapeTrack.solfeggio741,
+      isPremium: true,
       steps: [
         PathworkingStep(
           title: 'Between the Twin Pillars',
@@ -122,6 +126,7 @@ class ArchetypalPathworking {
       description:
           'Ascend the highest snowbound ridge above the clouds. Kindle the six-pointed star within your lantern and become the quiet beacon of your own destiny.',
       track: SoundscapeTrack.celestialDrone,
+      isPremium: true,
       steps: [
         PathworkingStep(
           title: 'The Ascent Above the Clouds',
@@ -158,6 +163,7 @@ class ArchetypalPathworking {
       description:
           'Release the outworn shell of an old identity. Lay down your heavy armor and watch the golden dawn rise between the immortal towers.',
       track: SoundscapeTrack.solfeggio528,
+      isPremium: true,
       steps: [
         PathworkingStep(
           title: 'The Sunset on the Old World',
@@ -194,6 +200,7 @@ class ArchetypalPathworking {
       description:
           'Rest beside the starlit spring under the great eight-pointed star of destiny. Pour your living waters back into the earth and drink from the well of eternity.',
       track: SoundscapeTrack.tibetanBowls,
+      isPremium: false,
       steps: [
         PathworkingStep(
           title: 'Under the Eight-Pointed Star',

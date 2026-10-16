@@ -23,7 +23,7 @@ enum TarotDeckTheme {
       colors: [Color(0xFF282330), Color(0xFF17141C), Color(0xFF0B090F)],
     ),
     accentColor: Color(0xFFF3DEAB),
-    isPremium: true,
+    isPremium: false,
   ),
   obsidian(
     id: 'obsidian',

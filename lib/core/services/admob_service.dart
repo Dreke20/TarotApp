@@ -133,7 +133,7 @@ class AdMobService {
   /// Record a reading completion and check if an interstitial should be presented.
   /// Strictly capped:
   /// - Pro users: NEVER shown.
-  /// - Minimum 4 minutes cooldown between ads.
+  /// - Minimum 5 minutes cooldown between ads.
   /// - Minimum 2 completed readings between ads.
   Future<bool> showInterstitialIfReady({required bool isPro}) async {
     if (isPro) return false;
@@ -142,7 +142,7 @@ class AdMobService {
 
     final now = DateTime.now();
     final cooldownPassed = _lastInterstitialShownAt == null ||
-        now.difference(_lastInterstitialShownAt!).inMinutes >= 4;
+        now.difference(_lastInterstitialShownAt!).inMinutes >= 5;
 
     final reachedQuota = _completedReadingsSinceAd >= 2;
 

@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/holographic_foil_card.dart';
+import '../../../auth/presentation/auth_notifier.dart';
+import '../../../monetization/presentation/widgets/starlight_offering_modal.dart';
 import '../../domain/archetypal_pathworking.dart';
 import '../widgets/pathworking_player_modal.dart';
 
@@ -85,14 +87,32 @@ class PathworkingSanctuaryScreen extends ConsumerWidget {
                   return GestureDetector(
                     onTap: () {
                       HapticFeedback.selectionClick();
-                      PathworkingPlayerModal.show(
-                        context,
-                        pathworking: journey,
-                        onRevelationAnchored: (intention) {
-                          onIntentionAnchored?.call(intention);
-                          Navigator.of(context).pop();
-                        },
-                      );
+                      final authProfile = ref.read(authNotifierProvider).profile;
+                      final isPro = authProfile?.isPro ?? false;
+
+                      void embark() {
+                        PathworkingPlayerModal.show(
+                          context,
+                          pathworking: journey,
+                          onRevelationAnchored: (intention) {
+                            onIntentionAnchored?.call(intention);
+                            Navigator.of(context).pop();
+                          },
+                        );
+                      }
+
+                      if (journey.isPremium && !isPro) {
+                        StarlightOfferingModal.show(
+                          context,
+                          customFeatureTitle: 'ARCHETYPAL PATHWORKING',
+                          customFeatureDescription:
+                              'Unlock the deep guided visualization for ${journey.cardName} with 1 Starlight Pass, or upgrade to Oracle Pro for unlimited access to all pathworkings.',
+                          onUnlocked: embark,
+                        );
+                        return;
+                      }
+
+                      embark();
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -183,13 +203,38 @@ class PathworkingSanctuaryScreen extends ConsumerWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          journey.title,
-                                          style: GoogleFonts.cinzel(
-                                            fontSize: 13.5,
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.goldBright,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                journey.title,
+                                                style: GoogleFonts.cinzel(
+                                                  fontSize: 13.5,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppColors.goldBright,
+                                                ),
+                                              ),
+                                            ),
+                                            if (journey.isPremium) ...[
+                                              const SizedBox(width: 6),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.goldBright.withValues(alpha: 0.2),
+                                                  borderRadius: BorderRadius.circular(4),
+                                                  border: Border.all(color: AppColors.goldBright, width: 0.8),
+                                                ),
+                                                child: Text(
+                                                  'PRO',
+                                                  style: GoogleFonts.cinzel(
+                                                    fontSize: 8,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: AppColors.goldBright,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ],
                                         ),
                                         const SizedBox(height: 3),
                                         Text(

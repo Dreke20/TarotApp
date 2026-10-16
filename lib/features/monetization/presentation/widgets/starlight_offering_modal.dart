@@ -12,17 +12,23 @@ import '../monetization_notifier.dart';
 /// "Celestial Offering" (Rewarded Ad) to unlock the feature immediately.
 class StarlightOfferingModal extends ConsumerStatefulWidget {
   final SpreadType? requestedSpread;
+  final String? customFeatureTitle;
+  final String? customFeatureDescription;
   final VoidCallback? onUnlocked;
 
   const StarlightOfferingModal({
     super.key,
     this.requestedSpread,
+    this.customFeatureTitle,
+    this.customFeatureDescription,
     this.onUnlocked,
   });
 
   static Future<void> show(
     BuildContext context, {
     SpreadType? requestedSpread,
+    String? customFeatureTitle,
+    String? customFeatureDescription,
     VoidCallback? onUnlocked,
   }) {
     return showModalBottomSheet(
@@ -31,6 +37,8 @@ class StarlightOfferingModal extends ConsumerStatefulWidget {
       backgroundColor: Colors.transparent,
       builder: (_) => StarlightOfferingModal(
         requestedSpread: requestedSpread,
+        customFeatureTitle: customFeatureTitle,
+        customFeatureDescription: customFeatureDescription,
         onUnlocked: onUnlocked,
       ),
     );
@@ -78,8 +86,10 @@ class _StarlightOfferingModalState
 
   @override
   Widget build(BuildContext context) {
-    final spreadTitle =
-        widget.requestedSpread?.title.toUpperCase() ?? 'SACRED PROPHECY';
+    final featureTitle = widget.customFeatureTitle?.toUpperCase() ??
+        (widget.requestedSpread?.title.toUpperCase() ?? 'SACRED PROPHECY');
+    final featureDescription = widget.customFeatureDescription ??
+        'This comprehensive guidance is reserved for our honored Seekers. Choose your path to unveil the wisdom:';
     final monetization = ref.watch(monetizationProvider);
 
     return Container(
@@ -135,7 +145,7 @@ class _StarlightOfferingModalState
               const SizedBox(height: 16),
 
               Text(
-                'UNLOCK $spreadTitle',
+                'UNLOCK $featureTitle',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.cinzel(
                   fontSize: 16,
@@ -146,7 +156,7 @@ class _StarlightOfferingModalState
               ),
               const SizedBox(height: 8),
               Text(
-                'This comprehensive alignment spread is reserved for our honored Seekers. Choose your path to unveil the wisdom:',
+                featureDescription,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 12,
@@ -157,27 +167,44 @@ class _StarlightOfferingModalState
 
               if (monetization.starlightPassTokens > 0) ...[
                 const SizedBox(height: 14),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: AppColors.glassFillStrong,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.goldBright),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.stars, color: AppColors.goldBright, size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        'You have ${monetization.starlightPassTokens} Starlight Pass(es) available',
-                        style: GoogleFonts.cinzel(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.goldBright,
-                        ),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.goldBright,
+                      side: const BorderSide(color: AppColors.goldBright, width: 1.4),
+                      backgroundColor: AppColors.goldBright.withValues(alpha: 0.16),
+                      padding: const EdgeInsets.symmetric(vertical: 13),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                    ],
+                    ),
+                    onPressed: () {
+                      ref.read(monetizationProvider.notifier).consumeStarlightPass(widget.customFeatureTitle);
+                      Navigator.of(context).pop();
+                      widget.onUnlocked?.call();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('✦ Starlight Pass consumed. Enjoy $featureTitle! ✦'),
+                          backgroundColor: AppColors.backgroundMidnight,
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.stars, color: AppColors.goldBright, size: 16),
+                        const SizedBox(width: 8),
+                        Text(
+                          'USE 1 STARLIGHT PASS (${monetization.starlightPassTokens} REMAINING)',
+                          style: GoogleFonts.cinzel(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.1,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../auth/presentation/auth_notifier.dart';
+import '../../../monetization/presentation/widgets/starlight_offering_modal.dart';
 import '../../data/tarot_repository.dart';
 import '../notifiers/reading_notifier.dart';
 import '../widgets/glass_container.dart';
@@ -104,8 +105,20 @@ class _SeekersChronicleScreenState extends ConsumerState<SeekersChronicleScreen>
                     title: '30-DAY SOLSTICE',
                     subtitle: 'Monthly Destiny Epoch',
                     isSelected: _selectedDays == 30,
+                    isProOnly: true,
                     onTap: () {
                       HapticFeedback.selectionClick();
+                      final isPro = authProfile?.isPro ?? false;
+                      if (!isPro) {
+                        StarlightOfferingModal.show(
+                          context,
+                          customFeatureTitle: '30-DAY SOLSTICE CHRONICLE',
+                          customFeatureDescription:
+                              'Synthesize 30 days of readings, recurring stalker cards, and multi-week destiny arcs. Unlock with 1 Starlight Pass or upgrade to Oracle Pro for unlimited monthly chronicles.',
+                          onUnlocked: () => setState(() => _selectedDays = 30),
+                        );
+                        return;
+                      }
                       setState(() => _selectedDays = 30);
                     },
                   ),
@@ -330,6 +343,7 @@ class _SeekersChronicleScreenState extends ConsumerState<SeekersChronicleScreen>
     required String subtitle,
     required bool isSelected,
     required VoidCallback onTap,
+    bool isProOnly = false,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -346,14 +360,38 @@ class _SeekersChronicleScreenState extends ConsumerState<SeekersChronicleScreen>
         ),
         child: Column(
           children: [
-            Text(
-              title,
-              style: GoogleFonts.cinzel(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: isSelected ? AppColors.goldBright : AppColors.textSecondary,
-                letterSpacing: 1.1,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.cinzel(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: isSelected ? AppColors.goldBright : AppColors.textSecondary,
+                    letterSpacing: 1.1,
+                  ),
+                ),
+                if (isProOnly) ...[
+                  const SizedBox(width: 5),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: AppColors.goldBright.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: AppColors.goldBright, width: 0.8),
+                    ),
+                    child: Text(
+                      'PRO',
+                      style: GoogleFonts.cinzel(
+                        fontSize: 7.5,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.goldBright,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
             const SizedBox(height: 2),
             Text(
