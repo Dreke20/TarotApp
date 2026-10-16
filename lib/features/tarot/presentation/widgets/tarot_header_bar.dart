@@ -17,6 +17,7 @@ import '../../../divination/presentation/screens/iching_screen.dart';
 import '../../../dream/presentation/screens/dream_journal_screen.dart';
 import '../screens/custom_spread_builder_screen.dart';
 import '../../../astrology/presentation/screens/natal_chart_screen.dart';
+import '../../../astrology/presentation/screens/lunar_almanac_screen.dart';
 import '../../../collective/presentation/screens/collective_sanctuary_screen.dart';
 import '../../../lens/presentation/screens/tarot_lens_screen.dart';
 import 'ambient_audio_button.dart';
@@ -159,6 +160,41 @@ class TarotHeaderBar extends ConsumerWidget {
                         const SizedBox(width: 4),
                         Text(
                           'CODEX',
+                          style: GoogleFonts.cinzel(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.goldBright,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+
+                  // Lunar Almanac & Sabbat Calendar Action Button
+                  GlassContainer(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    borderRadius: 12,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const LunarAlmanacScreen(),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.brightness_3,
+                          size: 14,
+                          color: AppColors.goldBright,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'ALMANAC',
                           style: GoogleFonts.cinzel(
                             fontSize: 9,
                             fontWeight: FontWeight.w700,

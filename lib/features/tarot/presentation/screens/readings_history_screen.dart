@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/services/biometric_vault_service.dart';
+import '../../../../core/widgets/biometric_gate_barrier.dart';
 import '../../domain/reading.dart';
 import '../notifiers/reading_notifier.dart';
 import '../widgets/glass_container.dart';
@@ -42,27 +44,62 @@ class _ReadingsHistoryScreenState extends ConsumerState<ReadingsHistoryScreen> {
       return true;
     }).toList();
 
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: AppColors.goldBright),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          'SACRED JOURNAL',
-          style: GoogleFonts.cinzel(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.goldBright,
-            letterSpacing: 2.0,
+    return BiometricGateBarrier(
+      title: 'SANCTUARY VAULT LOCKED',
+      subtitle: 'Scan your biometric fingerprint or face to unseal past readings.',
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new,
+                color: AppColors.goldBright),
+            onPressed: () => Navigator.of(context).pop(),
           ),
+          title: Text(
+            'SACRED JOURNAL',
+            style: GoogleFonts.cinzel(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.goldBright,
+              letterSpacing: 2.0,
+            ),
+          ),
+          centerTitle: true,
+          actions: [
+            Consumer(
+              builder: (context, ref, _) {
+                final vaultState = ref.watch(biometricVaultProvider);
+                final isEnabled = vaultState.value ?? false;
+                return IconButton(
+                  icon: Icon(
+                    isEnabled ? Icons.fingerprint : Icons.lock_outline,
+                    color: isEnabled ? AppColors.goldBright : AppColors.goldMuted,
+                  ),
+                  tooltip: isEnabled ? 'Biometric Vault Consecrated' : 'Enable Biometric Vault',
+                  onPressed: () async {
+                    await ref.read(biometricVaultProvider.notifier).toggleVault(!isEnabled);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            !isEnabled
+                                ? 'Biometric Altar Vault consecrated.'
+                                : 'Biometric Altar Vault disengaged.',
+                            style: GoogleFonts.plusJakartaSans(),
+                          ),
+                          backgroundColor: AppColors.backgroundMidnight,
+                        ),
+                      );
+                    }
+                  },
+                );
+              },
+            ),
+            const SizedBox(width: 8),
+          ],
         ),
-        centerTitle: true,
-      ),
       body: MysticBackground(
         altarTheme: state.altarTheme,
         child: Center(
@@ -175,6 +212,7 @@ class _ReadingsHistoryScreenState extends ConsumerState<ReadingsHistoryScreen> {
         ),
       ),
     ),
+  ),
   ),
 );
   }

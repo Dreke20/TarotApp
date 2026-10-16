@@ -86,7 +86,7 @@ final class AuthNotifierProvider
   }
 }
 
-String _$authNotifierHash() => r'3e98c5114b494b7562d240c2a4bd948a990bc4b1';
+String _$authNotifierHash() => r'e654bb61b049f45035f9d6a151969cf13a7827b0';
 
 /// Session + seeker profile state. Generated provider: [authProvider].
 

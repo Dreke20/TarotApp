@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/biometric_gate_barrier.dart';
 import '../../../tarot/presentation/widgets/glass_container.dart';
 import '../../data/jungian_symbol_data.dart';
 import '../../domain/dream_entry.dart';
@@ -20,8 +21,11 @@ class _DreamJournalScreenState extends ConsumerState<DreamJournalScreen> {
   Widget build(BuildContext context) {
     final dreams = ref.watch(dreamProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.backgroundDeep,
+    return BiometricGateBarrier(
+      title: 'ASTRAL VAULT CONSECRATED',
+      subtitle: 'Authenticate to unseal your nocturnal dream visions & Jungian reflections.',
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundDeep,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -146,6 +150,7 @@ class _DreamJournalScreenState extends ConsumerState<DreamJournalScreen> {
             ),
           ),
       ),
+    ),
     );
   }
 

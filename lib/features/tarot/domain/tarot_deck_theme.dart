@@ -36,6 +36,42 @@ enum TarotDeckTheme {
     ),
     accentColor: Color(0xFFC5A059),
     isPremium: true,
+  ),
+  amethyst(
+    id: 'amethyst',
+    title: 'Amethyst Starlight',
+    subtitle: 'Deep cosmic violet with iridescent lilac foil',
+    backGradient: LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [Color(0xFF2E173E), Color(0xFF1B0B26), Color(0xFF0C0412)],
+    ),
+    accentColor: Color(0xFFC084FC),
+    isPremium: true,
+  ),
+  roseGold(
+    id: 'rose_gold',
+    title: 'Alchemical Rose Gold',
+    subtitle: 'Emerald velvet weave with brushed rose gold filigree',
+    backGradient: LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [Color(0xFF132A22), Color(0xFF0B1A14), Color(0xFF050E0A)],
+    ),
+    accentColor: Color(0xFFE0A99A),
+    isPremium: true,
+  ),
+  celestialSilver(
+    id: 'celestial_silver',
+    title: 'Liquid Platinum',
+    subtitle: 'Midnight indigo with liquid platinum and cyan starlight',
+    backGradient: LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [Color(0xFF151E30), Color(0xFF0B101C), Color(0xFF05070E)],
+    ),
+    accentColor: Color(0xFF93C5FD),
+    isPremium: true,
   );
 
   const TarotDeckTheme({
