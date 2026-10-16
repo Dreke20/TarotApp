@@ -14,6 +14,7 @@ import '../../domain/tarot_card.dart';
 import '../../domain/tarot_deck_theme.dart';
 import '../../services/tarot_widget_service.dart';
 import '../../../monetization/presentation/monetization_notifier.dart';
+import '../../../altar/presentation/notifiers/altar_consecration_notifier.dart';
 import 'oracle_persona_notifier.dart';
 import 'reading_state.dart';
 
@@ -205,6 +206,8 @@ class ReadingNotifier extends _$ReadingNotifier {
 
     try {
       final activePersona = ref.read(oraclePersonaNotifierProvider);
+      final altarState = ref.read(altarConsecrationNotifierProvider);
+      final altarConsecration = altarState.isPurified ? altarState.summaryText : null;
 
       final oracleData = await _repository.consultOracle(
         question: state.question,
@@ -212,6 +215,7 @@ class ReadingNotifier extends _$ReadingNotifier {
         drawnCards: state.drawnCards,
         astrologyInfo: astrologyInfo,
         persona: activePersona,
+        altarConsecration: altarConsecration,
       );
 
       final interpretation = oracleData['interpretation'] as String? ??
@@ -238,6 +242,7 @@ class ReadingNotifier extends _$ReadingNotifier {
         cosmicWeather: cosmicWeather,
         scryingPrompts: scryingPrompts,
         personaId: activePersona.id,
+        altarConsecration: altarConsecration,
       );
 
       final updatedHistory = List<Reading>.of(state.history)

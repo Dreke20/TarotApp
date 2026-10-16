@@ -28,6 +28,7 @@ _Reading _$ReadingFromJson(Map<String, dynamic> json) => _Reading(
           .toList() ??
       const [],
   personaId: json['persona_id'] as String?,
+  altarConsecration: json['altar_consecration'] as String?,
   createdAt: DateTime.parse(json['created_at'] as String),
 );
 
@@ -47,5 +48,6 @@ Map<String, dynamic> _$ReadingToJson(_Reading instance) => <String, dynamic>{
   'cosmic_weather': instance.cosmicWeather,
   'scrying_prompts': instance.scryingPrompts,
   'persona_id': instance.personaId,
+  'altar_consecration': instance.altarConsecration,
   'created_at': instance.createdAt.toIso8601String(),
 };

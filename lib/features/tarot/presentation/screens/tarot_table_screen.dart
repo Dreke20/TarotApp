@@ -29,6 +29,8 @@ import '../../../dream/presentation/screens/dream_journal_screen.dart';
 import '../../../lens/presentation/screens/tarot_lens_screen.dart';
 import '../../../monetization/presentation/monetization_notifier.dart';
 import '../../../monetization/presentation/widgets/starlight_offering_modal.dart';
+import '../../../altar/presentation/widgets/crystal_grid_overlay.dart';
+import '../../../altar/presentation/widgets/smoke_purification_modal.dart';
 
 /// The central Tarot Altar Table where cards are shuffled, drawn, flipped in 3D,
 /// and synthesized by the AI Oracle with multi-deck themes, Celtic Cross, and astrological alignment.
@@ -222,6 +224,10 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
         child: Column(
         children: [
+          // Consecration Status & Cardinal Guardian Crystal Grid
+          const CrystalGridOverlay(),
+          const SizedBox(height: 8),
+
           // If no cards are dealt yet: show Deck Pile on Altar
           if (!state.hasDrawnCards) ...[
             Text(
@@ -335,6 +341,34 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                       const SizedBox(width: 6),
                       Text(
                         'CUT THE DECK',
+                        style: GoogleFonts.cinzel(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.goldBright,
+                    side: const BorderSide(color: AppColors.goldMuted, width: 1.2),
+                    backgroundColor: AppColors.glassFill,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 13),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  onPressed: () => SmokePurificationModal.show(context),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('🪵', style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 6),
+                      Text(
+                        'PURIFY ALTAR',
                         style: GoogleFonts.cinzel(
                           fontSize: 11.5,
                           fontWeight: FontWeight.bold,

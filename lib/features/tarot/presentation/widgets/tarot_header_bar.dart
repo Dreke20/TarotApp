@@ -21,6 +21,8 @@ import '../../../astrology/presentation/screens/lunar_almanac_screen.dart';
 import '../../../collective/presentation/screens/collective_sanctuary_screen.dart';
 import '../../../lens/presentation/screens/tarot_lens_screen.dart';
 import '../screens/seekers_chronicle_screen.dart';
+import '../../../altar/presentation/widgets/crystal_grid_sheet.dart';
+import '../../../altar/presentation/widgets/smoke_purification_modal.dart';
 import 'ambient_audio_button.dart';
 import 'glass_container.dart';
 import 'oracle_persona_selector_modal.dart';
@@ -307,6 +309,35 @@ class TarotHeaderBar extends ConsumerWidget {
                       ],
                     ),
                   ),
+                  // Altar Purification & Smudge Rite Action Button
+                  GlassContainer(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    borderRadius: 12,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      SmokePurificationModal.show(context);
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.flare,
+                          size: 14,
+                          color: AppColors.goldBright,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'PURIFY',
+                          style: GoogleFonts.cinzel(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.goldBright,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(width: 6),
 
                   // Talk to a Live Person (whispers26.com) Button
@@ -481,6 +512,12 @@ class TarotHeaderBar extends ConsumerWidget {
                     case 'persona':
                       OraclePersonaSelectorModal.show(context);
                       break;
+                    case 'smudge':
+                      SmokePurificationModal.show(context);
+                      break;
+                    case 'crystals':
+                      CrystalGridSheet.show(context);
+                      break;
                     case 'live_reader':
                       ExternalLaunchService.openLiveReader(context);
                       break;
@@ -586,6 +623,26 @@ class TarotHeaderBar extends ConsumerWidget {
                         const Text('👁️', style: TextStyle(fontSize: 15)),
                         const SizedBox(width: 8),
                         Text('Archetypal Oracle Personas', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'smudge',
+                    child: Row(
+                      children: [
+                        const Text('🪵', style: TextStyle(fontSize: 15)),
+                        const SizedBox(width: 8),
+                        Text('Altar Smudge & Purification', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'crystals',
+                    child: Row(
+                      children: [
+                        const Text('🔮', style: TextStyle(fontSize: 15)),
+                        const SizedBox(width: 8),
+                        Text('Sacred Crystal Grid', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
                       ],
                     ),
                   ),

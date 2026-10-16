@@ -431,12 +431,38 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                       const SizedBox(height: 14),
                     ],
 
-                    // Elemental Chemistry & Cosmic Weather Matrix
-                    if (reading.elementalChemistry != null || reading.cosmicWeather != null) ...[
+                    // Elemental Chemistry, Cosmic Weather & Altar Consecration Matrix
+                    if (reading.elementalChemistry != null || reading.cosmicWeather != null || reading.altarConsecration != null) ...[
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
                         children: [
+                          if (reading.altarConsecration != null && reading.altarConsecration!.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1C152E),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: AppColors.goldBright.withValues(alpha: 0.5)),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text('✦', style: TextStyle(fontSize: 11, color: AppColors.goldBright)),
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: Text(
+                                      reading.altarConsecration!,
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.goldBright,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           if (reading.cosmicWeather != null && reading.cosmicWeather!.isNotEmpty)
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),

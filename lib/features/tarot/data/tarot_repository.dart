@@ -101,6 +101,7 @@ class TarotRepository {
     Map<String, String>? astrologyInfo,
     OraclePersona persona = OraclePersona.highPriestess,
     String? dreamNarrative,
+    String? altarConsecration,
   }) async {
     final cleanQuestion = PromptSanitizerService.sanitizeQuestion(
       question.trim().isEmpty ? 'Daily Cosmic Guidance' : question.trim(),
@@ -150,6 +151,7 @@ class TarotRepository {
       'recent_journey_context': recentThemes,
       'recurring_cards': recurringCards,
       'dream_narrative': ?dreamNarrative,
+      'altar_consecration': ?altarConsecration,
       'drawn_cards': drawnCards
           .map((card) => {
                 'id': card.id,
@@ -194,6 +196,7 @@ class TarotRepository {
       elementalChemistry: elementalChemistry,
       recurringCards: recurringCards,
       dreamNarrative: dreamNarrative,
+      altarConsecration: altarConsecration,
     );
   }
 
@@ -251,6 +254,7 @@ class TarotRepository {
     String? cosmicWeather,
     List<String> scryingPrompts = const [],
     String? personaId,
+    String? altarConsecration,
     String? userId,
   }) async {
     final newId = _uuid.v4();
@@ -271,6 +275,7 @@ class TarotRepository {
       cosmicWeather: cosmicWeather,
       scryingPrompts: scryingPrompts,
       personaId: personaId,
+      altarConsecration: altarConsecration,
       createdAt: now,
     );
 
@@ -393,6 +398,7 @@ class TarotRepository {
     String? elementalChemistry,
     List<String>? recurringCards,
     String? dreamNarrative,
+    String? altarConsecration,
   }) {
     final primaryCard = cards.first;
     final primaryMeaning = primaryCard.isReversed
@@ -521,6 +527,7 @@ class TarotRepository {
       'elemental_chemistry': elementalChemistry ?? calculateElementalChemistry(cards),
       'cosmic_weather': weatherText,
       'scrying_prompts': scryingPrompts,
+      'altar_consecration': ?altarConsecration,
     };
   }
 

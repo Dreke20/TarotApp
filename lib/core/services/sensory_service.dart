@@ -54,6 +54,24 @@ class SensoryService {
     HapticFeedback.mediumImpact();
   }
 
+  /// Micro-crackle haptic when sacred smoke wafts across the altar
+  void smokeCrackleHaptic() {
+    if (!hapticsEnabled) return;
+    HapticFeedback.selectionClick();
+  }
+
+  /// Resonant haptic when a crystal is consecrated or placed on the altar
+  void crystalPlacementHaptic() {
+    if (!hapticsEnabled) return;
+    HapticFeedback.lightImpact();
+  }
+
+  /// Sacred chime haptic when the altar achieves full purification
+  void altarPurifiedHaptic() {
+    if (!hapticsEnabled) return;
+    HapticFeedback.heavyImpact();
+  }
+
   /// Sound effect when dealing/flipping cards
   void playCardFlipSound() {
     if (!soundEnabled) return;

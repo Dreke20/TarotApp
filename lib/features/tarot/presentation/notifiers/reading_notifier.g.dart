@@ -41,7 +41,7 @@ final class ReadingNotifierProvider
   }
 }
 
-String _$readingNotifierHash() => r'3ab743d417b78a414a3e77cd28cac2f3ed1a113e';
+String _$readingNotifierHash() => r'fdaf9cfb743edb9a97f8e3676e507fcea6f20c7e';
 
 abstract class _$ReadingNotifier extends $Notifier<ReadingState> {
   ReadingState build();
