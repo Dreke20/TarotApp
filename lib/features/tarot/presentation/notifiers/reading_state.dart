@@ -3,6 +3,7 @@ import '../../domain/altar_theme.dart';
 import '../../domain/oracle_message.dart';
 import '../../domain/reading.dart';
 import '../../domain/spread_type.dart';
+import '../../domain/synastry_partner.dart';
 import '../../domain/tarot_card.dart';
 import '../../domain/tarot_deck_theme.dart';
 
@@ -26,6 +27,7 @@ abstract class ReadingState with _$ReadingState {
     @Default(AltarTheme.midnightNebula) AltarTheme altarTheme,
     int? selectedInspectIndex,
     String? errorMessage,
+    SynastryPartner? synastryPartner,
   }) = _ReadingState;
 
   const ReadingState._();

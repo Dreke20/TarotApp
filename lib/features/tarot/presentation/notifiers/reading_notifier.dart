@@ -9,6 +9,7 @@ import '../../domain/altar_theme.dart';
 import '../../domain/oracle_message.dart';
 import '../../domain/reading.dart';
 import '../../domain/spread_type.dart';
+import '../../domain/synastry_partner.dart';
 import '../../domain/tarot_card.dart';
 import '../../domain/tarot_deck_theme.dart';
 import '../../services/tarot_widget_service.dart';
@@ -66,6 +67,12 @@ class ReadingNotifier extends _$ReadingNotifier {
   void selectInspectIndex(int? index) {
     _sensory.cardSelectionHaptic();
     state = state.copyWith(selectedInspectIndex: index);
+  }
+
+  /// Sets the synastry partner profile for relationship spreads
+  void setSynastryPartner(SynastryPartner partner) {
+    _sensory.cardSelectionHaptic();
+    state = state.copyWith(synastryPartner: partner);
   }
 
   /// Updates the user's question / query for the oracle
@@ -179,14 +186,17 @@ class ReadingNotifier extends _$ReadingNotifier {
 
     // Grab seeker astrological placements from AuthNotifier
     final profile = ref.read(authNotifierProvider).profile;
-    Map<String, String>? astrologyInfo;
-    if (profile?.zodiacSign != null) {
-      astrologyInfo = {
-        'sun': profile!.zodiacSign!,
-        if (profile.moonSign != null) 'moon': profile.moonSign!,
-        if (profile.risingSign != null) 'rising': profile.risingSign!,
-      };
-    }
+    final partner = state.synastryPartner;
+    final astrologyInfo = <String, String>{
+      'sun': profile?.zodiacSign ?? 'Scorpio',
+      if (profile?.moonSign != null) 'moon': profile!.moonSign!,
+      if (profile?.risingSign != null) 'rising': profile!.risingSign!,
+      if (partner != null) ...{
+        'partner_name': partner.name,
+        'partner_sun': partner.sunSign,
+        'connection_type': partner.connectionType,
+      },
+    };
 
     try {
       final oracleData = await _repository.consultOracle(

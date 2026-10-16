@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/holographic_foil_card.dart';
 import '../../domain/tarot_card.dart';
-
 import '../../domain/tarot_deck_theme.dart';
 
 /// Interactive 3D Flippable Tarot Card with sacred geometry styling,
@@ -178,10 +178,14 @@ class _TarotCardWidgetState extends State<TarotCardWidget>
     final isReversed = card.isReversed;
     final cardAsset = card.assetPath ?? 'assets/cards/${card.id}.jpg';
 
-    return Container(
-      width: widget.width,
-      height: widget.height,
-      decoration: BoxDecoration(
+    return HolographicFoilCard(
+      borderRadius: BorderRadius.circular(14),
+      enableSensorTilt: true,
+      enableTouchTilt: false,
+      child: Container(
+        width: widget.width,
+        height: widget.height,
+        decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         gradient: AppColors.cardFaceGradient,
         border: Border.all(
@@ -263,8 +267,9 @@ class _TarotCardWidgetState extends State<TarotCardWidget>
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildProceduralCardFront(TarotCard card, bool isReversed) {
     return Stack(

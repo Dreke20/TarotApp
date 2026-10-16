@@ -42,6 +42,18 @@ class SensoryService {
     HapticFeedback.heavyImpact();
   }
 
+  /// Subtle micro-tick when thumb slides across card deck edges
+  void deckFanningHaptic() {
+    if (!hapticsEnabled) return;
+    HapticFeedback.selectionClick();
+  }
+
+  /// Pulsing heartbeat vibration during sacred attunement ritual
+  void sacredHeartbeatHaptic() {
+    if (!hapticsEnabled) return;
+    HapticFeedback.mediumImpact();
+  }
+
   /// Sound effect when dealing/flipping cards
   void playCardFlipSound() {
     if (!soundEnabled) return;

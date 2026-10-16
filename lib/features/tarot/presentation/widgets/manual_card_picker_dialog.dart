@@ -44,6 +44,7 @@ class ManualCardPickerDialog extends StatefulWidget {
 class _ManualCardPickerDialogState extends State<ManualCardPickerDialog> {
   final Set<int> _selectedCardIndices = {};
   final SensoryService _sensory = SensoryService();
+  int _lastFannedCardIndex = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -102,14 +103,25 @@ class _ManualCardPickerDialogState extends State<ManualCardPickerDialog> {
           ),
           const SizedBox(height: 20),
 
-          // Horizontally scrollable fanned card ribbon
+          // Horizontally scrollable fanned card ribbon with haptic fanning clicks
           Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-              itemCount: widget.fullDeck.length,
-              itemBuilder: (context, index) {
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (notification is ScrollUpdateNotification) {
+                  final cardIndex = (notification.metrics.pixels / 86.0).floor();
+                  if (cardIndex != _lastFannedCardIndex && cardIndex >= 0 && cardIndex < widget.fullDeck.length) {
+                    _lastFannedCardIndex = cardIndex;
+                    _sensory.deckFanningHaptic();
+                  }
+                }
+                return false;
+              },
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                itemCount: widget.fullDeck.length,
+                itemBuilder: (context, index) {
                 final isSelected = _selectedCardIndices.contains(index);
 
                 return GestureDetector(
@@ -180,6 +192,7 @@ class _ManualCardPickerDialogState extends State<ManualCardPickerDialog> {
               },
             ),
           ),
+        ),
 
           const SizedBox(height: 16),
 

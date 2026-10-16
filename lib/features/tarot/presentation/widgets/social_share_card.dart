@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../domain/reading.dart';
 import 'glass_container.dart';
+import 'social_story_export_modal.dart';
 import 'tarot_card_widget.dart';
 
 class SocialShareCardDialog extends StatelessWidget {
@@ -175,12 +176,14 @@ class SocialShareCardDialog extends StatelessWidget {
                 ),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('✨ Cosmic card ready to share with your circle!'),
-                      backgroundColor: AppColors.cosmicSurface,
-                    ),
-                  );
+                  if (reading.cards.isNotEmpty) {
+                    SocialStoryExportModal.show(
+                      context,
+                      card: reading.cards.first,
+                      isReversed: reading.cards.first.isReversed,
+                      customQuote: reading.summary ?? reading.advice ?? reading.cards.first.meaningUpright,
+                    );
+                  }
                 },
               ),
               const SizedBox(width: 12),

@@ -9,6 +9,7 @@ import '../notifiers/reading_notifier.dart';
 import 'glass_container.dart';
 import 'live_reader_card.dart';
 import 'social_share_card.dart';
+import 'social_story_export_modal.dart';
 import 'tarot_card_widget.dart';
 
 /// Immersive Glassmorphic Bottom Sheet displaying the AI Oracle's reading,
@@ -141,6 +142,23 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                         size: 20,
                       ),
                       onPressed: () => notifier.toggleFavorite(reading.id, !reading.isFavorite),
+                    ),
+                    // 9:16 Social Story Export
+                    IconButton(
+                      tooltip: 'Export 9:16 Story',
+                      icon: const Icon(Icons.auto_awesome_motion, color: AppColors.goldBright, size: 19),
+                      onPressed: () {
+                        if (reading.cards.isNotEmpty) {
+                          SocialStoryExportModal.show(
+                            context,
+                            card: reading.cards.first,
+                            isReversed: reading.cards.first.isReversed,
+                            customQuote: reading.summary ?? reading.advice ?? reading.cards.first.meaningUpright,
+                          );
+                        } else {
+                          SocialShareCardDialog.show(context, reading: reading);
+                        }
+                      },
                     ),
                     // Social Share
                     IconButton(

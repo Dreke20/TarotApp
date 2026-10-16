@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/stardust_particle_field.dart';
 import '../../domain/altar_theme.dart';
 
 /// Immersive celestial background featuring deep cosmic gradients,
@@ -120,8 +121,14 @@ class _MysticBackgroundState extends State<MysticBackground>
           },
         ),
 
-        // Foreground content
-        SafeArea(child: widget.child),
+        // Interactive Stardust Particle Field & Constellation Trails
+        Positioned.fill(
+          child: StardustParticleField(
+            enableAmbientDrift: true,
+            enableTouchTrails: true,
+            child: SafeArea(child: widget.child),
+          ),
+        ),
       ],
     );
   }

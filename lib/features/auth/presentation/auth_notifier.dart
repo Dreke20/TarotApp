@@ -60,10 +60,12 @@ class AuthNotifier extends _$AuthNotifier {
     required String sunSign,
     String? moonSign,
     String? risingSign,
+    String? displayName,
   }) async {
     final current = state.profile;
     if (current == null) return;
     final updated = current.copyWith(
+      displayName: displayName ?? current.displayName,
       zodiacSign: sunSign,
       moonSign: moonSign,
       risingSign: risingSign,

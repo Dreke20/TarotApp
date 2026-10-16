@@ -4,9 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../auth/presentation/auth_notifier.dart';
 import '../../domain/spread_type.dart';
+import '../../domain/synastry_partner.dart';
 import '../notifiers/reading_notifier.dart';
 import '../notifiers/reading_state.dart';
 import '../../data/tarot_deck_service.dart';
+import '../widgets/cosmic_synastry_modal.dart';
 import '../widgets/deck_pile_widget.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/lunar_transit_banner.dart';
@@ -135,6 +137,12 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                               }
                             },
                           ),
+
+                          // Cosmic Synastry & Relationship Mirror Configuration
+                          if (state.spreadType == SpreadType.heartOfTwo) ...[
+                            const SizedBox(height: 12),
+                            _buildSynastryConfigCard(context, state, notifier),
+                          ],
 
                           const SizedBox(height: 14),
 
@@ -544,6 +552,81 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSynastryConfigCard(
+    BuildContext context,
+    ReadingState state,
+    ReadingNotifier notifier,
+  ) {
+    final partner = state.synastryPartner ?? const SynastryPartner();
+    final profile = ref.watch(authNotifierProvider).profile;
+    final seekerSun = profile?.zodiacSign ?? 'Scorpio';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1B1430).withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.goldBright.withValues(alpha: 0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.goldBright.withValues(alpha: 0.15),
+            blurRadius: 16,
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          const Text('⚭', style: TextStyle(fontSize: 24, color: AppColors.goldBright)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'COSMIC SYNASTRY MIRROR',
+                  style: GoogleFonts.cinzel(
+                    color: AppColors.goldBright,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'You ($seekerSun) ⚭ ${partner.name} (${partner.sunSign}) • ${partner.connectionType}',
+                  style: GoogleFonts.plusJakartaSans(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              CosmicSynastryModal.show(
+                context,
+                currentPartner: partner,
+                seekerSunSign: seekerSun,
+                onPartnerSaved: (updated) => notifier.setSynastryPartner(updated),
+              );
+            },
+            child: Text(
+              'CALIBRATE',
+              style: GoogleFonts.cinzel(
+                color: AppColors.goldBright,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

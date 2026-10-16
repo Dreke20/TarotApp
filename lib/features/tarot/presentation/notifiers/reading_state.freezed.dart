@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ReadingState {
 
- SpreadType get spreadType; String get question; List<TarotCard> get drawnCards; Set<int> get revealedIndices; bool get isShuffling; bool get isDealing; bool get isConsultingOracle; bool get isAskingFollowUp; Reading? get currentReading; List<Reading> get history; List<OracleMessage> get conversationHistory; TarotDeckTheme get deckTheme; AltarTheme get altarTheme; int? get selectedInspectIndex; String? get errorMessage;
+ SpreadType get spreadType; String get question; List<TarotCard> get drawnCards; Set<int> get revealedIndices; bool get isShuffling; bool get isDealing; bool get isConsultingOracle; bool get isAskingFollowUp; Reading? get currentReading; List<Reading> get history; List<OracleMessage> get conversationHistory; TarotDeckTheme get deckTheme; AltarTheme get altarTheme; int? get selectedInspectIndex; String? get errorMessage; SynastryPartner? get synastryPartner;
 /// Create a copy of ReadingState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $ReadingStateCopyWith<ReadingState> get copyWith => _$ReadingStateCopyWithImpl<R
 @override
 bool operator ==(Object other) {
   final _this = this as ReadingState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReadingState&&(identical(other.spreadType, _this.spreadType) || other.spreadType == _this.spreadType)&&(identical(other.question, _this.question) || other.question == _this.question)&&const DeepCollectionEquality().equals(other.drawnCards, _this.drawnCards)&&const DeepCollectionEquality().equals(other.revealedIndices, _this.revealedIndices)&&(identical(other.isShuffling, _this.isShuffling) || other.isShuffling == _this.isShuffling)&&(identical(other.isDealing, _this.isDealing) || other.isDealing == _this.isDealing)&&(identical(other.isConsultingOracle, _this.isConsultingOracle) || other.isConsultingOracle == _this.isConsultingOracle)&&(identical(other.isAskingFollowUp, _this.isAskingFollowUp) || other.isAskingFollowUp == _this.isAskingFollowUp)&&(identical(other.currentReading, _this.currentReading) || other.currentReading == _this.currentReading)&&const DeepCollectionEquality().equals(other.history, _this.history)&&const DeepCollectionEquality().equals(other.conversationHistory, _this.conversationHistory)&&(identical(other.deckTheme, _this.deckTheme) || other.deckTheme == _this.deckTheme)&&(identical(other.altarTheme, _this.altarTheme) || other.altarTheme == _this.altarTheme)&&(identical(other.selectedInspectIndex, _this.selectedInspectIndex) || other.selectedInspectIndex == _this.selectedInspectIndex)&&(identical(other.errorMessage, _this.errorMessage) || other.errorMessage == _this.errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReadingState&&(identical(other.spreadType, _this.spreadType) || other.spreadType == _this.spreadType)&&(identical(other.question, _this.question) || other.question == _this.question)&&const DeepCollectionEquality().equals(other.drawnCards, _this.drawnCards)&&const DeepCollectionEquality().equals(other.revealedIndices, _this.revealedIndices)&&(identical(other.isShuffling, _this.isShuffling) || other.isShuffling == _this.isShuffling)&&(identical(other.isDealing, _this.isDealing) || other.isDealing == _this.isDealing)&&(identical(other.isConsultingOracle, _this.isConsultingOracle) || other.isConsultingOracle == _this.isConsultingOracle)&&(identical(other.isAskingFollowUp, _this.isAskingFollowUp) || other.isAskingFollowUp == _this.isAskingFollowUp)&&(identical(other.currentReading, _this.currentReading) || other.currentReading == _this.currentReading)&&const DeepCollectionEquality().equals(other.history, _this.history)&&const DeepCollectionEquality().equals(other.conversationHistory, _this.conversationHistory)&&(identical(other.deckTheme, _this.deckTheme) || other.deckTheme == _this.deckTheme)&&(identical(other.altarTheme, _this.altarTheme) || other.altarTheme == _this.altarTheme)&&(identical(other.selectedInspectIndex, _this.selectedInspectIndex) || other.selectedInspectIndex == _this.selectedInspectIndex)&&(identical(other.errorMessage, _this.errorMessage) || other.errorMessage == _this.errorMessage)&&(identical(other.synastryPartner, _this.synastryPartner) || other.synastryPartner == _this.synastryPartner));
 }
 
 
 @override
 int get hashCode {
   final _this = this as ReadingState;
-  return Object.hash(runtimeType,_this.spreadType,_this.question,const DeepCollectionEquality().hash(_this.drawnCards),const DeepCollectionEquality().hash(_this.revealedIndices),_this.isShuffling,_this.isDealing,_this.isConsultingOracle,_this.isAskingFollowUp,_this.currentReading,const DeepCollectionEquality().hash(_this.history),const DeepCollectionEquality().hash(_this.conversationHistory),_this.deckTheme,_this.altarTheme,_this.selectedInspectIndex,_this.errorMessage);
+  return Object.hash(runtimeType,_this.spreadType,_this.question,const DeepCollectionEquality().hash(_this.drawnCards),const DeepCollectionEquality().hash(_this.revealedIndices),_this.isShuffling,_this.isDealing,_this.isConsultingOracle,_this.isAskingFollowUp,_this.currentReading,const DeepCollectionEquality().hash(_this.history),const DeepCollectionEquality().hash(_this.conversationHistory),_this.deckTheme,_this.altarTheme,_this.selectedInspectIndex,_this.errorMessage,_this.synastryPartner);
 }
 
 @override
 String toString() {
   final _this = this as ReadingState;
-  return 'ReadingState(spreadType: ${_this.spreadType}, question: ${_this.question}, drawnCards: ${_this.drawnCards}, revealedIndices: ${_this.revealedIndices}, isShuffling: ${_this.isShuffling}, isDealing: ${_this.isDealing}, isConsultingOracle: ${_this.isConsultingOracle}, isAskingFollowUp: ${_this.isAskingFollowUp}, currentReading: ${_this.currentReading}, history: ${_this.history}, conversationHistory: ${_this.conversationHistory}, deckTheme: ${_this.deckTheme}, altarTheme: ${_this.altarTheme}, selectedInspectIndex: ${_this.selectedInspectIndex}, errorMessage: ${_this.errorMessage})';
+  return 'ReadingState(spreadType: ${_this.spreadType}, question: ${_this.question}, drawnCards: ${_this.drawnCards}, revealedIndices: ${_this.revealedIndices}, isShuffling: ${_this.isShuffling}, isDealing: ${_this.isDealing}, isConsultingOracle: ${_this.isConsultingOracle}, isAskingFollowUp: ${_this.isAskingFollowUp}, currentReading: ${_this.currentReading}, history: ${_this.history}, conversationHistory: ${_this.conversationHistory}, deckTheme: ${_this.deckTheme}, altarTheme: ${_this.altarTheme}, selectedInspectIndex: ${_this.selectedInspectIndex}, errorMessage: ${_this.errorMessage}, synastryPartner: ${_this.synastryPartner})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $ReadingStateCopyWith<$Res>  {
   factory $ReadingStateCopyWith(ReadingState value, $Res Function(ReadingState) _then) = _$ReadingStateCopyWithImpl;
 @useResult
 $Res call({
- SpreadType spreadType, String question, List<TarotCard> drawnCards, Set<int> revealedIndices, bool isShuffling, bool isDealing, bool isConsultingOracle, bool isAskingFollowUp, Reading? currentReading, List<Reading> history, List<OracleMessage> conversationHistory, TarotDeckTheme deckTheme, AltarTheme altarTheme, int? selectedInspectIndex, String? errorMessage
+ SpreadType spreadType, String question, List<TarotCard> drawnCards, Set<int> revealedIndices, bool isShuffling, bool isDealing, bool isConsultingOracle, bool isAskingFollowUp, Reading? currentReading, List<Reading> history, List<OracleMessage> conversationHistory, TarotDeckTheme deckTheme, AltarTheme altarTheme, int? selectedInspectIndex, String? errorMessage, SynastryPartner? synastryPartner
 });
 
 
@@ -68,7 +68,7 @@ class _$ReadingStateCopyWithImpl<$Res>
 
 /// Create a copy of ReadingState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? spreadType = null,Object? question = null,Object? drawnCards = null,Object? revealedIndices = null,Object? isShuffling = null,Object? isDealing = null,Object? isConsultingOracle = null,Object? isAskingFollowUp = null,Object? currentReading = freezed,Object? history = null,Object? conversationHistory = null,Object? deckTheme = null,Object? altarTheme = null,Object? selectedInspectIndex = freezed,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? spreadType = null,Object? question = null,Object? drawnCards = null,Object? revealedIndices = null,Object? isShuffling = null,Object? isDealing = null,Object? isConsultingOracle = null,Object? isAskingFollowUp = null,Object? currentReading = freezed,Object? history = null,Object? conversationHistory = null,Object? deckTheme = null,Object? altarTheme = null,Object? selectedInspectIndex = freezed,Object? errorMessage = freezed,Object? synastryPartner = freezed,}) {
   return _then(ReadingState(
 spreadType: null == spreadType ? _self.spreadType : spreadType // ignore: cast_nullable_to_non_nullable
 as SpreadType,question: null == question ? _self.question : question // ignore: cast_nullable_to_non_nullable
@@ -85,7 +85,8 @@ as List<OracleMessage>,deckTheme: null == deckTheme ? _self.deckTheme : deckThem
 as TarotDeckTheme,altarTheme: null == altarTheme ? _self.altarTheme : altarTheme // ignore: cast_nullable_to_non_nullable
 as AltarTheme,selectedInspectIndex: freezed == selectedInspectIndex ? _self.selectedInspectIndex : selectedInspectIndex // ignore: cast_nullable_to_non_nullable
 as int?,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,synastryPartner: freezed == synastryPartner ? _self.synastryPartner : synastryPartner // ignore: cast_nullable_to_non_nullable
+as SynastryPartner?,
   ));
 }
 /// Create a copy of ReadingState
@@ -182,10 +183,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( SpreadType spreadType,  String question,  List<TarotCard> drawnCards,  Set<int> revealedIndices,  bool isShuffling,  bool isDealing,  bool isConsultingOracle,  bool isAskingFollowUp,  Reading? currentReading,  List<Reading> history,  List<OracleMessage> conversationHistory,  TarotDeckTheme deckTheme,  AltarTheme altarTheme,  int? selectedInspectIndex,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( SpreadType spreadType,  String question,  List<TarotCard> drawnCards,  Set<int> revealedIndices,  bool isShuffling,  bool isDealing,  bool isConsultingOracle,  bool isAskingFollowUp,  Reading? currentReading,  List<Reading> history,  List<OracleMessage> conversationHistory,  TarotDeckTheme deckTheme,  AltarTheme altarTheme,  int? selectedInspectIndex,  String? errorMessage,  SynastryPartner? synastryPartner)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ReadingState() when $default != null:
-return $default(_that.spreadType,_that.question,_that.drawnCards,_that.revealedIndices,_that.isShuffling,_that.isDealing,_that.isConsultingOracle,_that.isAskingFollowUp,_that.currentReading,_that.history,_that.conversationHistory,_that.deckTheme,_that.altarTheme,_that.selectedInspectIndex,_that.errorMessage);case _:
+return $default(_that.spreadType,_that.question,_that.drawnCards,_that.revealedIndices,_that.isShuffling,_that.isDealing,_that.isConsultingOracle,_that.isAskingFollowUp,_that.currentReading,_that.history,_that.conversationHistory,_that.deckTheme,_that.altarTheme,_that.selectedInspectIndex,_that.errorMessage,_that.synastryPartner);case _:
   return orElse();
 
 }
@@ -203,10 +204,10 @@ return $default(_that.spreadType,_that.question,_that.drawnCards,_that.revealedI
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( SpreadType spreadType,  String question,  List<TarotCard> drawnCards,  Set<int> revealedIndices,  bool isShuffling,  bool isDealing,  bool isConsultingOracle,  bool isAskingFollowUp,  Reading? currentReading,  List<Reading> history,  List<OracleMessage> conversationHistory,  TarotDeckTheme deckTheme,  AltarTheme altarTheme,  int? selectedInspectIndex,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( SpreadType spreadType,  String question,  List<TarotCard> drawnCards,  Set<int> revealedIndices,  bool isShuffling,  bool isDealing,  bool isConsultingOracle,  bool isAskingFollowUp,  Reading? currentReading,  List<Reading> history,  List<OracleMessage> conversationHistory,  TarotDeckTheme deckTheme,  AltarTheme altarTheme,  int? selectedInspectIndex,  String? errorMessage,  SynastryPartner? synastryPartner)  $default,) {final _that = this;
 switch (_that) {
 case _ReadingState():
-return $default(_that.spreadType,_that.question,_that.drawnCards,_that.revealedIndices,_that.isShuffling,_that.isDealing,_that.isConsultingOracle,_that.isAskingFollowUp,_that.currentReading,_that.history,_that.conversationHistory,_that.deckTheme,_that.altarTheme,_that.selectedInspectIndex,_that.errorMessage);case _:
+return $default(_that.spreadType,_that.question,_that.drawnCards,_that.revealedIndices,_that.isShuffling,_that.isDealing,_that.isConsultingOracle,_that.isAskingFollowUp,_that.currentReading,_that.history,_that.conversationHistory,_that.deckTheme,_that.altarTheme,_that.selectedInspectIndex,_that.errorMessage,_that.synastryPartner);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -223,10 +224,10 @@ return $default(_that.spreadType,_that.question,_that.drawnCards,_that.revealedI
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( SpreadType spreadType,  String question,  List<TarotCard> drawnCards,  Set<int> revealedIndices,  bool isShuffling,  bool isDealing,  bool isConsultingOracle,  bool isAskingFollowUp,  Reading? currentReading,  List<Reading> history,  List<OracleMessage> conversationHistory,  TarotDeckTheme deckTheme,  AltarTheme altarTheme,  int? selectedInspectIndex,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( SpreadType spreadType,  String question,  List<TarotCard> drawnCards,  Set<int> revealedIndices,  bool isShuffling,  bool isDealing,  bool isConsultingOracle,  bool isAskingFollowUp,  Reading? currentReading,  List<Reading> history,  List<OracleMessage> conversationHistory,  TarotDeckTheme deckTheme,  AltarTheme altarTheme,  int? selectedInspectIndex,  String? errorMessage,  SynastryPartner? synastryPartner)?  $default,) {final _that = this;
 switch (_that) {
 case _ReadingState() when $default != null:
-return $default(_that.spreadType,_that.question,_that.drawnCards,_that.revealedIndices,_that.isShuffling,_that.isDealing,_that.isConsultingOracle,_that.isAskingFollowUp,_that.currentReading,_that.history,_that.conversationHistory,_that.deckTheme,_that.altarTheme,_that.selectedInspectIndex,_that.errorMessage);case _:
+return $default(_that.spreadType,_that.question,_that.drawnCards,_that.revealedIndices,_that.isShuffling,_that.isDealing,_that.isConsultingOracle,_that.isAskingFollowUp,_that.currentReading,_that.history,_that.conversationHistory,_that.deckTheme,_that.altarTheme,_that.selectedInspectIndex,_that.errorMessage,_that.synastryPartner);case _:
   return null;
 
 }
@@ -238,7 +239,7 @@ return $default(_that.spreadType,_that.question,_that.drawnCards,_that.revealedI
 
 
 class _ReadingState extends ReadingState {
-  const _ReadingState({this.spreadType = SpreadType.dailyGuidance, this.question = '',  List<TarotCard> drawnCards = const [],  Set<int> revealedIndices = const {}, this.isShuffling = false, this.isDealing = false, this.isConsultingOracle = false, this.isAskingFollowUp = false, this.currentReading,  List<Reading> history = const [],  List<OracleMessage> conversationHistory = const [], this.deckTheme = TarotDeckTheme.classic, this.altarTheme = AltarTheme.midnightNebula, this.selectedInspectIndex, this.errorMessage}): _drawnCards = drawnCards,_revealedIndices = revealedIndices,_history = history,_conversationHistory = conversationHistory,super._();
+  const _ReadingState({this.spreadType = SpreadType.dailyGuidance, this.question = '',  List<TarotCard> drawnCards = const [],  Set<int> revealedIndices = const {}, this.isShuffling = false, this.isDealing = false, this.isConsultingOracle = false, this.isAskingFollowUp = false, this.currentReading,  List<Reading> history = const [],  List<OracleMessage> conversationHistory = const [], this.deckTheme = TarotDeckTheme.classic, this.altarTheme = AltarTheme.midnightNebula, this.selectedInspectIndex, this.errorMessage, this.synastryPartner}): _drawnCards = drawnCards,_revealedIndices = revealedIndices,_history = history,_conversationHistory = conversationHistory,super._();
   
 
 @override@JsonKey() final  SpreadType spreadType;
@@ -280,6 +281,7 @@ class _ReadingState extends ReadingState {
 @override@JsonKey() final  AltarTheme altarTheme;
 @override final  int? selectedInspectIndex;
 @override final  String? errorMessage;
+@override final  SynastryPartner? synastryPartner;
 
 /// Create a copy of ReadingState
 /// with the given fields replaced by the non-null parameter values.
@@ -291,18 +293,18 @@ _$ReadingStateCopyWith<_ReadingState> get copyWith => __$ReadingStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReadingState&&(identical(other.spreadType, spreadType) || other.spreadType == spreadType)&&(identical(other.question, question) || other.question == question)&&const DeepCollectionEquality().equals(other.drawnCards, _drawnCards)&&const DeepCollectionEquality().equals(other.revealedIndices, _revealedIndices)&&(identical(other.isShuffling, isShuffling) || other.isShuffling == isShuffling)&&(identical(other.isDealing, isDealing) || other.isDealing == isDealing)&&(identical(other.isConsultingOracle, isConsultingOracle) || other.isConsultingOracle == isConsultingOracle)&&(identical(other.isAskingFollowUp, isAskingFollowUp) || other.isAskingFollowUp == isAskingFollowUp)&&(identical(other.currentReading, currentReading) || other.currentReading == currentReading)&&const DeepCollectionEquality().equals(other.history, _history)&&const DeepCollectionEquality().equals(other.conversationHistory, _conversationHistory)&&(identical(other.deckTheme, deckTheme) || other.deckTheme == deckTheme)&&(identical(other.altarTheme, altarTheme) || other.altarTheme == altarTheme)&&(identical(other.selectedInspectIndex, selectedInspectIndex) || other.selectedInspectIndex == selectedInspectIndex)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReadingState&&(identical(other.spreadType, spreadType) || other.spreadType == spreadType)&&(identical(other.question, question) || other.question == question)&&const DeepCollectionEquality().equals(other.drawnCards, _drawnCards)&&const DeepCollectionEquality().equals(other.revealedIndices, _revealedIndices)&&(identical(other.isShuffling, isShuffling) || other.isShuffling == isShuffling)&&(identical(other.isDealing, isDealing) || other.isDealing == isDealing)&&(identical(other.isConsultingOracle, isConsultingOracle) || other.isConsultingOracle == isConsultingOracle)&&(identical(other.isAskingFollowUp, isAskingFollowUp) || other.isAskingFollowUp == isAskingFollowUp)&&(identical(other.currentReading, currentReading) || other.currentReading == currentReading)&&const DeepCollectionEquality().equals(other.history, _history)&&const DeepCollectionEquality().equals(other.conversationHistory, _conversationHistory)&&(identical(other.deckTheme, deckTheme) || other.deckTheme == deckTheme)&&(identical(other.altarTheme, altarTheme) || other.altarTheme == altarTheme)&&(identical(other.selectedInspectIndex, selectedInspectIndex) || other.selectedInspectIndex == selectedInspectIndex)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.synastryPartner, synastryPartner) || other.synastryPartner == synastryPartner));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,spreadType,question,const DeepCollectionEquality().hash(_drawnCards),const DeepCollectionEquality().hash(_revealedIndices),isShuffling,isDealing,isConsultingOracle,isAskingFollowUp,currentReading,const DeepCollectionEquality().hash(_history),const DeepCollectionEquality().hash(_conversationHistory),deckTheme,altarTheme,selectedInspectIndex,errorMessage);
+    return Object.hash(runtimeType,spreadType,question,const DeepCollectionEquality().hash(_drawnCards),const DeepCollectionEquality().hash(_revealedIndices),isShuffling,isDealing,isConsultingOracle,isAskingFollowUp,currentReading,const DeepCollectionEquality().hash(_history),const DeepCollectionEquality().hash(_conversationHistory),deckTheme,altarTheme,selectedInspectIndex,errorMessage,synastryPartner);
 }
 
 @override
 String toString() {
-    return 'ReadingState(spreadType: $spreadType, question: $question, drawnCards: $drawnCards, revealedIndices: $revealedIndices, isShuffling: $isShuffling, isDealing: $isDealing, isConsultingOracle: $isConsultingOracle, isAskingFollowUp: $isAskingFollowUp, currentReading: $currentReading, history: $history, conversationHistory: $conversationHistory, deckTheme: $deckTheme, altarTheme: $altarTheme, selectedInspectIndex: $selectedInspectIndex, errorMessage: $errorMessage)';
+    return 'ReadingState(spreadType: $spreadType, question: $question, drawnCards: $drawnCards, revealedIndices: $revealedIndices, isShuffling: $isShuffling, isDealing: $isDealing, isConsultingOracle: $isConsultingOracle, isAskingFollowUp: $isAskingFollowUp, currentReading: $currentReading, history: $history, conversationHistory: $conversationHistory, deckTheme: $deckTheme, altarTheme: $altarTheme, selectedInspectIndex: $selectedInspectIndex, errorMessage: $errorMessage, synastryPartner: $synastryPartner)';
 }
 
 
@@ -313,7 +315,7 @@ abstract mixin class _$ReadingStateCopyWith<$Res> implements $ReadingStateCopyWi
   factory _$ReadingStateCopyWith(_ReadingState value, $Res Function(_ReadingState) _then) = __$ReadingStateCopyWithImpl;
 @override @useResult
 $Res call({
- SpreadType spreadType, String question, List<TarotCard> drawnCards, Set<int> revealedIndices, bool isShuffling, bool isDealing, bool isConsultingOracle, bool isAskingFollowUp, Reading? currentReading, List<Reading> history, List<OracleMessage> conversationHistory, TarotDeckTheme deckTheme, AltarTheme altarTheme, int? selectedInspectIndex, String? errorMessage
+ SpreadType spreadType, String question, List<TarotCard> drawnCards, Set<int> revealedIndices, bool isShuffling, bool isDealing, bool isConsultingOracle, bool isAskingFollowUp, Reading? currentReading, List<Reading> history, List<OracleMessage> conversationHistory, TarotDeckTheme deckTheme, AltarTheme altarTheme, int? selectedInspectIndex, String? errorMessage, SynastryPartner? synastryPartner
 });
 
 
@@ -330,7 +332,7 @@ class __$ReadingStateCopyWithImpl<$Res>
 
 /// Create a copy of ReadingState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? spreadType = null,Object? question = null,Object? drawnCards = null,Object? revealedIndices = null,Object? isShuffling = null,Object? isDealing = null,Object? isConsultingOracle = null,Object? isAskingFollowUp = null,Object? currentReading = freezed,Object? history = null,Object? conversationHistory = null,Object? deckTheme = null,Object? altarTheme = null,Object? selectedInspectIndex = freezed,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? spreadType = null,Object? question = null,Object? drawnCards = null,Object? revealedIndices = null,Object? isShuffling = null,Object? isDealing = null,Object? isConsultingOracle = null,Object? isAskingFollowUp = null,Object? currentReading = freezed,Object? history = null,Object? conversationHistory = null,Object? deckTheme = null,Object? altarTheme = null,Object? selectedInspectIndex = freezed,Object? errorMessage = freezed,Object? synastryPartner = freezed,}) {
   return _then(_ReadingState(
 spreadType: null == spreadType ? _self.spreadType : spreadType // ignore: cast_nullable_to_non_nullable
 as SpreadType,question: null == question ? _self.question : question // ignore: cast_nullable_to_non_nullable
@@ -347,7 +349,8 @@ as List<OracleMessage>,deckTheme: null == deckTheme ? _self.deckTheme : deckThem
 as TarotDeckTheme,altarTheme: null == altarTheme ? _self.altarTheme : altarTheme // ignore: cast_nullable_to_non_nullable
 as AltarTheme,selectedInspectIndex: freezed == selectedInspectIndex ? _self.selectedInspectIndex : selectedInspectIndex // ignore: cast_nullable_to_non_nullable
 as int?,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,synastryPartner: freezed == synastryPartner ? _self.synastryPartner : synastryPartner // ignore: cast_nullable_to_non_nullable
+as SynastryPartner?,
   ));
 }
 

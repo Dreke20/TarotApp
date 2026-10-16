@@ -19,11 +19,14 @@ class AppColors {
   // Whispers & Warnings Metallic Golds & Candle Embers
   static const Color goldBright = Color(0xFFF3DEAB); // Radiant Champagne Gold
   static const Color goldMetallic = Color(0xFFD4AF37); // True Imperial Metallic Gold
+  static const Color goldAccent = Color(0xFFD4AF37); // Imperial Gold Accent
   static const Color goldMuted = Color(0xFFC5A059); // Warm Antique Foil Gold
   static const Color goldDark = Color(0xFF7A5C28); // Deep Bronze Shadow
   static const Color goldCandle = Color(0xFFFFAE42); // Warm Candlelight Amber Glow
   static const Color starlightCyan = Color(0xFFF6E8C3); // Soft Celestial Starlight Ivory
   static const Color etherealLavender = Color(0xFFC5A059); // Harmonized to Antique Gold
+  static const Color backgroundDark = Color(0xFF030304);
+  static const Color cardSurface = Color(0xFF17151D);
 
   // Card & Element Accents (Enriched to fit the dark luxury occult palette)
   static const Color fireAccent = Color(0xFFFF7A59); // Candle flame crimson

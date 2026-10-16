@@ -288,6 +288,33 @@ class TarotRepository {
           'The alchemy between these three forces shows a clear movement from releasing past conditioning into reclaiming authentic mastery.';
       advice =
           'Integrate the lesson of ${past.name} so you do not repeat old loops. Meet the challenge of ${present.name} with clarity, and keep your vision anchored in ${future.name}.';
+    } else if (spreadType == SpreadType.heartOfTwo && cards.length >= 5) {
+      final seekerCard = cards[0];
+      final partnerCard = cards[1];
+      final nexusCard = cards[2];
+      final lessonCard = cards[3];
+      final horizonCard = cards[4];
+      final partnerName = astrologyInfo?['partner_name'] ?? 'Your Counterpart';
+      final partnerSun = astrologyInfo?['partner_sun'] ?? 'Cosmic Counterpart';
+      final connectionType = astrologyInfo?['connection_type'] ?? 'Soulmate Bond';
+
+      summary =
+          'Cosmic Synastry Mirror ($connectionType): $sunSign and $partnerSun unite through the alchemy of ${nexusCard.name}, culminating in ${horizonCard.name}.';
+      narrative =
+          '✦ COSMIC SYNASTRY & RELATIONSHIP MIRROR ✦\n\n'
+          'Seeking guidance for the sacred connection between you ($sunSign) and $partnerName ($partnerSun) anchored in a $connectionType:\n\n'
+          '• Your Emotional Core (I): ${seekerCard.name} (${seekerCard.isReversed ? "Reversed" : "Upright"})\n'
+          '${seekerCard.isReversed ? seekerCard.meaningReversed : seekerCard.meaningUpright}\n\n'
+          '• Their Energetic Presence (II): ${partnerCard.name} (${partnerCard.isReversed ? "Reversed" : "Upright"})\n'
+          '${partnerCard.isReversed ? partnerCard.meaningReversed : partnerCard.meaningUpright}\n\n'
+          '• The Relational Nexus (III): ${nexusCard.name} (${nexusCard.isReversed ? "Reversed" : "Upright"})\n'
+          'The magnetic center pulling both souls together: ${nexusCard.isReversed ? nexusCard.meaningReversed : nexusCard.meaningUpright}\n\n'
+          '• Sacred Lesson & Growth Crucible (IV): ${lessonCard.name} (${lessonCard.isReversed ? "Reversed" : "Upright"})\n'
+          'Where ego surrenders to spiritual evolution: ${lessonCard.isReversed ? lessonCard.meaningReversed : lessonCard.meaningUpright}\n\n'
+          '• Highest Harmonious Horizon (V): ${horizonCard.name} (${horizonCard.isReversed ? "Reversed" : "Upright"})\n'
+          'The destiny and ultimate potential of this sacred alliance: ${horizonCard.isReversed ? horizonCard.meaningReversed : horizonCard.meaningUpright}';
+      advice =
+          'Honor $partnerName\'s journey through the lens of ${partnerCard.name}. Transcend the crucible of ${lessonCard.name} through vulnerability, and step fearlessly into ${horizonCard.name}.';
     } else {
       // 10-Card Celtic Cross synthesis
       summary =
