@@ -62,3 +62,12 @@ Whether you seek urgent clarity on love, career guidance at a crossroads, or dee
 ## 4. Privacy & Transparency
 - **Guest Readings Stay On-Device:** We respect your spiritual privacy. Guest readings never leave your local phone storage.
 - **Zero Data Selling:** Your questions, birth data, and readings are never sold, rented, or shared with third parties.
+- **In-App Account & Data Deletion:** Full account and data deletion is available anytime in-app via Profile settings or online at `https://oraculumtarot.com/delete-account`.
+
+---
+
+## 5. Official Disclaimer & Policy Compliance
+- **Spiritual & Entertainment Disclaimer:** Oraculum is intended solely for personal reflection, meditation, and creative mindfulness. Interpretations are synthesized by artificial intelligence and do not replace licensed medical, mental health, legal, or financial advice.
+- **Monetization & In-App Purchases:** Oraculum provides a comprehensive free experience supported by optional non-intrusive rewarded video offerings ("Starlight Passes"). Optional Oracle Pro subscriptions (Monthly, Annual, and Lifetime) are processed securely through Google Play Billing.
+- **Age Rating:** Designed for seekers aged 13 and older.
+

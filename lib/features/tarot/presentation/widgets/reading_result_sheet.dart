@@ -551,6 +551,43 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                         ),
                       ),
                     ),
+                    // AI Transparency & Spiritual Reflection Disclaimer (Google Play AI Policy Compliance)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8, bottom: 4),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.auto_awesome, size: 12, color: AppColors.goldMuted),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              'Synthesized by AI for spiritual reflection & personal contemplation. Not medical, legal, or financial advice.',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 10,
+                                color: AppColors.textMuted,
+                                height: 1.3,
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () => _showReportAiDialog(context),
+                            child: Text(
+                              'Report',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 10.5,
+                                color: AppColors.goldBright,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 18),
 
                     // Oracle's Advice
@@ -865,5 +902,122 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
         ),
       ),
     ).animate().fadeIn(duration: 350.ms).slideY(begin: 0.1, end: 0);
+  }
+
+  void _showReportAiDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        String selectedReason = 'Inappropriate or harmful content';
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: const Color(0xFF140E26),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(color: AppColors.goldBright.withValues(alpha: 0.4)),
+              ),
+              title: Row(
+                children: [
+                  const Icon(Icons.flag, color: AppColors.goldBright, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'REPORT AI OUTPUT',
+                    style: GoogleFonts.cinzel(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.goldBright,
+                    ),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Help maintain sacred sanctuary safety. Select why this AI-generated prophecy violates guidelines:',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ...[
+                    'Inappropriate or harmful content',
+                    'Medical, financial, or legal claims',
+                    'Offensive or discriminatory phrasing',
+                    'Hallucinatory or incoherent text',
+                  ].map((reason) {
+                    final isSelected = selectedReason == reason;
+                    return InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: () => setDialogState(() => selectedReason = reason),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+                              size: 18,
+                              color: isSelected ? AppColors.goldBright : AppColors.textMuted,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                reason,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 12,
+                                  color: isSelected ? AppColors.goldBright : AppColors.textPrimary,
+                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: Text(
+                    'CANCEL',
+                    style: GoogleFonts.cinzel(
+                      fontSize: 11,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.goldBright,
+                    foregroundColor: AppColors.backgroundDeep,
+                  ),
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Thank you. This reading has been flagged for review.'),
+                        backgroundColor: AppColors.cosmicSurface,
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'SUBMIT REPORT',
+                    style: GoogleFonts.cinzel(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 }

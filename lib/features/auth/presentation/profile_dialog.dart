@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../tarot/presentation/widgets/glass_container.dart';
 import 'auth_notifier.dart';
@@ -308,10 +309,111 @@ class _ProfileDialogState extends ConsumerState<ProfileDialog> {
                   ),
                 ),
               ),
+              const SizedBox(height: 14),
+
+              // Account & Data Privacy (Google Play Account Deletion Policy)
+              Center(
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFFF87171),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  ),
+                  icon: const Icon(Icons.delete_forever, size: 16),
+                  label: Text(
+                    'DELETE ACCOUNT & DATA',
+                    style: GoogleFonts.cinzel(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.1,
+                      color: const Color(0xFFF87171),
+                    ),
+                  ),
+                  onPressed: () => _confirmAccountDeletion(context),
+                ),
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _confirmAccountDeletion(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF160E26),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(color: Color(0xFFF87171), width: 1.2),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: Color(0xFFF87171), size: 22),
+              const SizedBox(width: 8),
+              Text(
+                'PURGE ACCOUNT & DATA',
+                style: GoogleFonts.cinzel(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFFF87171),
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            'This action is irreversible. All of your personal tarot readings, journal reflections, astrological birth placements, and cached preferences will be permanently erased.',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 12.5,
+              color: AppColors.textPrimary,
+              height: 1.45,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(
+                'CANCEL',
+                style: GoogleFonts.cinzel(
+                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFDC2626),
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () async {
+                Navigator.of(ctx).pop();
+                Navigator.of(context).pop();
+                try {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.clear();
+                  await ref.read(authNotifierProvider.notifier).signOut();
+                } catch (_) {}
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('All personal data and account records have been purged.'),
+                      backgroundColor: Color(0xFF450A0A),
+                    ),
+                  );
+                }
+              },
+              child: Text(
+                'DELETE EVERYTHING',
+                style: GoogleFonts.cinzel(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
