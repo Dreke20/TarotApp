@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:flutter/services.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/services/celestial_voice_service.dart';
 import '../../data/tarot_card_data.dart';
 import '../../domain/tarot_card.dart';
 import '../notifiers/reading_notifier.dart';
@@ -211,6 +213,78 @@ class _TarotCodexScreenState extends ConsumerState<TarotCodexScreen> {
                           ),
                           const SizedBox(height: 18),
 
+                          // Spoken Card Wisdom Bar
+                          StatefulBuilder(
+                            builder: (context, setModalState) {
+                              final voice = CelestialVoiceService.instance;
+                              final isSpeaking = voice.isPlaying;
+                              return GestureDetector(
+                                onTap: () async {
+                                  HapticFeedback.lightImpact();
+                                  if (voice.isPlaying) {
+                                    await voice.stop();
+                                    setModalState(() {});
+                                  } else {
+                                    voice.onStarted = () {
+                                      if (context.mounted) setModalState(() {});
+                                    };
+                                    voice.onStopped = () {
+                                      if (context.mounted) setModalState(() {});
+                                    };
+                                    final text =
+                                        '${card.name}. Arcana: ${card.arcana}. Element: ${card.element ?? "Cosmic"}. Upright wisdom: ${card.meaningUpright}. Inverted wisdom: ${card.meaningReversed}.';
+                                    await voice.speak(text);
+                                  }
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 14, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: isSpeaking
+                                        ? AppColors.goldBright.withValues(alpha: 0.15)
+                                        : AppColors.glassFillStrong,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: isSpeaking
+                                          ? AppColors.goldBright
+                                          : AppColors.goldMuted.withValues(alpha: 0.4),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        isSpeaking
+                                            ? Icons.volume_up
+                                            : Icons.record_voice_over,
+                                        color: isSpeaking
+                                            ? AppColors.goldBright
+                                            : AppColors.textSecondary,
+                                        size: 16,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        isSpeaking
+                                            ? 'CHANNELING WISDOM...'
+                                            : 'SPEAK CARD WISDOM',
+                                        style: GoogleFonts.cinzel(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                          color: isSpeaking
+                                              ? AppColors.goldBright
+                                              : AppColors.textPrimary,
+                                          letterSpacing: 1.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 14),
+
                           // Upright Meaning Section
                           _buildMeaningBlock(
                             title: 'UPRIGHT PROPHECY',
@@ -237,7 +311,7 @@ class _TarotCodexScreenState extends ConsumerState<TarotCodexScreen> {
           ),
         );
       },
-    );
+    ).whenComplete(() => CelestialVoiceService.instance.stop());
   }
 
   Widget _buildMeaningBlock({
