@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tarot_app/core/services/storage_service.dart';
+import 'package:tarot_app/core/services/prompt_sanitizer_service.dart';
 import 'package:tarot_app/core/supabase/supabase_config.dart';
 import 'package:uuid/uuid.dart';
 import '../domain/oracle_message.dart';
@@ -27,9 +28,12 @@ class TarotRepository {
     required List<TarotCard> drawnCards,
     Map<String, String>? astrologyInfo,
   }) async {
+    final cleanQuestion = PromptSanitizerService.sanitizeQuestion(
+      question.trim().isEmpty ? 'Daily Cosmic Guidance' : question.trim(),
+    );
+
     final payload = {
-      'user_question':
-          question.trim().isEmpty ? 'Daily Cosmic Guidance' : question.trim(),
+      'user_question': cleanQuestion,
       'spread_type': spreadType.title,
       'seeker_astrology': astrologyInfo,
       'drawn_cards': drawnCards
@@ -80,8 +84,10 @@ class TarotRepository {
     required String userQuestion,
     required List<OracleMessage> conversationHistory,
   }) async {
+    final cleanFollowUp = PromptSanitizerService.sanitizeFollowUp(userQuestion);
+
     final payload = {
-      'follow_up_prompt': userQuestion,
+      'follow_up_prompt': cleanFollowUp,
       'user_question': reading.question,
       'spread_type': reading.spreadType,
       'drawn_cards': reading.cards.map((c) => c.name).toList(),

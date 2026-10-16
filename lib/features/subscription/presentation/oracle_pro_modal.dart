@@ -165,7 +165,45 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 18),
+                    // Social Proof Trust Badge
+                    Container(
+                      margin: const EdgeInsets.only(top: 10, bottom: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                      decoration: BoxDecoration(
+                        color: AppColors.goldMuted.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.goldBright.withValues(alpha: 0.28),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            children: List.generate(
+                              5,
+                              (index) => const Icon(
+                                Icons.star_rounded,
+                                color: AppColors.goldBright,
+                                size: 14,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '4.9/5 RATING · 15,000+ SEEKERS WORLDWIDE',
+                            style: GoogleFonts.cinzel(
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.goldBright,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 14),
 
                     // Feature highlights
                     _buildFeatureRow(
@@ -195,24 +233,34 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                     ),
                     const SizedBox(height: 18),
 
-                    // Plan selection cards with dynamic localized store prices
+                    // Featured Annual Plan Card (with 3-day Free Trial)
+                    _buildFeaturedAnnualCard(
+                      price: subState.priceFor(SubscriptionPlan.yearly),
+                      isSelected: subState.selectedPlan == SubscriptionPlan.yearly,
+                      onTap: () => subNotifier.selectPlan(SubscriptionPlan.yearly),
+                    ),
+                    const SizedBox(height: 10),
+
+                    // Monthly & Lifetime cards
                     Row(
                       children: [
                         Expanded(
                           child: _buildPlanCard(
-                            plan: SubscriptionPlan.yearly,
-                            price: subState.priceFor(SubscriptionPlan.yearly),
-                            isSelected: subState.selectedPlan == SubscriptionPlan.yearly,
-                            onTap: () => subNotifier.selectPlan(SubscriptionPlan.yearly),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildPlanCard(
                             plan: SubscriptionPlan.monthly,
                             price: subState.priceFor(SubscriptionPlan.monthly),
+                            badgeText: 'FLEXIBLE',
                             isSelected: subState.selectedPlan == SubscriptionPlan.monthly,
                             onTap: () => subNotifier.selectPlan(SubscriptionPlan.monthly),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _buildPlanCard(
+                            plan: SubscriptionPlan.lifetime,
+                            price: subState.priceFor(SubscriptionPlan.lifetime),
+                            badgeText: 'ONE-TIME',
+                            isSelected: subState.selectedPlan == SubscriptionPlan.lifetime,
+                            onTap: () => subNotifier.selectPlan(SubscriptionPlan.lifetime),
                           ),
                         ),
                       ],
@@ -349,18 +397,32 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                           ),
                         )
                       : Text(
-                          '✦ UPGRADE TO ORACLE PRO ✦',
+                          _getPlanButtonLabel(subState.selectedPlan),
+                          textAlign: TextAlign.center,
                           style: GoogleFonts.cinzel(
-                            fontSize: 12.5,
+                            fontSize: 12.0,
                             fontWeight: FontWeight.w800,
-                            letterSpacing: 1.5,
+                            letterSpacing: 1.2,
                             color: const Color(0xFF09080C),
                           ),
                         ),
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
+            Text(
+              subState.selectedPlan == SubscriptionPlan.yearly
+                  ? 'Includes 3-day free trial. Cancel anytime in Google Play.'
+                  : subState.selectedPlan == SubscriptionPlan.lifetime
+                      ? 'One-time investment. All future updates included forever.'
+                      : 'Monthly subscription. Cancel anytime in Google Play.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 9.5,
+                color: AppColors.textMuted,
+              ),
+            ),
+            const SizedBox(height: 4),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -403,6 +465,17 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
         ),
       ),
     );
+  }
+
+  String _getPlanButtonLabel(SubscriptionPlan plan) {
+    switch (plan) {
+      case SubscriptionPlan.yearly:
+        return '✦ START 3-DAY FREE TRIAL & UPGRADE ✦';
+      case SubscriptionPlan.lifetime:
+        return '✦ UNLOCK LIFETIME ACCESS ✦';
+      case SubscriptionPlan.monthly:
+        return '✦ SUBSCRIBE TO ORACLE PRO ✦';
+    }
   }
 
   Widget _buildFeatureRow({
@@ -453,9 +526,138 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
     );
   }
 
+  Widget _buildFeaturedAnnualCard({
+    required String price,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.cosmicSurface : AppColors.glassFill,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? AppColors.goldBright : AppColors.glassBorder,
+            width: isSelected ? 2.0 : 1.0,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.goldBright.withValues(alpha: 0.2),
+                    blurRadius: 14,
+                    spreadRadius: 1,
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+                        decoration: BoxDecoration(
+                          gradient: AppColors.goldButtonGradient,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Text(
+                          'SAVE 50%',
+                          style: GoogleFonts.cinzel(
+                            fontSize: 8.5,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF09080C),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+                        decoration: BoxDecoration(
+                          color: AppColors.etherealLavender.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                            color: AppColors.etherealLavender.withValues(alpha: 0.5),
+                            width: 0.8,
+                          ),
+                        ),
+                        child: Text(
+                          '3-DAY FREE TRIAL',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 8.5,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.etherealLavender,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 7),
+                  Text(
+                    'ANNUAL SANCTUARY',
+                    style: GoogleFonts.cinzel(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? AppColors.goldBright : AppColors.textPrimary,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Only \$2.50/month · Cancel anytime',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 10,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  price,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected ? AppColors.goldBright : AppColors.textMuted,
+                      width: 1.8,
+                    ),
+                    color: isSelected ? AppColors.goldBright : Colors.transparent,
+                  ),
+                  child: isSelected
+                      ? const Icon(Icons.check, size: 13, color: Color(0xFF09080C))
+                      : null,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildPlanCard({
     required SubscriptionPlan plan,
     required String price,
+    required String? badgeText,
     required bool isSelected,
     required VoidCallback onTap,
   }) {
@@ -468,29 +670,59 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isSelected ? AppColors.goldBright : AppColors.glassBorder,
-            width: isSelected ? 1.5 : 1,
+            width: isSelected ? 1.6 : 1,
           ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.goldBright.withValues(alpha: 0.12),
+                    blurRadius: 10,
+                  ),
+                ]
+              : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (plan.savings != null)
-              Container(
-                margin: const EdgeInsets.only(bottom: 6),
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.goldBright,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  plan.savings!,
-                  style: GoogleFonts.cinzel(
-                    fontSize: 8,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.backgroundDeep,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (badgeText != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.goldBright : AppColors.glassBorder,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      badgeText,
+                      style: GoogleFonts.cinzel(
+                        fontSize: 7.5,
+                        fontWeight: FontWeight.bold,
+                        color: isSelected ? AppColors.backgroundDeep : AppColors.textSecondary,
+                      ),
+                    ),
+                  )
+                else
+                  const SizedBox(height: 14),
+                Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected ? AppColors.goldBright : AppColors.textMuted,
+                      width: 1.5,
+                    ),
+                    color: isSelected ? AppColors.goldBright : Colors.transparent,
                   ),
+                  child: isSelected
+                      ? const Icon(Icons.check, size: 11, color: Color(0xFF09080C))
+                      : null,
                 ),
-              ),
+              ],
+            ),
+            const SizedBox(height: 6),
             Text(
               plan.title,
               style: GoogleFonts.cinzel(
@@ -499,11 +731,11 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                 color: isSelected ? AppColors.goldBright : AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 3),
             Text(
               price,
               style: GoogleFonts.plusJakartaSans(
-                fontSize: 13,
+                fontSize: 12.5,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
               ),

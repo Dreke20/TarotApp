@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/services/admob_service.dart';
+import '../../../core/services/encrypted_vault_storage.dart';
 import 'monetization_state.dart';
 
 export 'monetization_state.dart';
@@ -20,9 +20,8 @@ class MonetizationNotifier extends _$MonetizationNotifier {
 
   Future<void> _loadPersistedTokens() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final tokens = prefs.getInt(_prefStarlightTokens) ?? 0;
-      final offerings = prefs.getInt(_prefTotalOfferings) ?? 0;
+      final tokens = await EncryptedVaultStorage.instance.getSignedInt(_prefStarlightTokens);
+      final offerings = await EncryptedVaultStorage.instance.getSignedInt(_prefTotalOfferings);
       state = state.copyWith(
         starlightPassTokens: tokens,
         totalOfferingsMade: offerings,
@@ -36,8 +35,7 @@ class MonetizationNotifier extends _$MonetizationNotifier {
     final updatedTokens = state.starlightPassTokens - 1;
     state = state.copyWith(starlightPassTokens: updatedTokens);
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt(_prefStarlightTokens, updatedTokens);
+      await EncryptedVaultStorage.instance.setSignedInt(_prefStarlightTokens, updatedTokens);
     } catch (_) {}
     return true;
   }
@@ -66,9 +64,8 @@ class MonetizationNotifier extends _$MonetizationNotifier {
         message: '✦ Celestial Starlight Received! 1 Sacred Pass added to your inventory. ✦',
       );
       try {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setInt(_prefStarlightTokens, newTokens);
-        await prefs.setInt(_prefTotalOfferings, newOfferings);
+        await EncryptedVaultStorage.instance.setSignedInt(_prefStarlightTokens, newTokens);
+        await EncryptedVaultStorage.instance.setSignedInt(_prefTotalOfferings, newOfferings);
       } catch (_) {}
       return true;
     } else {
@@ -78,6 +75,18 @@ class MonetizationNotifier extends _$MonetizationNotifier {
       );
       return false;
     }
+  }
+
+  /// Grants bonus Starlight Pass tokens for maintaining daily devotion streaks
+  Future<void> grantStreakBonus(int bonusCount) async {
+    final updatedTokens = state.starlightPassTokens + bonusCount;
+    state = state.copyWith(
+      starlightPassTokens: updatedTokens,
+      message: '✦ Daily Devotion Honored! $bonusCount Sacred Starlight Passes granted. ✦',
+    );
+    try {
+      await EncryptedVaultStorage.instance.setSignedInt(_prefStarlightTokens, updatedTokens);
+    } catch (_) {}
   }
 
   /// Evaluates and presents a post-reading interstitial ad if cooldown & frequency criteria match.

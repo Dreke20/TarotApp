@@ -13,6 +13,7 @@ import '../../domain/synastry_partner.dart';
 import '../../domain/tarot_card.dart';
 import '../../domain/tarot_deck_theme.dart';
 import '../../services/tarot_widget_service.dart';
+import '../../../monetization/presentation/monetization_notifier.dart';
 import 'reading_state.dart';
 
 part 'reading_notifier.g.dart';
@@ -229,8 +230,11 @@ class ReadingNotifier extends _$ReadingNotifier {
         history: updatedHistory,
       );
 
-      await StreakService.recordReadingToday();
+      final newStreak = await StreakService.recordReadingToday();
       ref.invalidate(streakProvider);
+      if (newStreak == 3 || newStreak == 7 || newStreak == 14 || newStreak == 30) {
+        ref.read(monetizationProvider.notifier).grantStreakBonus(2);
+      }
 
       // Synchronize newly drawn card to Android home screen widget
       if (state.drawnCards.isNotEmpty) {

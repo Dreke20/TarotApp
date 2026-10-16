@@ -75,7 +75,7 @@ class SubscriptionNotifier extends _$SubscriptionNotifier {
       }
 
       // Fallback: direct server verification (e.g. testing / sandbox / desktop / web)
-      final planName = state.selectedPlan == SubscriptionPlan.yearly ? 'yearly' : 'monthly';
+      final planName = state.selectedPlan.name;
       final success = await ref.read(authNotifierProvider.notifier).activatePro(
             action: 'subscribe',
             plan: planName,
@@ -162,7 +162,7 @@ class SubscriptionNotifier extends _$SubscriptionNotifier {
   Future<bool> _handleServerVerification(PurchaseDetails purchase, SubscriptionPlan plan) async {
     final receipt = purchase.verificationData.serverVerificationData;
     final source = purchase.verificationData.source;
-    final planName = plan == SubscriptionPlan.yearly ? 'yearly' : 'monthly';
+    final planName = plan.name;
 
     final verified = await ref.read(authNotifierProvider.notifier).activatePro(
           action: 'subscribe',
