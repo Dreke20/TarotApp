@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../../core/services/review_service.dart';
 import '../../../../core/services/sensory_service.dart';
 import '../../../../core/services/streak_service.dart';
 import '../../../../core/supabase/supabase_client.dart';
@@ -259,6 +260,9 @@ class ReadingNotifier extends _$ReadingNotifier {
       if (newStreak == 3 || newStreak == 7 || newStreak == 14 || newStreak == 30) {
         ref.read(monetizationProvider.notifier).grantStreakBonus(2);
       }
+
+      // Check for respectful in-app review prompt on milestone satisfaction
+      await ReviewService.instance.checkAndPromptForReview(streak: newStreak);
 
       // Synchronize newly drawn card to Android home screen widget
       if (state.drawnCards.isNotEmpty) {

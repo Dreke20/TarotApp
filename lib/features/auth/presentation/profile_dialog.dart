@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/services/sensory_service.dart';
+import '../../tarot/data/tarot_repository.dart';
 import '../../tarot/presentation/widgets/glass_container.dart';
 import 'auth_notifier.dart';
 
@@ -45,6 +48,7 @@ class _ProfileDialogState extends ConsumerState<ProfileDialog> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
     final profile = authState.profile;
+    final sensorySettings = ref.watch(sensorySettingsProvider);
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -269,6 +273,50 @@ class _ProfileDialogState extends ConsumerState<ProfileDialog> {
                   ],
                 ),
               ),
+              const SizedBox(height: 18),
+
+              // Sensory Resonance (Haptics & SFX Persistence)
+              Text(
+                'SENSORY RESONANCE',
+                style: GoogleFonts.cinzel(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.goldBright,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.glassFillStrong,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.glassBorder),
+                ),
+                child: Column(
+                  children: [
+                    _buildSwitchRow(
+                      icon: Icons.vibration,
+                      title: 'Haptic Vibrations',
+                      subtitle: 'Tactile pulses for card flips & rituals',
+                      value: sensorySettings.hapticsEnabled,
+                      onChanged: (val) => ref
+                          .read(sensorySettingsProvider.notifier)
+                          .setHapticsEnabled(val),
+                    ),
+                    const Divider(color: AppColors.glassBorder, height: 6),
+                    _buildSwitchRow(
+                      icon: Icons.volume_up_outlined,
+                      title: 'Sound Effects',
+                      subtitle: 'Sacred audio cues & celestial chimes',
+                      value: sensorySettings.soundEnabled,
+                      onChanged: (val) => ref
+                          .read(sensorySettingsProvider.notifier)
+                          .setSoundEnabled(val),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 22),
 
               // Save Placements Button
@@ -309,7 +357,29 @@ class _ProfileDialogState extends ConsumerState<ProfileDialog> {
                   ),
                 ),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 12),
+
+              // Sacred Journal Export (GDPR Art. 20 Data Portability)
+              Center(
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.goldBright,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  ),
+                  icon: const Icon(Icons.file_download_outlined, size: 16, color: AppColors.goldBright),
+                  label: Text(
+                    'EXPORT SACRED JOURNAL (JSON)',
+                    style: GoogleFonts.cinzel(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.1,
+                      color: AppColors.goldBright,
+                    ),
+                  ),
+                  onPressed: () => _exportSacredJournal(context),
+                ),
+              ),
+              const SizedBox(height: 8),
 
               // Account & Data Privacy (Google Play Account Deletion Policy)
               Center(
@@ -467,5 +537,78 @@ class _ProfileDialogState extends ConsumerState<ProfileDialog> {
         ),
       ],
     );
+  }
+
+  Widget _buildSwitchRow({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: AppColors.goldBright, size: 18),
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 9.5,
+                      color: AppColors.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Switch(
+            value: value,
+            activeThumbColor: AppColors.goldBright,
+            activeTrackColor: AppColors.goldBright.withValues(alpha: 0.35),
+            inactiveThumbColor: AppColors.textMuted,
+            inactiveTrackColor: AppColors.cosmicSurface,
+            onChanged: onChanged,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _exportSacredJournal(BuildContext context) async {
+    try {
+      final jsonString =
+          await ref.read(tarotRepositoryProvider).exportSacredJournalAsJson();
+      await SharePlus.instance.share(
+        ShareParams(
+          text: jsonString,
+          subject: 'Sacred Tarot Journal Export',
+        ),
+      );
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to export journal: $e'),
+            backgroundColor: AppColors.cosmicSurface,
+          ),
+        );
+      }
+    }
   }
 }

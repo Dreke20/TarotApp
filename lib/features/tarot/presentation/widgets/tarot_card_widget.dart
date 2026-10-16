@@ -223,10 +223,11 @@ class _TarotCardWidgetState extends State<TarotCardWidget>
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // 1. High-resolution card artwork with seamless procedural fallback
+              // 1. High-resolution card artwork with seamless procedural fallback and GPU memory cache sizing
               Image.asset(
                 cardAsset,
                 fit: BoxFit.cover,
+                cacheWidth: (widget.width * MediaQuery.devicePixelRatioOf(context)).round().clamp(200, 1024),
                 errorBuilder: (context, error, stackTrace) {
                   return _buildProceduralCardFront(card, isReversed);
                 },

@@ -1,5 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'ambient_soundscape_service.g.dart';
@@ -69,6 +69,8 @@ class AmbientAudioState {
 @Riverpod(keepAlive: true)
 class AmbientAudioNotifier extends _$AmbientAudioNotifier {
   final AudioPlayer _player = AudioPlayer();
+  AppLifecycleListener? _lifecycleListener;
+  bool _wasPlayingBeforePause = false;
 
   @override
   AmbientAudioState build() {
@@ -76,8 +78,28 @@ class AmbientAudioNotifier extends _$AmbientAudioNotifier {
       _player.setReleaseMode(ReleaseMode.loop);
     } catch (_) {}
 
+    _lifecycleListener = AppLifecycleListener(
+      onPause: () {
+        if (state.isPlaying) {
+          _wasPlayingBeforePause = true;
+          try {
+            _player.pause();
+          } catch (_) {}
+        }
+      },
+      onResume: () {
+        if (_wasPlayingBeforePause && state.isPlaying) {
+          _wasPlayingBeforePause = false;
+          try {
+            _player.resume();
+          } catch (_) {}
+        }
+      },
+    );
+
     ref.onDispose(() {
       try {
+        _lifecycleListener?.dispose();
         _player.dispose();
       } catch (_) {}
     });
@@ -85,6 +107,7 @@ class AmbientAudioNotifier extends _$AmbientAudioNotifier {
   }
 
   Future<void> togglePlay() async {
+    _wasPlayingBeforePause = false;
     if (state.isPlaying) {
       try {
         await _player.pause();

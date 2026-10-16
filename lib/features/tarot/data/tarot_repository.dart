@@ -630,4 +630,18 @@ class TarotRepository {
       'trajectory': 'The next moon cycle invites decisive manifestation anchored in self-trust.',
     };
   }
+
+  /// Exports all past readings, reflections, and scrying notes as a formatted JSON document.
+  /// Complies with GDPR Article 20 data portability standards and gives the seeker full ownership.
+  Future<String> exportSacredJournalAsJson({String? userId}) async {
+    final history = await getReadingHistory(userId: userId);
+    final exportData = <String, dynamic>{
+      'sacred_archive_title': 'Tarot App Sacred Journal & Divination History',
+      'exported_at_utc': DateTime.now().toUtc().toIso8601String(),
+      'app_version': '1.0.0+1',
+      'total_readings': history.length,
+      'readings': history.map((r) => r.toJson()).toList(),
+    };
+    return const JsonEncoder.withIndent('  ').convert(exportData);
+  }
 }

@@ -11,6 +11,7 @@ import 'core/supabase/supabase_config.dart';
 import 'features/onboarding/presentation/screens/sacred_initiation_screen.dart';
 import 'features/tarot/presentation/screens/tarot_table_screen.dart';
 import 'features/tarot/services/tarot_widget_service.dart';
+import 'core/services/sensory_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,6 +62,13 @@ Future<void> main() async {
     await widgetService.updateHomeScreenWidget();
   } catch (e) {
     debugPrint('Home widget initialization note: $e');
+  }
+
+  // Initialize sensory settings (haptics and sound preferences)
+  try {
+    await SensoryService.init();
+  } catch (e) {
+    debugPrint('Sensory initialization note: $e');
   }
 
   // Check if seeker has completed the Sacred Initiation ritual

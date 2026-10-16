@@ -1,18 +1,101 @@
 import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'sensory_service.g.dart';
 
-class SensoryService {
-  static final SensoryService instance = SensoryService();
+class SensorySettings {
+  final bool soundEnabled;
+  final bool hapticsEnabled;
 
-  bool soundEnabled;
-  bool hapticsEnabled;
-
-  SensoryService({
+  const SensorySettings({
     this.soundEnabled = true,
     this.hapticsEnabled = true,
   });
+
+  SensorySettings copyWith({
+    bool? soundEnabled,
+    bool? hapticsEnabled,
+  }) {
+    return SensorySettings(
+      soundEnabled: soundEnabled ?? this.soundEnabled,
+      hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
+    );
+  }
+}
+
+@Riverpod(keepAlive: true)
+class SensorySettingsNotifier extends _$SensorySettingsNotifier {
+  static const String _kSoundKey = 'sensory_sound_enabled';
+  static const String _kHapticsKey = 'sensory_haptics_enabled';
+
+  @override
+  SensorySettings build() {
+    _loadFromStorage();
+    return SensorySettings(
+      soundEnabled: SensoryService.instance.soundEnabled,
+      hapticsEnabled: SensoryService.instance.hapticsEnabled,
+    );
+  }
+
+  Future<void> _loadFromStorage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final sound = prefs.getBool(_kSoundKey) ?? true;
+      final haptics = prefs.getBool(_kHapticsKey) ?? true;
+      SensoryService.instance.soundEnabled = sound;
+      SensoryService.instance.hapticsEnabled = haptics;
+      state = SensorySettings(soundEnabled: sound, hapticsEnabled: haptics);
+    } catch (_) {}
+  }
+
+  Future<void> toggleSound() async {
+    await setSoundEnabled(!state.soundEnabled);
+  }
+
+  Future<void> toggleHaptics() async {
+    await setHapticsEnabled(!state.hapticsEnabled);
+  }
+
+  Future<void> setSoundEnabled(bool enabled) async {
+    SensoryService.instance.soundEnabled = enabled;
+    state = state.copyWith(soundEnabled: enabled);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_kSoundKey, enabled);
+    } catch (_) {}
+  }
+
+  Future<void> setHapticsEnabled(bool enabled) async {
+    SensoryService.instance.hapticsEnabled = enabled;
+    state = state.copyWith(hapticsEnabled: enabled);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_kHapticsKey, enabled);
+    } catch (_) {}
+  }
+}
+
+class SensoryService {
+  static final SensoryService instance = SensoryService._internal();
+  factory SensoryService({bool? soundEnabled, bool? hapticsEnabled}) {
+    if (soundEnabled != null) instance.soundEnabled = soundEnabled;
+    if (hapticsEnabled != null) instance.hapticsEnabled = hapticsEnabled;
+    return instance;
+  }
+  SensoryService._internal();
+
+  bool soundEnabled = true;
+  bool hapticsEnabled = true;
+
+  /// Loads persisted settings at app initialization
+  static Future<void> init() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      instance.soundEnabled = prefs.getBool('sensory_sound_enabled') ?? true;
+      instance.hapticsEnabled = prefs.getBool('sensory_haptics_enabled') ?? true;
+    } catch (_) {}
+  }
 
   /// Haptic feedback when touching or selecting a card
   void cardSelectionHaptic() {
@@ -100,4 +183,4 @@ class SensoryService {
 }
 
 @Riverpod(keepAlive: true)
-SensoryService sensoryService(Ref ref) => SensoryService();
+SensoryService sensoryService(Ref ref) => SensoryService.instance;

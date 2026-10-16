@@ -9,6 +9,59 @@ part of 'sensory_service.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(SensorySettingsNotifier)
+final sensorySettingsProvider = SensorySettingsNotifierProvider._();
+
+final class SensorySettingsNotifierProvider
+    extends $NotifierProvider<SensorySettingsNotifier, SensorySettings> {
+  SensorySettingsNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'sensorySettingsProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$sensorySettingsNotifierHash();
+
+  @$internal
+  @override
+  SensorySettingsNotifier create() => SensorySettingsNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SensorySettings value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SensorySettings>(value),
+    );
+  }
+}
+
+String _$sensorySettingsNotifierHash() =>
+    r'c4e3a78c2d173766a904e975a5c1fefdeb4e5921';
+
+abstract class _$SensorySettingsNotifier extends $Notifier<SensorySettings> {
+  SensorySettings build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<SensorySettings, SensorySettings>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<SensorySettings, SensorySettings>,
+              SensorySettings,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(sensoryService)
 final sensoryServiceProvider = SensoryServiceProvider._();
 
@@ -48,4 +101,4 @@ final class SensoryServiceProvider
   }
 }
 
-String _$sensoryServiceHash() => r'3e2ce19878b31e96c171ca7dfadc4d4625b5d8da';
+String _$sensoryServiceHash() => r'c3282d5dcf815e944bcf7047edd51e2af42bfa3b';
