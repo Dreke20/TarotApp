@@ -147,8 +147,8 @@ timeline
    - [x] **Major Arcana (22/22 Complete ✅):** Full 22 Major Arcana cards in obsidian black frame with 24k antique gold filigree and Roman numeral medallions.
    - [x] **Suit of Wands (14/14 Complete ✅):** Ace through 10, Page, Knight, Queen, King depicting the sacred elemental fire of willpower, inspiration, and creative energy.
    - [x] **Suit of Cups (14/14 Complete ✅):** Ace through 10, Page, Knight, Queen, King capturing the fluid elemental water of intuition, emotional depths, romantic harmony, and spiritual chalices.
-   - [x] **Suit of Swords (11/14 Complete ⚔️):** Ace through 10 and Page of Swords complete, depicting the sharp elemental air of intellect, truth, sorrow, mental respite, and clarity before dawn. (Court cards: Knight, Queen, King pending next quota window).
-   - [ ] **Suit of Pentacles (0/14 Pending 🪙):** Elemental earth of material wealth, craftsmanship, manifestation, and heritage.
+   - [x] **Suit of Swords (11/14 Complete ⚔️):** Ace through 10 and Page of Swords complete, depicting the sharp elemental air of intellect, truth, sorrow, mental respite, and clarity before dawn. (Final 3 Court cards: Knight, Queen, King scheduled for batch generation when Gemini quota resets on Oct 20 at 06:17 UTC).
+   - [ ] **Suit of Pentacles (0/14 Pending 🪙):** Elemental earth of material wealth, craftsmanship, manifestation, and heritage. (Scheduled for batch generation on Oct 20 at 06:17 UTC alongside the remaining Swords court cards; full deck is currently 100% playable via procedural gold talisman rendering).
 
 9. **Android Home Screen / Glance Widget (Completed ✅):**
    - [x] **Native AppWidget Architecture:** Built [`OraculumWidgetProvider`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/android/app/src/main/kotlin/com/tarotapp/tarot_app/OraculumWidgetProvider.kt) with RemoteViews layout in luxury obsidian gradient and antique gold borders (`widget_bg.xml`, `widget_gold_badge.xml`, `widget_gold_button.xml`).
