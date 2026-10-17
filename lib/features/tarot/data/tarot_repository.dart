@@ -212,7 +212,19 @@ class TarotRepository {
       'follow_up_prompt': cleanFollowUp,
       'user_question': reading.question,
       'spread_type': reading.spreadType,
-      'drawn_cards': reading.cards.map((c) => c.name).toList(),
+      'drawn_cards': reading.cards
+          .map((c) => {
+                'name': c.name,
+                'arcana': c.arcana,
+                'is_reversed': c.isReversed,
+                'position_name': c.positionName,
+                'meaning_upright': c.meaningUpright,
+                'meaning_reversed': c.meaningReversed,
+              })
+          .toList(),
+      'reading_summary': reading.summary,
+      'reading_advice': reading.advice,
+      'reading_interpretation': reading.interpretation,
       'chat_history': conversationHistory
           .map((m) => {'role': m.role, 'content': m.content})
           .toList(),
@@ -238,7 +250,10 @@ class TarotRepository {
       }
     }
 
-    return 'Regarding "$userQuestion", the archetype of ${reading.cards.first.name} suggests looking inward at your unspoken expectations. Trust the stillness before you speak.';
+    final firstCard = reading.cards.isNotEmpty ? reading.cards.first : null;
+    final orient = (firstCard != null && firstCard.isReversed) ? 'Reversed' : 'Upright';
+    final cardName = firstCard?.name ?? 'The Mystic Oracle';
+    return 'In deep contemplation of "$cleanFollowUp", the archetype of $cardName ($orient) in your spread reminds you that outer turbulence reflects unintegrated inner expectations. ${reading.advice ?? "Ground your awareness in stillness"} and allow intuition to guide your discernment.';
   }
 
   /// Saves a completed reading to the Supabase 'readings' table and local cache.
@@ -255,6 +270,7 @@ class TarotRepository {
     List<String> scryingPrompts = const [],
     String? personaId,
     String? altarConsecration,
+    String? microRitual,
     String? userId,
   }) async {
     final newId = _uuid.v4();
@@ -276,6 +292,7 @@ class TarotRepository {
       scryingPrompts: scryingPrompts,
       personaId: personaId,
       altarConsecration: altarConsecration,
+      microRitual: microRitual,
       createdAt: now,
     );
 
@@ -299,6 +316,7 @@ class TarotRepository {
           'advice': reading.advice,
           'notes': reading.notes,
           'is_favorite': reading.isFavorite,
+          'micro_ritual': reading.microRitual,
           'created_at': reading.createdAt.toIso8601String(),
         });
       } catch (e) {
@@ -309,7 +327,24 @@ class TarotRepository {
     return reading;
   }
 
+  /// Completely purges all local and remote reading history and notes
+  Future<void> purgeAllUserData() async {
+    _localReadings.clear();
+    await _storage.saveReadings([]);
+    if (_supabase != null && SupabaseConfig.isConfigured) {
+      final user = _supabase.auth.currentUser;
+      if (user != null) {
+        try {
+          await _supabase.from('readings').delete().eq('user_id', user.id);
+        } catch (e) {
+          debugPrint('Supabase delete readings error: $e');
+        }
+      }
+    }
+  }
+
   /// Updates personal reflection notes for a reading
+
   Future<void> updateReadingNotes(String readingId, String notes) async {
     final index = _localReadings.indexWhere((r) => r.id == readingId);
     if (index != -1) {
@@ -482,7 +517,18 @@ class TarotRepository {
           'The destiny and ultimate potential of this sacred alliance: ${horizonCard.isReversed ? horizonCard.meaningReversed : horizonCard.meaningUpright}';
       advice =
           'Honor $partnerName\'s journey through the lens of ${partnerCard.name}. Transcend the crucible of ${lessonCard.name} through vulnerability, and step fearlessly into ${horizonCard.name}.';
-    } else {
+    } else if (cards.length == 2) {
+      final cardA = cards[0];
+      final cardB = cards[1];
+      summary =
+          'Polarity and dialogue between ${cardA.name} and ${cardB.name}: dual currents aligning for conscious clarity.';
+      narrative =
+          '$voicePrefix\n\nYour inquiry—"${question.trim().isEmpty ? "Dual Currents" : question}"—activates a binary field of energy:\n\n'
+          '• Primary Current: ${cardA.name} (${cardA.isReversed ? "Reversed" : "Upright"}). ${cardA.isReversed ? cardA.meaningReversed : cardA.meaningUpright}\n\n'
+          '• Complementary Horizon: ${cardB.name} (${cardB.isReversed ? "Reversed" : "Upright"}). ${cardB.isReversed ? cardB.meaningReversed : cardB.meaningUpright}';
+      advice =
+          'Balance the impulse of ${cardA.name} with the receptive wisdom of ${cardB.name}.';
+    } else if (cards.length >= 10) {
       // 10-Card Celtic Cross synthesis
       summary =
           'The Celtic Cross reveals a sacred matrix of transformation: present tensions are catalysts for profound spiritual sovereignty.';
@@ -492,7 +538,43 @@ class TarotRepository {
           'Above you, the crown potential is anchored in ${cards[4].name}, with the near future illuminated by ${cards[5].name}. Your inner self embodies the truth of ${cards[6].name}, responding to external forces of ${cards[7].name}. Between the secret hopes of ${cards[8].name} and the ultimate culmination of ${cards[9].name}, you are being guided into unwavering alignment with your higher calling.';
       advice =
           'Embrace the crucible of ${cards[1].name} without resistance. The final outcome in ${cards[9].name} promises profound awakening when you step forward with integrity.';
+    } else {
+      // Dynamic multi-card synthesis for arbitrary spreads
+      summary =
+          'The constellation of ${cards.map((c) => c.name).join(", ")} aligns to reveal hidden currents.';
+      final buffer = StringBuffer('$voicePrefix\n\nRegarding "${question.trim().isEmpty ? "Sacred Guidance" : question}":\n\n');
+      for (int i = 0; i < cards.length; i++) {
+        final c = cards[i];
+        final pos = c.positionName ?? 'Position ${i + 1}';
+        buffer.writeln('• $pos: ${c.name} (${c.isReversed ? "Reversed" : "Upright"}). ${c.isReversed ? c.meaningReversed : c.meaningUpright}\n');
+      }
+      narrative = buffer.toString().trim();
+      advice = 'Ground into the lesson of ${cards.first.name} while navigating the transformation of ${cards.last.name}.';
     }
+
+
+    // Optical Gaze and Karmic Crossroads synthesis
+    final majorCount = cards.where((c) => c.arcana.toLowerCase() == 'major').length;
+    final isKarmicCrossroads = majorCount >= 2;
+    final karmicNote = isKarmicCrossroads
+        ? '\n\n✦ KARMIC SOUL CROSSROADS ✦\nWith $majorCount Major Arcana archetypes dominating this spread, you stand before an initiatory spiritual threshold. These are not passing mundane occurrences, but foundational soul-evolution milestones demanding your conscious surrender.'
+        : '';
+
+    String opticalGazeNote = '';
+    if (cards.length >= 2) {
+      final cardA = cards[0];
+      final cardB = cards[1];
+      if (cardA.isReversed != cardB.isReversed) {
+        opticalGazeNote = '\n\n✦ OPTICAL GAZE & POLARITY TENSION ✦\nThe directional interplay between ${cardA.name} (${cardA.isReversed ? "Reversed" : "Upright"}) and ${cardB.name} (${cardB.isReversed ? "Reversed" : "Upright"}) creates an active tension: one archetype draws power from within while the other projects into outer manifestation.';
+      } else {
+        opticalGazeNote = '\n\n✦ OPTICAL GAZE & HARMONIC DIALOGUE ✦\nBoth ${cardA.name} and ${cardB.name} gaze in unified alignment, confirming harmonic momentum across subconscious impulse and sovereign action.';
+      }
+    }
+
+    final fullInterpretation = '$narrative$opticalGazeNote$karmicNote';
+
+    final microRitual =
+        'Close your eyes for 60 seconds. Inhale slowly for 4 counts drawing in the sovereign essence of ${primaryCard.name}, hold gently for 4 counts, and exhale for 6 counts releasing doubt and tension. Place your right palm flat against your sternum to physically anchor this prophecy into your body.';
 
     final journeyRecall = (recurringCards != null && recurringCards.isNotEmpty)
         ? 'The recurring presence of ${recurringCards.first} highlights an ongoing threshold calling for conscious integration.'
@@ -513,7 +595,7 @@ class TarotRepository {
 
     return {
       'summary': summary,
-      'interpretation': narrative,
+      'interpretation': fullInterpretation,
       'card_insights': cards
           .map((c) => {
                 'card_name': c.name,
@@ -522,14 +604,16 @@ class TarotRepository {
               })
           .toList(),
       'advice': advice,
+      'micro_ritual': microRitual,
       'astrological_note': 'Harmonized with your $sunSign celestial alignment.',
       'journey_recall': journeyRecall,
       'elemental_chemistry': elementalChemistry ?? calculateElementalChemistry(cards),
       'cosmic_weather': weatherText,
       'scrying_prompts': scryingPrompts,
-      'altar_consecration': ?altarConsecration,
+      'altar_consecration': altarConsecration,
     };
   }
+
 
   /// AI Dream-to-Tarot Altar Scrying:
   /// Analyzes a dream description using Jungian archetypal psychology and

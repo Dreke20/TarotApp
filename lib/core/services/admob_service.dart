@@ -20,9 +20,11 @@ class AdMobService {
   RewardedAd? _rewardedAd;
   bool _isRewardedLoading = false;
 
-  // Official Google AdMob Test Ad Unit IDs
+  // AdMob Ad Unit IDs (supports compile-time --dart-define for production with test ID fallback)
   static String get bannerAdUnitId {
     if (kIsWeb) return '';
+    const customId = String.fromEnvironment('ADMOB_BANNER_ID');
+    if (customId.isNotEmpty) return customId;
     if (Platform.isAndroid) {
       return 'ca-app-pub-3940256099942544/6300978111';
     } else if (Platform.isIOS) {
@@ -33,6 +35,8 @@ class AdMobService {
 
   static String get interstitialAdUnitId {
     if (kIsWeb) return '';
+    const customId = String.fromEnvironment('ADMOB_INTERSTITIAL_ID');
+    if (customId.isNotEmpty) return customId;
     if (Platform.isAndroid) {
       return 'ca-app-pub-3940256099942544/1033173712';
     } else if (Platform.isIOS) {
@@ -43,6 +47,8 @@ class AdMobService {
 
   static String get rewardedAdUnitId {
     if (kIsWeb) return '';
+    const customId = String.fromEnvironment('ADMOB_REWARDED_ID');
+    if (customId.isNotEmpty) return customId;
     if (Platform.isAndroid) {
       return 'ca-app-pub-3940256099942544/5224354917';
     } else if (Platform.isIOS) {

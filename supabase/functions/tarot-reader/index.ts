@@ -7,9 +7,10 @@ const corsHeaders = {
 };
 
 interface DrawnCard {
-  id: string;
+  id?: string;
   name: string;
   arcana?: string;
+  element?: string;
   is_reversed?: boolean;
   position_name?: string;
   meaning_upright?: string;
@@ -17,15 +18,18 @@ interface DrawnCard {
 }
 
 interface TarotRequest {
-  user_question: string;
-  spread_type: string;
-  drawn_cards: (string | DrawnCard)[];
+  user_question?: string;
+  spread_type?: string;
+  drawn_cards?: (string | DrawnCard)[];
   seeker_astrology?: {
     sun?: string;
     moon?: string;
     rising?: string;
   };
   follow_up_prompt?: string;
+  reading_summary?: string;
+  reading_advice?: string;
+  reading_interpretation?: string;
   chat_history?: { role: string; content: string }[];
   oracle_persona?: string;
   recent_journey_context?: string[];
@@ -38,12 +42,13 @@ interface TarotRequest {
   };
   elemental_chemistry?: string;
   dream_narrative?: string;
+  altar_consecration?: string;
 }
 
 const CANDIDATE_MODELS = [
-  "gemini-3.1-flash-lite",
-  "gemini-3.8-flash",
-  "gemini-3.5-flash",
+  "gemini-2.0-flash",
+  "gemini-1.5-flash",
+  "gemini-1.5-pro",
   "gemini-flash-latest",
 ];
 
@@ -89,6 +94,9 @@ serve(async (req) => {
       drawn_cards,
       seeker_astrology,
       follow_up_prompt,
+      reading_summary,
+      reading_advice,
+      reading_interpretation,
       chat_history,
       oracle_persona,
       recent_journey_context,
@@ -96,6 +104,7 @@ serve(async (req) => {
       cosmic_weather,
       elemental_chemistry,
       dream_narrative,
+      altar_consecration,
     } = body;
 
     const geminiApiKey =
@@ -118,9 +127,32 @@ serve(async (req) => {
         "You speak as The Shadow Mirror: raw, psychologically rigorous truth, confronting ego traps, unintegrated shadows, and uncomfortable honesty.";
     }
 
-    // 1. Follow-up conversational question mode
+    // 1. Follow-up conversational inquiry mode with full contextual memory
     if (follow_up_prompt) {
-      const systemPrompt = `${personaPrompt} Answer this seeker inquiry in direct context of the cards previously revealed. Offer poetic yet actionable wisdom.`;
+      let cardsContext = "";
+      if (drawn_cards && drawn_cards.length > 0) {
+        cardsContext = drawn_cards
+          .map((c, i) => {
+            if (typeof c === "string") return `• Card ${i + 1}: ${c}`;
+            const orient = c.is_reversed ? "Reversed" : "Upright";
+            const pos = c.position_name ? `(${c.position_name})` : "";
+            const arcana = c.arcana ? `[${c.arcana.toUpperCase()}]` : "";
+            return `• Card ${i + 1} ${pos}: ${c.name} [${orient}] ${arcana}`;
+          })
+          .join("\n");
+      }
+
+      const systemPrompt = `You are a legendary spiritual Oracle. ${personaPrompt}
+Answer this seeker inquiry in the exact context of the sacred reading already unveiled:
+- Seeker Question: "${user_question || "Daily Guidance"}"
+- Spread Layout: "${spread_type || "Tarot Spread"}"
+- Drawn Cards & Placements:
+${cardsContext || "Sacred Tarot Spread"}
+${reading_summary ? `- Prophecy Summary: "${reading_summary}"` : ""}
+${reading_advice ? `- Spiritual Guidance: "${reading_advice}"` : ""}
+${reading_interpretation ? `- Prophecy Excerpt: "${reading_interpretation.slice(0, 400)}..."` : ""}
+
+Address the seeker directly with profound mystical gravitas, archetypal continuity, and actionable psychological/spiritual clarity. Directly reference the specific cards, their positions, or their reversals when relevant to the seeker's inquiry.`;
 
       let followUpAnswer = "";
       if (geminiApiKey) {
@@ -149,7 +181,10 @@ serve(async (req) => {
       }
 
       if (!followUpAnswer) {
-        followUpAnswer = `In response to your inquiry—"${follow_up_prompt}"—the cards remind you that your inner discernment is your true anchor. Look deeper into where you feel tension, for therein lies the hidden doorway to breakthrough.`;
+        const firstCardName = drawn_cards && drawn_cards.length > 0
+          ? (typeof drawn_cards[0] === "string" ? drawn_cards[0] : drawn_cards[0].name)
+          : "The Oracle";
+        followUpAnswer = `In response to your inquiry—"${follow_up_prompt}"—the energy of ${firstCardName} reminds you that your inner discernment is your true anchor. Look deeper into where you feel tension, for therein lies the hidden doorway to breakthrough.`;
       }
 
       return new Response(JSON.stringify({ answer: followUpAnswer }), {
@@ -176,7 +211,8 @@ serve(async (req) => {
         }
         const orientation = c.is_reversed ? "Reversed" : "Upright";
         const position = c.position_name ? `(${c.position_name})` : "";
-        return `Card ${index + 1} ${position}: ${c.name} [${orientation}] - Keywords: ${
+        const arcana = c.arcana ? `[${c.arcana.toUpperCase()}]` : "";
+        return `Card ${index + 1} ${position}: ${c.name} [${orientation}] ${arcana} - Keywords: ${
           c.is_reversed ? c.meaning_reversed : c.meaning_upright
         }`;
       })
@@ -216,12 +252,20 @@ serve(async (req) => {
       ? `\nJungian Dream Narrative: "${dream_narrative}". Synthesize the dream's subconscious archetypes into this reading.`
       : "";
 
+    const altarContext = altar_consecration
+      ? `\nAltar Consecration Anchor: "${altar_consecration}". Weave this sacred intention through the reading.`
+      : "";
+
     const systemPrompt = `You are a legendary spiritual Oracle. ${personaPrompt}
-Analyze the cards through the lens of card interplay, directional tension, elemental dignities, and the seeker's personal destiny path.`;
+Analyze the cards through the lens of master tarot hermeneutics:
+1. OPTICAL GAZE & SPATIAL TENSION: Examine the visual dialogue between adjacent cards. Notice whether figures gaze towards each other (dialogue, confrontation, synthesis) or turn away (avoidance, departure, unresolved past). Highlight this directional tension in the narrative.
+2. KARMIC WEIGHTING: Calculate Major Arcana presence. If 2 or more Major Arcana cards are present, declare that the seeker is navigating an initiatory, fated Soul Crossroads rather than mundane day-to-day circumstance.
+3. ELEMENTAL DIGNITIES: Synthesize the elemental chemistry (Fire/Water/Air/Earth) and how they harmonize or clash.
+4. TANGIBLE 60-SECOND MICRO-RITUAL: Provide an actionable, somatic 60-second integration ritual (breathwork cadence, grounding touch, or focus prompt) tailored to the elemental alchemy that grounds this prophecy into the physical body.`;
 
     const userPrompt = `
 Seeker Question: "${user_question || "What guidance does the cosmos have for me at this juncture?"}"
-Spread Type: "${spread_type || "Custom Spread"}"${astroDetails}${weatherDetails}${synergyDetails}${journeyDetails}${recurringDetails}${dreamContext}
+Spread Type: "${spread_type || "Custom Spread"}"${astroDetails}${weatherDetails}${synergyDetails}${journeyDetails}${recurringDetails}${dreamContext}${altarContext}
 
 Drawn Cards:
 ${cardsDescription}
@@ -229,7 +273,7 @@ ${cardsDescription}
 Provide your reading in strictly valid JSON format matching this schema:
 {
   "summary": "A poetic 1-2 sentence distillation of the reading's core energy matching your persona voice",
-  "interpretation": "A deep narrative linking all drawn cards together in response to the seeker's question, highlighting the transition between positions, card gaze, and tensions",
+  "interpretation": "A deep narrative linking all drawn cards together in response to the seeker's question, highlighting optical gaze tension, card-to-card transitions, and karmic crossroads",
   "card_insights": [
     {
       "card_name": "Card name",
@@ -238,6 +282,7 @@ Provide your reading in strictly valid JSON format matching this schema:
     }
   ],
   "advice": "Empathetic, actionable guidance for the seeker moving forward",
+  "micro_ritual": "A tangible, 60-second somatic action, breathwork cadence, physical anchor, or journaling prompt tailored to this reading that the seeker can do right now to integrate this prophecy.",
   "astrological_note": "A celestial/elemental resonance note aligning with the seeker's energies",
   "journey_recall": "1-2 sentences weaving past readings or recurring cards into this moment, explaining why the cycle has returned or evolved",
   "elemental_chemistry": "Specific synthesis of how the elements (Fire, Water, Air, Earth) interact in this spread (e.g. steam, conflagration, or grounded oasis)",
@@ -292,7 +337,7 @@ Provide your reading in strictly valid JSON format matching this schema:
         summary: `The cosmos reflects your search through ${firstCardName}, urging conscious alignment with inner truth.`,
         interpretation: `As the veil parts, your question—"${
           user_question || "Daily Guidance"
-        }"—reveals a significant spiritual pivot. The cards highlight a current transition where old cycles yield to heightened clarity. By honoring both the shadow and the light of these archetypes, the current tensions dissolve into grounded wisdom.`,
+        }"—reveals a significant spiritual pivot. The optical dialogue between your cards reflects a profound threshold: tensions dissolve when conscious presence meets shadow truth. By honoring the directional gaze of these archetypes, old loops yield to grounded wisdom.`,
         card_insights: drawn_cards.map((c, idx) => ({
           card_name: typeof c === "string" ? c : c.name,
           position:
@@ -304,6 +349,7 @@ Provide your reading in strictly valid JSON format matching this schema:
         })),
         advice:
           "Ground your energies in stillness before taking decisive action. Allow intuition to be your compass over fear.",
+        micro_ritual: `Close your eyes for 60 seconds. Inhale for 4 counts, anchor the archetype of ${firstCardName} at your heart for 4 counts, and exhale for 6 counts releasing lingering tension. Rest your right palm over your heart to seal this alignment.`,
         astrological_note:
           seeker_astrology?.sun
             ? `Harmonized with your ${seeker_astrology.sun} essence and cosmic vitality.`
@@ -339,3 +385,4 @@ Provide your reading in strictly valid JSON format matching this schema:
     );
   }
 });
+

@@ -29,6 +29,7 @@ _Reading _$ReadingFromJson(Map<String, dynamic> json) => _Reading(
       const [],
   personaId: json['persona_id'] as String?,
   altarConsecration: json['altar_consecration'] as String?,
+  microRitual: json['micro_ritual'] as String?,
   createdAt: DateTime.parse(json['created_at'] as String),
 );
 
@@ -49,5 +50,6 @@ Map<String, dynamic> _$ReadingToJson(_Reading instance) => <String, dynamic>{
   'scrying_prompts': instance.scryingPrompts,
   'persona_id': instance.personaId,
   'altar_consecration': instance.altarConsecration,
+  'micro_ritual': instance.microRitual,
   'created_at': instance.createdAt.toIso8601String(),
 };

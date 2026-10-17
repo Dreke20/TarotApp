@@ -61,27 +61,40 @@ class OracleQuestionBar extends StatelessWidget {
                     notifier.setQuestion('');
                   },
                 ),
-              IconButton(
-                icon: const Icon(Icons.mic_none, size: 20, color: AppColors.goldBright),
-                tooltip: 'Sacred Voice Invocation',
-                onPressed: () {
-                  VoiceInvocationModal.show(
-                    context,
-                    onQuestionSpoken: (spoken) {
-                      controller.text = spoken;
-                      notifier.setQuestion(spoken);
-                    },
-                  );
-                },
+              Container(
+                margin: const EdgeInsets.only(left: 4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.goldBright.withValues(alpha: 0.15),
+                  border: Border.all(
+                    color: AppColors.goldBright.withValues(alpha: 0.5),
+                    width: 1,
+                  ),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.mic, size: 19, color: AppColors.goldBright),
+                  tooltip: 'Sacred Voice Invocation',
+                  padding: const EdgeInsets.all(7),
+                  constraints: const BoxConstraints(),
+                  onPressed: () {
+                    VoiceInvocationModal.show(
+                      context,
+                      onQuestionSpoken: (spoken) {
+                        controller.text = spoken;
+                        notifier.setQuestion(spoken);
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
 
         // Quick prompt suggestions
         SizedBox(
-          height: 30,
+          height: 36,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
@@ -89,25 +102,51 @@ class OracleQuestionBar extends StatelessWidget {
             separatorBuilder: (_, _) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
               final prompt = quickPrompts[index];
-              return GestureDetector(
-                onTap: () {
-                  controller.text = prompt;
-                  notifier.setQuestion(prompt);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.glassFill,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: AppColors.glassBorder.withValues(alpha: 0.3),
+              return Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () {
+                    controller.text = prompt;
+                    notifier.setQuestion(prompt);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF181522),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppColors.goldBright.withValues(alpha: 0.35),
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ),
-                  child: Text(
-                    prompt,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 10.5,
-                      color: AppColors.textSecondary,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          '✦ ',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: AppColors.goldBright,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          prompt,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

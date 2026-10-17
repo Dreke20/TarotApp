@@ -14,6 +14,13 @@ abstract class AuthState with _$AuthState {
     String? errorMessage,
   }) = _AuthState;
 
-  bool get isAuthenticated => profile != null;
+  bool get isGuest =>
+      profile == null ||
+      profile!.id.startsWith('local_') ||
+      profile!.email == null ||
+      profile!.email!.isEmpty ||
+      profile!.email == 'seeker@oraculum.app';
+
+  bool get isAuthenticated => !isGuest;
   bool get isPro => profile?.isPro ?? false;
 }

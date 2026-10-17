@@ -1,7 +1,17 @@
+import java.util.Properties
+import java.io.FileInputStream
+import java.io.File
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
 android {
@@ -13,6 +23,22 @@ android {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    signingConfigs {
+        create("release") {
+            val keyAliasVal = keystoreProperties.getProperty("keyAlias")
+            val keyPasswordVal = keystoreProperties.getProperty("keyPassword")
+            val storeFileVal = keystoreProperties.getProperty("storeFile")
+            val storePasswordVal = keystoreProperties.getProperty("storePassword")
+            if (keyAliasVal != null && storeFileVal != null) {
+                val candidateFile = File(storeFileVal)
+                storeFile = if (candidateFile.isAbsolute) candidateFile else rootProject.file(storeFileVal)
+                keyAlias = keyAliasVal
+                keyPassword = keyPasswordVal
+                storePassword = storePasswordVal
+            }
+        }
     }
 
     defaultConfig {
@@ -32,15 +58,23 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            val releaseSigning = signingConfigs.findByName("release")
+            if (releaseSigning?.storeFile != null && releaseSigning.storeFile!!.exists()) {
+                signingConfig = releaseSigning
+            } else {
+                signingConfig = signingConfigs.getByName("debug")
+            }
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
+
     }
 
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+        jniLibs {
+            keepDebugSymbols += "**/*.so"
         }
     }
 }

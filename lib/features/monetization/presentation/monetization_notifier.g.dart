@@ -42,7 +42,7 @@ final class MonetizationNotifierProvider
 }
 
 String _$monetizationNotifierHash() =>
-    r'e5e0e71733829d98ec689b0e2c0c11d68903c2a1';
+    r'1af8326db1ae4effa78d4b4ad72a3c7d22a3178f';
 
 abstract class _$MonetizationNotifier extends $Notifier<MonetizationState> {
   MonetizationState build();

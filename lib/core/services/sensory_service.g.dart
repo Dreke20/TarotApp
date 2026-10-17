@@ -42,7 +42,7 @@ final class SensorySettingsNotifierProvider
 }
 
 String _$sensorySettingsNotifierHash() =>
-    r'c4e3a78c2d173766a904e975a5c1fefdeb4e5921';
+    r'039d3dc0bf12b5762c00d93a9eb80021dae10f21';
 
 abstract class _$SensorySettingsNotifier extends $Notifier<SensorySettings> {
   SensorySettings build();

@@ -96,5 +96,35 @@ void main() {
       expect(decoded['total_readings'], greaterThanOrEqualTo(1));
       expect(decoded['readings'], isA<List>());
     });
+
+    test('purgeAllUserData completely clears local readings and persistent store', () async {
+      final repo = TarotRepository();
+      const testCard = TarotCard(
+        id: 'the_fool',
+        name: 'The Fool',
+        number: 0,
+        arcana: 'major',
+        keywords: ['beginnings', 'leap of faith'],
+        meaningUpright: 'A new adventure begins.',
+        meaningReversed: 'Recklessness.',
+        element: 'Air',
+      );
+
+      await repo.saveReading(
+        question: 'Testing purge',
+        spreadType: SpreadType.dailyGuidance,
+        drawnCards: [testCard],
+        interpretation: 'Beginning of the journey.',
+      );
+
+      final historyBefore = await repo.getReadingHistory();
+      expect(historyBefore, isNotEmpty);
+
+      await repo.purgeAllUserData();
+
+      final historyAfter = await repo.getReadingHistory();
+      expect(historyAfter, isEmpty);
+    });
   });
 }
+

@@ -23,9 +23,11 @@ abstract class Reading with _$Reading {
     @JsonKey(name: 'scrying_prompts') @Default([]) List<String> scryingPrompts,
     @JsonKey(name: 'persona_id') String? personaId,
     @JsonKey(name: 'altar_consecration') String? altarConsecration,
+    @JsonKey(name: 'micro_ritual') String? microRitual,
     @JsonKey(name: 'created_at') required DateTime createdAt,
   }) = _Reading;
 
   factory Reading.fromJson(Map<String, dynamic> json) =>
       _$ReadingFromJson(json);
 }
+

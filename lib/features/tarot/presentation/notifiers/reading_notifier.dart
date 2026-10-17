@@ -226,6 +226,7 @@ class ReadingNotifier extends _$ReadingNotifier {
       final journeyRecall = oracleData['journey_recall'] as String?;
       final elementalChemistry = oracleData['elemental_chemistry'] as String?;
       final cosmicWeather = oracleData['cosmic_weather'] as String?;
+      final microRitual = oracleData['micro_ritual'] as String?;
       final scryingPrompts = (oracleData['scrying_prompts'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
@@ -244,7 +245,9 @@ class ReadingNotifier extends _$ReadingNotifier {
         scryingPrompts: scryingPrompts,
         personaId: activePersona.id,
         altarConsecration: altarConsecration,
+        microRitual: microRitual,
       );
+
 
       final updatedHistory = List<Reading>.of(state.history)
         ..insert(0, savedReading);

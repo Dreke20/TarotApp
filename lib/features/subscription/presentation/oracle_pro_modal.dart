@@ -338,16 +338,26 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                       const SizedBox(height: 10),
                     ],
 
-                    // Restore Purchases Link
-                    TextButton(
-                      onPressed: subState.isSubmitting
-                          ? null
-                          : () => subNotifier.restorePurchases(),
-                      child: Text(
-                        'Restore Previous Purchases',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 11,
-                          color: AppColors.textMuted,
+                    // Restore Purchases Button / Link
+                    Center(
+                      child: TextButton.icon(
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.textSecondary,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        ),
+                        onPressed: subState.isSubmitting
+                            ? null
+                            : () => subNotifier.restorePurchases(),
+                        icon: const Icon(Icons.restore, size: 15, color: AppColors.goldBright),
+                        label: Text(
+                          'Restore Previous Purchases',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary,
+                            decoration: TextDecoration.underline,
+                            decorationColor: AppColors.glassBorder,
+                          ),
                         ),
                       ),
                     ),
@@ -460,6 +470,60 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                   decoration: TextDecoration.underline,
                 ),
               ),
+            ),
+            const SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Subscriptions renew automatically unless cancelled at least 24 hours prior to the end of the billing period in Google Play Subscriptions. Payment is charged to your Google Play account.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 8.5,
+                  color: AppColors.textMuted.withValues(alpha: 0.8),
+                  height: 1.3,
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () => ExternalLaunchService.openTermsOfService(context),
+                  child: Text(
+                    'Terms of Service',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 9.5,
+                      color: AppColors.goldMuted,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+                Text('  •  ', style: TextStyle(color: AppColors.textMuted.withValues(alpha: 0.5), fontSize: 10)),
+                GestureDetector(
+                  onTap: () => ExternalLaunchService.openPrivacyPolicy(context),
+                  child: Text(
+                    'Privacy Policy',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 9.5,
+                      color: AppColors.goldMuted,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+                Text('  •  ', style: TextStyle(color: AppColors.textMuted.withValues(alpha: 0.5), fontSize: 10)),
+                GestureDetector(
+                  onTap: () => ExternalLaunchService.openManageSubscriptions(context),
+                  child: Text(
+                    'Manage Subscriptions',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 9.5,
+                      color: AppColors.goldMuted,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

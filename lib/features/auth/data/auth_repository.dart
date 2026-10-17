@@ -10,7 +10,6 @@ class AuthRepository {
 
   static UserProfile _localProfile = const UserProfile(
     id: 'local_seeker_001',
-    email: 'seeker@oraculum.app',
     displayName: 'Cosmic Seeker',
     zodiacSign: 'Scorpio',
     moonSign: 'Pisces',
@@ -135,7 +134,42 @@ class AuthRepository {
     if (_supabase != null && SupabaseConfig.isConfigured) {
       await _supabase.auth.signOut();
     }
+    _localProfile = const UserProfile(
+      id: 'local_seeker_001',
+      displayName: 'Cosmic Seeker',
+      zodiacSign: 'Scorpio',
+      moonSign: 'Pisces',
+      risingSign: 'Leo',
+      isPro: false,
+    );
+    await _storage.saveProfile(_localProfile);
   }
+
+  Future<void> sendPasswordReset(String email) async {
+    if (_supabase != null && SupabaseConfig.isConfigured) {
+      await _supabase.auth.resetPasswordForEmail(email);
+    }
+  }
+
+  /// Permanently deletes remote profile data and clears local profile
+  Future<void> deleteAccount() async {
+    if (_supabase != null && SupabaseConfig.isConfigured) {
+      final user = _supabase.auth.currentUser;
+      if (user != null) {
+        try {
+          await _supabase.from('profiles').delete().eq('id', user.id);
+        } catch (e) {
+          debugPrint('Supabase delete profile error: $e');
+        }
+      }
+      try {
+        await _supabase.auth.signOut();
+      } catch (_) {}
+    }
+    _localProfile = const UserProfile(id: 'local_seeker');
+    await _storage.saveProfile(_localProfile);
+  }
+
 
   /// Securely verifies and activates Oracle Pro through the Supabase Edge Function
   Future<UserProfile> verifyAndActivatePro({

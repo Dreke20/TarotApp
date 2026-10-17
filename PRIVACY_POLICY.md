@@ -43,7 +43,7 @@ If you use Oraculum as an anonymous seeker/guest, your tarot questions, card dra
 - **Encryption in Transit:** All network traffic between Oraculum, Supabase, and Google services is encrypted using industry-standard TLS 1.3 / HTTPS.
 - **In-App Account & Data Deletion:** Seekers can instantly delete their account, purge all local journal reflections, and remove cloud-synced records at any time from **Profile > DELETE ACCOUNT & DATA**.
 - **Web-Based Deletion Request:** Users can also request permanent account and data deletion online without reinstalling the application by visiting:  
-  **Deletion URL:** `https://oraculumtarot.com/delete-account` or emailing `privacy@oraculumtarot.com` with subject *"Data Deletion Request"*. All records are purged within 30 days.
+  **Deletion URL:** `https://github.com/Dreke20/TarotApp/blob/main/ACCOUNT_DELETION.md` or emailing `privacy@oraculumtarot.com` / `dreke.dev@gmail.com` with subject *"Data Deletion Request"*. All records are purged within 30 days.
 
 ---
 

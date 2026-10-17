@@ -104,15 +104,32 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
       }
     });
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: MysticBackground(
-        altarTheme: state.altarTheme,
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Constrained Centered Header Bar
-              Center(
+    final isRitualActive =
+        state.isShuffling || state.isDealing || state.isConsultingOracle;
+
+    return PopScope(
+      canPop: !isRitualActive,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && isRitualActive && context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'The sacred ritual is underway. Please allow the Oracle to complete.'),
+              duration: Duration(seconds: 2),
+              backgroundColor: AppColors.backgroundMidnight,
+            ),
+          );
+        }
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: MysticBackground(
+          altarTheme: state.altarTheme,
+          child: SafeArea(
+            child: Column(
+              children: [
+                // Constrained Centered Header Bar
+                Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 1040),
                   child: TarotHeaderBar(state: state, isPro: isPro),
@@ -198,8 +215,9 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildAltarTable(
     BuildContext context,
@@ -263,168 +281,124 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
 
             const SizedBox(height: 26),
 
-            // Action Buttons: Automated Shuffle vs Manual Ritual Draw
-            Wrap(
-              spacing: 12,
-              runSpacing: 10,
-              alignment: WrapAlignment.center,
+            // Action Buttons: Hero Primary CTA + Organized Ritual Tools
+            Column(
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: state.isShuffling ? null : AppColors.goldButtonGradient,
-                    color: state.isShuffling ? AppColors.goldMuted : null,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.goldMetallic.withValues(alpha: 0.35),
-                        blurRadius: 18,
-                        spreadRadius: 1,
-                        offset: const Offset(0, 4),
+                // Primary Hero CTA: Consult the Oracle
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 360),
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: state.isShuffling ? null : AppColors.goldButtonGradient,
+                        color: state.isShuffling ? AppColors.goldMuted : null,
+                        borderRadius: BorderRadius.circular(18),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.goldMetallic.withValues(alpha: 0.4),
+                            blurRadius: 20,
+                            spreadRadius: 1,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      foregroundColor: const Color(0xFF09080C),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 22, vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    onPressed:
-                        state.isShuffling ? null : () => notifier.startReading(),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text('✦', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF09080C))),
-                        const SizedBox(width: 8),
-                        Text(
-                          state.isShuffling ? 'SHUFFLING...' : 'CONSULT ORACLE',
-                          style: GoogleFonts.cinzel(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1.5,
-                            color: const Color(0xFF09080C),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          foregroundColor: const Color(0xFF09080C),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        const Text('✦', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF09080C))),
+                        onPressed: state.isShuffling
+                            ? null
+                            : () {
+                                HapticFeedback.heavyImpact();
+                                notifier.startReading();
+                              },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text('✦', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF09080C))),
+                            const SizedBox(width: 10),
+                            Text(
+                              state.isShuffling ? 'SHUFFLING...' : 'CONSULT ORACLE',
+                              style: GoogleFonts.cinzel(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1.6,
+                                color: const Color(0xFF09080C),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            const Text('✦', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF09080C))),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Secondary Ritual Tools Strip: Cut Deck, Purify, Center Breath
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 440),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        _buildAltarToolButton(
+                          context,
+                          icon: const Icon(Icons.style, size: 15, color: AppColors.goldBright),
+                          title: 'CUT DECK',
+                          onTap: state.isShuffling
+                              ? null
+                              : () {
+                                  HapticFeedback.selectionClick();
+                                  ManualCardPickerDialog.show(
+                                    context,
+                                    spreadType: state.spreadType,
+                                    fullDeck: TarotDeckService().shuffleDeck(),
+                                    onCardsSelected: (chosen) {
+                                      notifier.setManualDrawnCards(chosen);
+                                    },
+                                  );
+                                },
+                        ),
+                        _buildAltarToolButton(
+                          context,
+                          icon: const Text('🪵', style: TextStyle(fontSize: 13)),
+                          title: 'PURIFY ALTAR',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            SmokePurificationModal.show(context);
+                          },
+                        ),
+                        _buildAltarToolButton(
+                          context,
+                          icon: const Icon(Icons.air, size: 15, color: AppColors.etherealLavender),
+                          title: 'CENTER BREATH',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            SacredBreathingModal.show(
+                              context,
+                              initialQuestion: _questionController.text,
+                              onIntentionSet: (intention) {
+                                if (intention.isNotEmpty) {
+                                  _questionController.text = intention;
+                                  notifier.setQuestion(intention);
+                                }
+                              },
+                            );
+                          },
+                        ),
                       ],
                     ),
-                  ),
-                ),
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.goldBright,
-                    side:
-                        const BorderSide(color: AppColors.goldMuted, width: 1.2),
-                    backgroundColor: AppColors.glassFill,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 18, vertical: 13),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  onPressed: state.isShuffling
-                      ? null
-                      : () {
-                          ManualCardPickerDialog.show(
-                            context,
-                            spreadType: state.spreadType,
-                            fullDeck: TarotDeckService().shuffleDeck(),
-                            onCardsSelected: (chosen) {
-                              notifier.setManualDrawnCards(chosen);
-                            },
-                          );
-                        },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.style, size: 16),
-                      const SizedBox(width: 6),
-                      Text(
-                        'CUT THE DECK',
-                        style: GoogleFonts.cinzel(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.goldBright,
-                    side: const BorderSide(color: AppColors.goldMuted, width: 1.2),
-                    backgroundColor: AppColors.glassFill,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 13),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  onPressed: () => SmokePurificationModal.show(context),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('🪵', style: TextStyle(fontSize: 14)),
-                      const SizedBox(width: 6),
-                      Text(
-                        'PURIFY ALTAR',
-                        style: GoogleFonts.cinzel(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.etherealLavender,
-                    side: BorderSide(
-                        color: AppColors.etherealLavender.withValues(alpha: 0.6),
-                        width: 1.2),
-                    backgroundColor: AppColors.glassFill,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 13),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  onPressed: () {
-                    HapticFeedback.lightImpact();
-                    SacredBreathingModal.show(
-                      context,
-                      initialQuestion: _questionController.text,
-                      onIntentionSet: (intention) {
-                        if (intention.isNotEmpty) {
-                          _questionController.text = intention;
-                          notifier.setQuestion(intention);
-                        }
-                      },
-                    );
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.air, size: 16, color: AppColors.etherealLavender),
-                      const SizedBox(width: 6),
-                      Text(
-                        'CENTER BREATH',
-                        style: GoogleFonts.cinzel(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                          color: AppColors.etherealLavender,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ],
@@ -610,19 +584,51 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
             if (state.isConsultingOracle) ...[
               const OracleChannelingView(),
             ] else if (!state.allCardsRevealed) ...[
-              TextButton.icon(
-                icon: const Icon(Icons.visibility,
-                    size: 16, color: AppColors.goldBright),
-                label: Text(
-                  'REVEAL ALL CARDS',
-                  style: GoogleFonts.cinzel(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A1726),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
                     color: AppColors.goldBright,
-                    letterSpacing: 1.2,
+                    width: 1.3,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.goldBright.withValues(alpha: 0.25),
+                      blurRadius: 14,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      notifier.revealAllCards();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 13),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.visibility, size: 18, color: AppColors.goldBright),
+                          const SizedBox(width: 8),
+                          Text(
+                            'REVEAL ALL CARDS',
+                            style: GoogleFonts.cinzel(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.goldBright,
+                              letterSpacing: 1.4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-                onPressed: () => notifier.revealAllCards(),
               ),
             ] else if (state.currentReading != null) ...[
               Container(
@@ -682,29 +688,95 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
     required String title,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-        decoration: BoxDecoration(
-          color: AppColors.glassFillStrong,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.goldBright.withValues(alpha: 0.35)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(glyph, style: const TextStyle(fontSize: 14)),
-            const SizedBox(width: 6),
-            Text(
-              title,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          onTap();
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF191624),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.goldBright.withValues(alpha: 0.38),
+              width: 1.0,
             ),
-          ],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.25),
+                blurRadius: 5,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(glyph, style: const TextStyle(fontSize: 14)),
+              const SizedBox(width: 7),
+              Text(
+                title,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAltarToolButton(
+    BuildContext context, {
+    required Widget icon,
+    required String title,
+    required VoidCallback? onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: const Color(0xFF191624),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: AppColors.glassBorder.withValues(alpha: 0.7),
+              width: 1.1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              icon,
+              const SizedBox(width: 7),
+              Text(
+                title,
+                style: GoogleFonts.cinzel(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.1,
+                  color: AppColors.goldBright,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

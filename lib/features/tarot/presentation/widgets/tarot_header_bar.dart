@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/services/external_launch_service.dart';
+import '../../../auth/presentation/auth_modal.dart';
 import '../../../auth/presentation/auth_notifier.dart';
 import '../../../auth/presentation/profile_dialog.dart';
 import '../../domain/altar_theme.dart';
@@ -30,7 +31,6 @@ import '../../../meditation/presentation/screens/pathworking_sanctuary_screen.da
 import '../../../notifications/presentation/widgets/cosmic_notification_modal.dart';
 import '../../../subscription/presentation/oracle_pro_modal.dart';
 import 'ambient_audio_button.dart';
-import 'glass_container.dart';
 import 'oracle_persona_selector_modal.dart';
 import 'streak_badge.dart';
 
@@ -48,7 +48,9 @@ class TarotHeaderBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authProfile = ref.watch(authNotifierProvider).profile;
+    final authState = ref.watch(authNotifierProvider);
+    final authProfile = authState.profile;
+    final isGuest = authState.isGuest;
     final notifier = ref.read(readingNotifierProvider.notifier);
 
     return Padding(
@@ -120,317 +122,141 @@ class TarotHeaderBar extends ConsumerWidget {
                           ],
                         ],
                       ),
-                      Text(
-                        authProfile?.zodiacSign != null
-                            ? 'ALIGNED WITH ${authProfile!.zodiacSign!.toUpperCase()}'
-                            : 'SACRED ORACULUM',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.cinzel(
-                          fontSize: 8,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.goldMuted,
-                          letterSpacing: 1.2,
+                      if (isGuest)
+                        GestureDetector(
+                          onTap: () => AuthModal.show(context),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'GUEST • SIGN IN / JOIN',
+                                style: GoogleFonts.cinzel(
+                                  fontSize: 8.5,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.goldBright,
+                                  letterSpacing: 0.9,
+                                ),
+                              ),
+                              const SizedBox(width: 3),
+                              const Icon(Icons.arrow_forward_ios, size: 8, color: AppColors.goldBright),
+                            ],
+                          ),
+                        )
+                      else
+                        Text(
+                          authProfile?.zodiacSign != null
+                              ? 'ALIGNED WITH ${authProfile!.zodiacSign!.toUpperCase()}'
+                              : 'SACRED ORACULUM',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.cinzel(
+                            fontSize: 8,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.goldMuted,
+                            letterSpacing: 1.2,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ],
               ),
           const SizedBox(width: 8),
 
-          // Action Toolbar: Live Reader, Codex, Journal, Themes, Soundscape, Streaks, Sanctuaries
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              reverse: false,
-              physics: const BouncingScrollPhysics(),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Oracle Pro Action Button (Direct Paywall Access)
-                  GestureDetector(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      OracleProModal.show(context);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: isPro
-                            ? AppColors.goldBright.withValues(alpha: 0.22)
-                            : AppColors.goldBright.withValues(alpha: 0.14),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: AppColors.goldBright.withValues(alpha: isPro ? 0.9 : 0.6),
-                          width: 1.1,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            isPro ? Icons.workspace_premium : Icons.stars,
-                            size: 13,
-                            color: AppColors.goldBright,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            isPro ? 'ORACLE PRO' : 'GO PRO',
-                            style: GoogleFonts.cinzel(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.goldBright,
-                              letterSpacing: 1.1,
-                            ),
-                          ),
-                        ],
+          // Header Action Controls: Pro Badge, Soundscape, Streak, Theme, Grimoire Hub
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Prominent Sign In Button for Guest Seekers
+              if (isGuest) ...[
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    AuthModal.show(context);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.goldBright.withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppColors.goldBright,
+                        width: 1.1,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 6),
-
-                  // Sacred Tarot Codex Action Button
-                  GlassContainer(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                    borderRadius: 12,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const TarotCodexScreen(),
-                        ),
-                      );
-                    },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
-                          Icons.style_outlined,
-                          size: 14,
-                          color: AppColors.goldBright,
-                        ),
+                        const Icon(Icons.login, size: 12, color: AppColors.goldBright),
                         const SizedBox(width: 4),
                         Text(
-                          'CODEX',
+                          'SIGN IN',
                           style: GoogleFonts.cinzel(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.bold,
                             color: AppColors.goldBright,
-                            letterSpacing: 1.0,
+                            letterSpacing: 0.8,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(width: 6),
-
-                  // Lunar Almanac & Sabbat Calendar Action Button
-                  GlassContainer(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                    borderRadius: 12,
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const LunarAlmanacScreen(),
-                        ),
-                      );
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.brightness_3,
-                          size: 14,
-                          color: AppColors.goldBright,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'ALMANAC',
-                          style: GoogleFonts.cinzel(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.goldBright,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-
-                  // Sacred Journal Action Button
-                  GlassContainer(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                    borderRadius: 12,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const ReadingsHistoryScreen(),
-                        ),
-                      );
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.auto_stories,
-                          size: 14,
-                          color: AppColors.goldBright,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'JOURNAL',
-                          style: GoogleFonts.cinzel(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.goldBright,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-
-                  // Oracle Persona Switcher Action Button
-                  GlassContainer(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                    borderRadius: 12,
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      OraclePersonaSelectorModal.show(context);
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.face_retouching_natural,
-                          size: 14,
-                          color: AppColors.goldBright,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'ORACLE',
-                          style: GoogleFonts.cinzel(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.goldBright,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-
-                  // The Seeker's Chronicle Action Button
-                  GlassContainer(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                    borderRadius: 12,
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const SeekersChronicleScreen(),
-                        ),
-                      );
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.menu_book,
-                          size: 14,
-                          color: AppColors.goldBright,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'CHRONICLE',
-                          style: GoogleFonts.cinzel(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.goldBright,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Altar Purification & Smudge Rite Action Button
-                  GlassContainer(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                    borderRadius: 12,
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      SmokePurificationModal.show(context);
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.flare,
-                          size: 14,
-                          color: AppColors.goldBright,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'PURIFY',
-                          style: GoogleFonts.cinzel(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.goldBright,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-
-                  // Talk to a Live Person (whispers26.com) Button
-                  InkWell(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      ExternalLaunchService.openLiveReader(context);
-                    },
+                ),
+                const SizedBox(width: 4),
+              ],
+              // Oracle Pro Action Button (Direct Paywall Access)
+              GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  OracleProModal.show(context);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: isPro
+                        ? AppColors.goldBright.withValues(alpha: 0.22)
+                        : AppColors.goldBright.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppColors.goldBright.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: AppColors.goldBright.withValues(alpha: 0.45),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.record_voice_over_outlined,
-                            color: AppColors.goldBright,
-                            size: 14,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'LIVE READER',
-                            style: GoogleFonts.cinzel(
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.goldBright,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                        ],
-                      ),
+                    border: Border.all(
+                      color: AppColors.goldBright.withValues(alpha: isPro ? 0.9 : 0.65),
+                      width: 1.1,
                     ),
                   ),
-                  const SizedBox(width: 6),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isPro ? Icons.workspace_premium : Icons.stars,
+                        size: 14,
+                        color: AppColors.goldBright,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        isPro ? 'PRO' : 'GO PRO',
+                        style: GoogleFonts.cinzel(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.goldBright,
+                          letterSpacing: 1.1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+
+              // Ambient Meditative Soundscape Button
+              const AmbientAudioButton(),
+              const SizedBox(width: 2),
+
+              // Daily Habit Streak Badge
+              const StreakBadge(),
+              const SizedBox(width: 2),
+
               // Theme Switcher Menu
               PopupMenuButton<String>(
                 icon: const Icon(Icons.palette_outlined, color: AppColors.goldBright, size: 20),
+                tooltip: 'Altar & Card Art Themes',
                 color: AppColors.backgroundMidnight,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -566,19 +392,12 @@ class TarotHeaderBar extends ConsumerWidget {
                       )),
                 ],
               ),
+              const SizedBox(width: 2),
 
-              // Daily Habit Streak Badge
-              const StreakBadge(),
-              const SizedBox(width: 6),
-
-              // Ambient Meditative Soundscape Button
-              const AmbientAudioButton(),
-              const SizedBox(width: 6),
-
-              // Divination Sanctuary Switcher (Runes & I Ching)
+              // Consolidated Grimoire & Sanctuary Hub
               PopupMenuButton<String>(
-                icon: const Icon(Icons.explore_outlined, color: AppColors.goldBright, size: 20),
-                tooltip: 'Sacred Divination Systems',
+                icon: const Icon(Icons.auto_stories, color: AppColors.goldBright, size: 20),
+                tooltip: 'Sacred Grimoire & Sanctuaries',
                 color: AppColors.backgroundMidnight,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -586,6 +405,29 @@ class TarotHeaderBar extends ConsumerWidget {
                 ),
                 onSelected: (val) {
                   switch (val) {
+                    case 'codex':
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const TarotCodexScreen()),
+                      );
+                      break;
+                    case 'journal':
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const ReadingsHistoryScreen()),
+                      );
+                      break;
+                    case 'almanac':
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const LunarAlmanacScreen()),
+                      );
+                      break;
+                    case 'chronicle':
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const SeekersChronicleScreen()),
+                      );
+                      break;
+                    case 'persona':
+                      OraclePersonaSelectorModal.show(context);
+                      break;
                     case 'runes':
                       Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => const RuneCastingScreen()),
@@ -621,14 +463,6 @@ class TarotHeaderBar extends ConsumerWidget {
                         MaterialPageRoute(builder: (_) => const TarotLensScreen()),
                       );
                       break;
-                    case 'chronicle':
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const SeekersChronicleScreen()),
-                      );
-                      break;
-                    case 'persona':
-                      OraclePersonaSelectorModal.show(context);
-                      break;
                     case 'smudge':
                       SmokePurificationModal.show(context);
                       break;
@@ -661,7 +495,70 @@ class TarotHeaderBar extends ConsumerWidget {
                   PopupMenuItem(
                     enabled: false,
                     child: Text(
-                      'SACRED SANCTUARIES',
+                      'ORACLE WISDOM & CODEX',
+                      style: GoogleFonts.cinzel(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.goldBright,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'codex',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.style_outlined, size: 16, color: AppColors.goldBright),
+                        const SizedBox(width: 8),
+                        Text('Sacred Tarot Codex', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'journal',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.auto_stories, size: 16, color: AppColors.goldBright),
+                        const SizedBox(width: 8),
+                        Text('Reading Journal & History', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'almanac',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.brightness_3, size: 16, color: AppColors.goldBright),
+                        const SizedBox(width: 8),
+                        Text('Lunar Almanac & Ephemeris', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'chronicle',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.menu_book, size: 16, color: AppColors.goldBright),
+                        const SizedBox(width: 8),
+                        Text("The Seeker's Chronicle", style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'persona',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.face_retouching_natural, size: 16, color: AppColors.goldBright),
+                        const SizedBox(width: 8),
+                        Text('Archetypal Oracle Personas', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuDivider(),
+                  PopupMenuItem(
+                    enabled: false,
+                    child: Text(
+                      'DIVINATION SANCTUARIES',
                       style: GoogleFonts.cinzel(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
@@ -741,56 +638,6 @@ class TarotHeaderBar extends ConsumerWidget {
                     ),
                   ),
                   PopupMenuItem(
-                    value: 'chronicle',
-                    child: Row(
-                      children: [
-                        const Text('📜', style: TextStyle(fontSize: 15)),
-                        const SizedBox(width: 8),
-                        Text("The Seeker's Chronicle", style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'persona',
-                    child: Row(
-                      children: [
-                        const Text('👁️', style: TextStyle(fontSize: 15)),
-                        const SizedBox(width: 8),
-                        Text('Archetypal Oracle Personas', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'smudge',
-                    child: Row(
-                      children: [
-                        const Text('🪵', style: TextStyle(fontSize: 15)),
-                        const SizedBox(width: 8),
-                        Text('Altar Smudge & Purification', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'crystals',
-                    child: Row(
-                      children: [
-                        const Text('🔮', style: TextStyle(fontSize: 15)),
-                        const SizedBox(width: 8),
-                        Text('Sacred Crystal Grid', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'breathe',
-                    child: Row(
-                      children: [
-                        const Text('🫁', style: TextStyle(fontSize: 15)),
-                        const SizedBox(width: 8),
-                        Text('4-7-8 Breath Centering', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
                     value: 'pathworking',
                     child: Row(
                       children: [
@@ -834,10 +681,8 @@ class TarotHeaderBar extends ConsumerWidget {
               ),
             ],
           ),
-        ),
+        ],
       ),
-    ],
-  ),
-);
+    );
   }
 }

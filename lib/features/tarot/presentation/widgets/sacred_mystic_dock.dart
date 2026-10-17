@@ -127,37 +127,60 @@ class SacredMysticDock extends StatelessWidget {
     bool isActive = false,
     required VoidCallback onTap,
   }) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(14),
-      onTap: () {
-        SensoryService().cardSelectionHaptic();
-        onTap();
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: isActive ? AppColors.goldBright.withValues(alpha: 0.18) : Colors.transparent,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isActive ? AppColors.goldBright : Colors.transparent,
-            width: 1,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(iconText, style: const TextStyle(fontSize: 15)),
-            const SizedBox(width: 6),
-            Text(
-              title,
-              style: GoogleFonts.cinzel(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: isActive ? AppColors.goldBright : AppColors.textPrimary,
-                letterSpacing: 1.0,
-              ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: () {
+          SensoryService().cardSelectionHaptic();
+          onTap();
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: isActive
+                ? AppColors.goldBright.withValues(alpha: 0.22)
+                : const Color(0xFF181522),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isActive
+                  ? AppColors.goldBright
+                  : AppColors.glassBorder.withValues(alpha: 0.65),
+              width: isActive ? 1.4 : 1.0,
             ),
-          ],
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: AppColors.goldBright.withValues(alpha: 0.35),
+                      blurRadius: 12,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(iconText, style: const TextStyle(fontSize: 15)),
+              const SizedBox(width: 7),
+              Text(
+                title,
+                style: GoogleFonts.cinzel(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.bold,
+                  color: isActive ? AppColors.goldBright : AppColors.textPrimary,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

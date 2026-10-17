@@ -132,12 +132,14 @@ void main() {
           'What fear does The Fool urge me to release?',
         ],
         personaId: 'high_priestess',
+        microRitual: 'Close your eyes for 60 seconds and breathe with The Fool.',
       );
 
       final json = jsonDecode(jsonEncode(reading.toJson())) as Map<String, dynamic>;
       expect(json['journey_recall'], contains('The Fool marks a cycle of rebirth'));
       expect(json['cosmic_weather'], contains('Gemini'));
       expect(json['persona_id'], 'high_priestess');
+      expect(json['micro_ritual'], contains('Close your eyes for 60 seconds'));
       expect(json['scrying_prompts'], hasLength(2));
 
       final reconstructed = Reading.fromJson(json);
@@ -146,10 +148,11 @@ void main() {
       expect(reconstructed.cosmicWeather, reading.cosmicWeather);
       expect(reconstructed.scryingPrompts, reading.scryingPrompts);
       expect(reconstructed.personaId, 'high_priestess');
+      expect(reconstructed.microRitual, reading.microRitual);
     });
 
-    // 6. consultOracle local fallback generates all enriched AI fields
-    test('consultOracle produces journey_recall, elemental_chemistry, cosmic_weather, and scrying_prompts', () async {
+    // 6. consultOracle local fallback generates all enriched AI fields including micro_ritual
+    test('consultOracle produces journey_recall, elemental_chemistry, cosmic_weather, micro_ritual, and scrying_prompts', () async {
       final repository = TarotRepository();
       final card = TarotCardData.allCards.firstWhere((c) => c.arcana == 'major');
 
@@ -164,11 +167,56 @@ void main() {
       expect(result['journey_recall'], isNotNull);
       expect(result['elemental_chemistry'], isNotNull);
       expect(result['cosmic_weather'], isNotNull);
+      expect(result['micro_ritual'], isNotNull);
+      expect(result['micro_ritual'].toString(), contains('60 seconds'));
       final prompts = result['scrying_prompts'] as List<dynamic>?;
       expect(prompts, isNotNull);
       expect(prompts!.length, 3);
       expect(result['interpretation'].toString().toUpperCase(), contains('THE HERMIT'));
     });
+
+    // 7. Master Hermeneutics: Optical Gaze & Karmic Crossroads
+    test('consultOracle calculates Karmic Soul Crossroads and Optical Gaze tension when multiple cards appear', () async {
+      final repository = TarotRepository();
+      final majorA = TarotCardData.allCards.firstWhere((c) => c.name == 'The Tower');
+      final majorB = TarotCardData.allCards.firstWhere((c) => c.name == 'The Star').copyWith(isReversed: true);
+
+      final result = await repository.consultOracle(
+        drawnCards: [majorA, majorB],
+        spreadType: SpreadType.threeFates,
+        question: 'Navigating profound upheaval',
+      );
+
+      final interpretation = result['interpretation'].toString();
+      expect(interpretation, contains('KARMIC SOUL CROSSROADS'));
+      expect(interpretation, contains('OPTICAL GAZE'));
+      expect(result['micro_ritual'], isNotNull);
+    });
+
+    // 8. Follow-up Dialogue Memory
+    test('askOracleFollowUp provides grounded archetypal response in context', () async {
+      final repository = TarotRepository();
+      final card = TarotCardData.allCards.firstWhere((c) => c.name == 'The Magician');
+      final reading = Reading(
+        id: 'r_follow_up_test',
+        question: 'How do I manifest my purpose?',
+        spreadType: SpreadType.dailyGuidance.id,
+        cards: [card],
+        interpretation: 'The Magician bridges the infinite into tangible reality.',
+        advice: 'Align sovereign will with compassionate action.',
+        createdAt: DateTime.now(),
+      );
+
+      final answer = await repository.askOracleFollowUp(
+        reading: reading,
+        userQuestion: 'How can I conquer my self-doubt?',
+        conversationHistory: [],
+      );
+
+      expect(answer, contains('The Magician'));
+      expect(answer, contains('self-doubt'));
+    });
+
 
     // 7. Widget Verification: SeekersChronicleScreen
     testWidgets('SeekersChronicleScreen renders cycle tabs and metrics cleanly', (tester) async {

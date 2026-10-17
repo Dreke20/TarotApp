@@ -138,7 +138,9 @@ To test premium features (Celtic Cross 10-card spread, multi-turn AI conversatio
 
 ## 🎯 Section 6: Official URLs for Play Console
 
-- **Privacy Policy URL:** `https://oraculumtarot.com/privacy-policy` (or raw GitHub markdown URL: `https://raw.githubusercontent.com/Dreke20/TarotApp/main/PRIVACY_POLICY.md`)
-- **Account & Data Deletion URL:** `https://oraculumtarot.com/delete-account`
-- **Support Email:** `privacy@oraculumtarot.com` / `sanctuary@oraculumtarot.com`
-- **Developer Website:** `https://oraculumtarot.com`
+- **Privacy Policy URL:** `https://github.com/Dreke20/TarotApp/blob/main/PRIVACY_POLICY.md`  
+  *(Raw alternative: `https://raw.githubusercontent.com/Dreke20/TarotApp/main/PRIVACY_POLICY.md`)*
+- **Account & Data Deletion URL:** `https://github.com/Dreke20/TarotApp/blob/main/ACCOUNT_DELETION.md`  
+  *(Raw alternative: `https://raw.githubusercontent.com/Dreke20/TarotApp/main/ACCOUNT_DELETION.md`)*
+- **Support / Privacy Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
+- **Developer Website / Repository:** `https://github.com/Dreke20/TarotApp`

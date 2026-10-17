@@ -35,25 +35,71 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
-  Future<void> signIn(String email, String password) async {
+  Future<bool> signIn(String email, String password) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final profile = await _repository.signInWithEmail(email, password);
       state = state.copyWith(profile: profile, isLoading: false);
+      return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: _formatAuthError(e));
+      return false;
     }
   }
 
-  Future<void> signUp(String email, String password, String displayName) async {
+  Future<bool> signUp(
+    String email,
+    String password,
+    String displayName, {
+    String? sunSign,
+  }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      final profile =
+      var profile =
           await _repository.signUpWithEmail(email, password, displayName);
+      if (sunSign != null) {
+        profile = profile.copyWith(zodiacSign: sunSign);
+        await _repository.updateProfile(profile);
+      }
       state = state.copyWith(profile: profile, isLoading: false);
+      return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: _formatAuthError(e));
+      return false;
     }
+  }
+
+  Future<bool> sendPasswordReset(String email) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      await _repository.sendPasswordReset(email);
+      state = state.copyWith(isLoading: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, errorMessage: _formatAuthError(e));
+      return false;
+    }
+  }
+
+  void clearError() {
+    state = state.copyWith(errorMessage: null);
+  }
+
+  String _formatAuthError(Object error) {
+    final str = error.toString();
+    if (str.contains('Invalid login credentials')) {
+      return 'Incorrect email or password. Please verify your credentials.';
+    }
+    if (str.contains('User already registered') || str.contains('already exists')) {
+      return 'An account with this email already exists. Try signing in.';
+    }
+    if (str.contains('Password should be at least')) {
+      return 'Your password must be at least 6 characters.';
+    }
+    if (str.contains('valid email')) {
+      return 'Please enter a valid email address.';
+    }
+    return str.replaceFirst('Exception: ', '').replaceFirst('AuthException: ', '');
   }
 
   Future<void> updateZodiacSigns({
@@ -128,7 +174,17 @@ class AuthNotifier extends _$AuthNotifier {
     }
     await loadProfile();
   }
+
+  Future<void> deleteAccount() async {
+    try {
+      await _repository.deleteAccount();
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
+    }
+    await loadProfile();
+  }
 }
+
 
 @riverpod
 bool isProUser(Ref ref) {

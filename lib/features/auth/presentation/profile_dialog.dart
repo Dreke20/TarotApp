@@ -4,10 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/services/external_launch_service.dart';
 import '../../../core/services/sensory_service.dart';
 import '../../tarot/data/tarot_repository.dart';
 import '../../tarot/presentation/widgets/glass_container.dart';
 import '../../subscription/presentation/oracle_pro_modal.dart';
+import 'auth_modal.dart';
 import 'auth_notifier.dart';
 
 class ProfileDialog extends ConsumerStatefulWidget {
@@ -171,6 +173,157 @@ class _ProfileDialogState extends ConsumerState<ProfileDialog> {
                   ),
                 ],
               ),
+
+              // Guest Seeker Authentication Banner (Log In & Sign Up)
+              if (authState.isGuest) ...[
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.goldBright.withValues(alpha: 0.12),
+                        AppColors.cosmicSurface.withValues(alpha: 0.35),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppColors.goldBright.withValues(alpha: 0.45),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.shield_outlined, color: AppColors.goldBright, size: 16),
+                          const SizedBox(width: 6),
+                          Text(
+                            'GUEST SEEKER SESSION',
+                            style: GoogleFonts.cinzel(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.goldBright,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Sign in or create an account to save your tarot journal, sync readings across devices, and preserve your cosmic ephemeris.',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          color: AppColors.textSecondary,
+                          height: 1.35,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(color: AppColors.goldBright, width: 1.1),
+                                padding: const EdgeInsets.symmetric(vertical: 9),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                AuthModal.show(context, initialTab: AuthTab.signIn);
+                              },
+                              child: Text(
+                                'LOG IN',
+                                style: GoogleFonts.cinzel(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.goldBright,
+                                  letterSpacing: 1.1,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.goldBright,
+                                foregroundColor: AppColors.backgroundDeep,
+                                padding: const EdgeInsets.symmetric(vertical: 9),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                elevation: 2,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                AuthModal.show(context, initialTab: AuthTab.signUp);
+                              },
+                              child: Text(
+                                'SIGN UP',
+                                style: GoogleFonts.cinzel(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.1,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ] else ...[
+                // When authenticated with an account, show sign out option
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.glassFillStrong,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.glassBorder),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.verified, color: AppColors.goldBright, size: 15),
+                          const SizedBox(width: 6),
+                          Text(
+                            'CONSECRATED ACCOUNT',
+                            style: GoogleFonts.cinzel(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.goldBright,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextButton.icon(
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.goldMuted,
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        ),
+                        icon: const Icon(Icons.logout, size: 14),
+                        label: Text(
+                          'SIGN OUT',
+                          style: GoogleFonts.cinzel(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onPressed: () => _confirmSignOut(context),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
 
               if (profile?.isPro != true) ...[
                 const SizedBox(height: 14),
@@ -454,6 +607,52 @@ class _ProfileDialogState extends ConsumerState<ProfileDialog> {
               ),
               const SizedBox(height: 8),
 
+              // Legal & Subscription Governance Links
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () => ExternalLaunchService.openTermsOfService(context),
+                    child: Text(
+                      'Terms of Service',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10,
+                        color: AppColors.goldMuted,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                  Text('  •  ', style: TextStyle(color: AppColors.textMuted.withValues(alpha: 0.5), fontSize: 10)),
+                  GestureDetector(
+                    onTap: () => ExternalLaunchService.openPrivacyPolicy(context),
+                    child: Text(
+                      'Privacy Policy',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10,
+                        color: AppColors.goldMuted,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                  if (profile?.isPro == true) ...[
+                    Text('  •  ', style: TextStyle(color: AppColors.textMuted.withValues(alpha: 0.5), fontSize: 10)),
+                    GestureDetector(
+                      onTap: () => ExternalLaunchService.openManageSubscriptions(context),
+                      child: Text(
+                        'Subscriptions',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10,
+                          color: AppColors.goldMuted,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              const SizedBox(height: 8),
+
               // Account & Data Privacy (Google Play Account Deletion Policy)
               Center(
                 child: TextButton.icon(
@@ -533,21 +732,99 @@ class _ProfileDialogState extends ConsumerState<ProfileDialog> {
                 Navigator.of(ctx).pop();
                 Navigator.of(context).pop();
                 try {
+                  await ref.read(tarotRepositoryProvider).purgeAllUserData();
+                  await ref.read(authNotifierProvider.notifier).deleteAccount();
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.clear();
-                  await ref.read(authNotifierProvider.notifier).signOut();
                 } catch (_) {}
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('All personal data and account records have been purged.'),
+                      content: Text('All personal data and account records have been permanently purged.'),
                       backgroundColor: Color(0xFF450A0A),
                     ),
                   );
                 }
               },
+
               child: Text(
                 'DELETE EVERYTHING',
+                style: GoogleFonts.cinzel(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _confirmSignOut(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: AppColors.backgroundMidnight,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+            side: const BorderSide(color: AppColors.glassBorder),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.logout, color: AppColors.goldBright, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'SIGN OUT',
+                style: GoogleFonts.cinzel(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.goldBright,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            'Are you sure you want to sign out of your sacred account? You will return to a local guest session.',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 12.5,
+              color: AppColors.textPrimary,
+              height: 1.4,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(
+                'CANCEL',
+                style: GoogleFonts.cinzel(
+                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.goldBright,
+                foregroundColor: AppColors.backgroundDeep,
+              ),
+              onPressed: () async {
+                Navigator.of(ctx).pop();
+                Navigator.of(context).pop();
+                await ref.read(authNotifierProvider.notifier).signOut();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('✨ Successfully signed out. Returned to guest session.'),
+                      backgroundColor: AppColors.cosmicSurface,
+                    ),
+                  );
+                }
+              },
+              child: Text(
+                'SIGN OUT',
                 style: GoogleFonts.cinzel(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,

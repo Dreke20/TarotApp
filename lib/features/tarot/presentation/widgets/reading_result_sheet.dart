@@ -278,8 +278,12 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                         if (_isPlayingNarration) {
                           await voice.stop();
                         } else {
-                          final textToSpeak = "${reading.summary} ${reading.interpretation} Guidance: ${reading.advice}";
+                          final ritualText = (reading.microRitual != null && reading.microRitual!.isNotEmpty)
+                              ? " Somatic Integration Ritual: ${reading.microRitual}"
+                              : "";
+                          final textToSpeak = "${reading.summary} ${reading.interpretation} Guidance: ${reading.advice}$ritualText";
                           await voice.speak(textToSpeak, persona: persona);
+
                         }
                       },
                       child: Container(
@@ -672,9 +676,62 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                       const SizedBox(height: 22),
                     ],
 
+                    // 60-Second Somatic Integration Ritual
+                    if (reading.microRitual != null && reading.microRitual!.isNotEmpty) ...[
+                      Text(
+                        '60-SECOND SOMATIC INTEGRATION RITUAL',
+                        style: GoogleFonts.cinzel(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.goldBright,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xFF1E1630),
+                              AppColors.cosmicSurface.withValues(alpha: 0.6),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: AppColors.goldBright.withValues(alpha: 0.45),
+                          ),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.hourglass_top_rounded,
+                              color: AppColors.goldBright,
+                              size: 22,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                reading.microRitual!,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 13,
+                                  color: AppColors.textPrimary,
+                                  height: 1.5,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 22),
+                    ],
+
                     // --- CONVERSATIONAL FOLLOW-UP CHAT ---
                     Text(
                       'DIALOGUE WITH THE ORACLE',
+
                       style: GoogleFonts.cinzel(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../domain/spread_type.dart';
@@ -69,34 +70,59 @@ class SpreadSelector extends StatelessWidget {
     final isSelected = selectedSpread == type;
 
     return GlassContainer(
-      onTap: () => onSpreadChanged(type),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-      borderRadius: 16,
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onSpreadChanged(type);
+      },
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      borderRadius: 18,
       fillColor: isSelected
-          ? AppColors.glassFillStrong
-          : AppColors.glassFill.withValues(alpha: 0.05),
+          ? AppColors.goldBright.withValues(alpha: 0.18)
+          : const Color(0xFF161320),
       borderColor: isSelected
           ? AppColors.goldBright
-          : AppColors.glassBorder.withValues(alpha: 0.4),
-      borderWidth: isSelected ? 1.5 : 1.0,
+          : AppColors.glassBorder.withValues(alpha: 0.65),
+      borderWidth: isSelected ? 1.6 : 1.1,
       shadows: isSelected
           ? [
               BoxShadow(
-                color: AppColors.goldBright.withValues(alpha: 0.25),
-                blurRadius: 16,
+                color: AppColors.goldBright.withValues(alpha: 0.35),
+                blurRadius: 18,
                 spreadRadius: 1,
+                offset: const Offset(0, 2),
               ),
             ]
-          : null,
+          : [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.35),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            ],
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 18,
-            color: isSelected ? AppColors.goldBright : AppColors.textSecondary,
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isSelected
+                  ? AppColors.goldBright.withValues(alpha: 0.25)
+                  : AppColors.glassFillStrong,
+              border: Border.all(
+                color: isSelected
+                    ? AppColors.goldBright
+                    : AppColors.goldBright.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
+            child: Icon(
+              icon,
+              size: 16,
+              color: isSelected ? AppColors.goldBright : AppColors.textSecondary,
+            ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -106,19 +132,20 @@ class SpreadSelector extends StatelessWidget {
                   Text(
                     type.title,
                     style: GoogleFonts.cinzel(
-                      fontSize: 11.5,
+                      fontSize: 12,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                       color: isSelected ? AppColors.goldBright : AppColors.textPrimary,
+                      letterSpacing: 0.6,
                     ),
                   ),
                   if (isPro) ...[
                     const SizedBox(width: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
                       decoration: BoxDecoration(
-                        color: AppColors.goldBright.withValues(alpha: 0.2),
+                        color: AppColors.goldBright.withValues(alpha: 0.22),
                         borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: AppColors.goldBright, width: 0.8),
+                        border: Border.all(color: AppColors.goldBright, width: 0.9),
                       ),
                       child: Text(
                         'PRO',
@@ -132,10 +159,12 @@ class SpreadSelector extends StatelessWidget {
                   ],
                 ],
               ),
+              const SizedBox(height: 2),
               Text(
                 '${type.cardCount} ${type.cardCount == 1 ? "Card" : "Cards"}',
                 style: GoogleFonts.plusJakartaSans(
-                  fontSize: 9.5,
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                   color: isSelected
                       ? AppColors.etherealLavender
                       : AppColors.textMuted,

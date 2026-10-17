@@ -13,8 +13,27 @@ import 'features/tarot/presentation/screens/tarot_table_screen.dart';
 import 'features/tarot/services/tarot_widget_service.dart';
 import 'core/services/sensory_service.dart';
 
+import 'dart:ui' show PlatformDispatcher;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Global uncaught error handling to prevent hard crashes in release
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint('[Oraculum Error] ${details.exceptionAsString()}');
+  };
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('[Oraculum Async Error] $error');
+    return true; // Handled safely to prevent crash
+  };
+
+  // Lock preferred orientation to portrait for sacred card table geometry
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   // Immersive edge-to-edge UI style
   SystemChrome.setSystemUIOverlayStyle(
