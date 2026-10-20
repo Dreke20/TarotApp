@@ -227,7 +227,7 @@ class _TarotCardWidgetState extends State<TarotCardWidget>
               Image.asset(
                 cardAsset,
                 fit: BoxFit.cover,
-                cacheWidth: (widget.width * MediaQuery.devicePixelRatioOf(context)).round().clamp(200, 1024),
+                cacheWidth: (((widget.width.isFinite ? widget.width : 280) * MediaQuery.devicePixelRatioOf(context)).round()).clamp(200, 1024),
                 errorBuilder: (context, error, stackTrace) {
                   return _buildProceduralCardFront(card, isReversed);
                 },
