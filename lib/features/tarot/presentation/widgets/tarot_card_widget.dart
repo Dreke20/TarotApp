@@ -5,14 +5,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/holographic_foil_card.dart';
+import '../../domain/card_deck_style.dart';
 import '../../domain/tarot_card.dart';
 import '../../domain/tarot_deck_theme.dart';
 import '../notifiers/card_back_notifier.dart';
+import '../notifiers/deck_style_notifier.dart';
 import 'card_back_design_painter.dart';
 
 /// Interactive 3D Flippable Tarot Card with sacred geometry styling,
 /// gold foil borders, and dynamic orientation handling.
-class TarotCardWidget extends StatefulWidget {
+class TarotCardWidget extends ConsumerStatefulWidget {
   final TarotCard card;
   final bool isFaceUp;
   final VoidCallback? onTap;
@@ -21,6 +23,7 @@ class TarotCardWidget extends StatefulWidget {
   final int index;
   final bool isSelected;
   final TarotDeckTheme deckTheme;
+  final CardDeckStyle? deckStyleOverride;
 
   const TarotCardWidget({
     super.key,
@@ -32,13 +35,14 @@ class TarotCardWidget extends StatefulWidget {
     this.index = 0,
     this.isSelected = false,
     this.deckTheme = TarotDeckTheme.classic,
+    this.deckStyleOverride,
   });
 
   @override
-  State<TarotCardWidget> createState() => _TarotCardWidgetState();
+  ConsumerState<TarotCardWidget> createState() => _TarotCardWidgetState();
 }
 
-class _TarotCardWidgetState extends State<TarotCardWidget>
+class _TarotCardWidgetState extends ConsumerState<TarotCardWidget>
     with SingleTickerProviderStateMixin {
   late final AnimationController _flipController;
   late final Animation<double> _animation;
@@ -188,6 +192,8 @@ class _TarotCardWidgetState extends State<TarotCardWidget>
     final card = widget.card;
     final isReversed = card.isReversed;
     final cardAsset = card.assetPath ?? 'assets/cards/${card.id}.jpg';
+    final CardDeckStyle activeStyle =
+        widget.deckStyleOverride ?? ref.watch(deckStyleProvider);
 
     return HolographicFoilCard(
       borderRadius: BorderRadius.circular(14),
@@ -197,93 +203,98 @@ class _TarotCardWidgetState extends State<TarotCardWidget>
         width: widget.width,
         height: widget.height,
         decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        gradient: AppColors.cardFaceGradient,
-        border: Border.all(
-          color: widget.isSelected
-              ? AppColors.goldBright
-              : widget.deckTheme.accentColor.withValues(alpha: 0.7),
-          width: widget.isSelected ? 2.0 : 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
+          borderRadius: BorderRadius.circular(14),
+          gradient: AppColors.cardFaceGradient,
+          border: Border.all(
             color: widget.isSelected
-                ? widget.deckTheme.accentColor.withValues(alpha: 0.45)
-                : AppColors.cosmicSurface.withValues(alpha: 0.6),
-            blurRadius: widget.isSelected ? 20 : 16,
-            spreadRadius: widget.isSelected ? 2 : 0,
-            offset: const Offset(0, 8),
+                ? AppColors.goldBright
+                : activeStyle.primaryAccent.withValues(alpha: 0.7),
+            width: widget.isSelected ? 2.0 : 1.5,
           ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(13),
-        child: Transform.rotate(
-          angle: isReversed ? pi : 0,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              // 1. High-resolution card artwork with seamless procedural fallback and GPU memory cache sizing
-              Image.asset(
-                cardAsset,
-                fit: BoxFit.cover,
-                cacheWidth: (((widget.width.isFinite ? widget.width : 280) * MediaQuery.devicePixelRatioOf(context)).round()).clamp(200, 1024),
-                errorBuilder: (context, error, stackTrace) {
-                  return _buildProceduralCardFront(card, isReversed);
-                },
-              ),
-
-              // 2. Subtle glass rim over artwork
-              Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(13),
-                    border: Border.all(
-                      color: AppColors.goldMuted.withValues(alpha: 0.35),
-                      width: 0.8,
-                    ),
+          boxShadow: [
+            BoxShadow(
+              color: widget.isSelected
+                  ? activeStyle.primaryAccent.withValues(alpha: 0.45)
+                  : AppColors.cosmicSurface.withValues(alpha: 0.6),
+              blurRadius: widget.isSelected ? 20 : 16,
+              spreadRadius: widget.isSelected ? 2 : 0,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(13),
+          child: Transform.rotate(
+            angle: isReversed ? pi : 0,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // 1. High-resolution card artwork with dynamic deck color filtering & GPU cache
+                ColorFiltered(
+                  colorFilter: activeStyle.colorFilter ??
+                      const ColorFilter.mode(Colors.transparent, BlendMode.dst),
+                  child: Image.asset(
+                    cardAsset,
+                    fit: BoxFit.cover,
+                    cacheWidth: (((widget.width.isFinite ? widget.width : 280) * MediaQuery.devicePixelRatioOf(context)).round()).clamp(200, 1024),
+                    errorBuilder: (context, error, stackTrace) {
+                      return _buildProceduralCardFront(card, isReversed, activeStyle);
+                    },
                   ),
                 ),
-              ),
 
-              // 3. Reversed badge if orientation is reversed
-              if (isReversed)
-                Positioned(
-                  bottom: 8,
-                  left: 6,
-                  right: 6,
-                  child: Center(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.8),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(
-                          color: const Color(0xFFFF8B8B).withValues(alpha: 0.8),
-                          width: 0.8,
-                        ),
-                      ),
-                      child: Text(
-                        'REVERSED',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 7.5,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFFFF8B8B),
-                          letterSpacing: 0.8,
-                        ),
+                // 2. Subtle glass rim & deck accent foil over artwork
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(13),
+                      border: Border.all(
+                        color: activeStyle.primaryAccent.withValues(alpha: 0.35),
+                        width: 0.8,
                       ),
                     ),
                   ),
                 ),
-            ],
+
+                // 3. Reversed badge if orientation is reversed
+                if (isReversed)
+                  Positioned(
+                    bottom: 8,
+                    left: 6,
+                    right: 6,
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.8),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: const Color(0xFFFF8B8B).withValues(alpha: 0.8),
+                            width: 0.8,
+                          ),
+                        ),
+                        child: Text(
+                          'REVERSED',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 7.5,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFFFF8B8B),
+                            letterSpacing: 0.8,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-  Widget _buildProceduralCardFront(TarotCard card, bool isReversed) {
+  Widget _buildProceduralCardFront(TarotCard card, bool isReversed, [CardDeckStyle? style]) {
+    final accent = style?.primaryAccent ?? AppColors.goldMuted;
     return Stack(
       children: [
         // Inner golden filigree boundary
@@ -293,7 +304,7 @@ class _TarotCardWidgetState extends State<TarotCardWidget>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                color: AppColors.goldMuted.withValues(alpha: 0.5),
+                color: accent.withValues(alpha: 0.5),
                 width: 0.8,
               ),
             ),

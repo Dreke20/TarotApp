@@ -11,6 +11,8 @@ import '../notifiers/reading_notifier.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/tarot_card_widget.dart';
 import '../notifiers/oracle_persona_notifier.dart';
+import '../widgets/deck_switcher_modal.dart';
+import '../../../wallpaper/presentation/screens/wallpaper_studio_screen.dart';
 import '../../../monetization/presentation/widgets/mystic_ad_banner.dart';
 
 /// The Sacred Tarot Codex: Interactive Compendium & Gallery of all 78 Cards
@@ -303,6 +305,35 @@ class _TarotCodexScreenState extends ConsumerState<TarotCodexScreen> {
                             iconColor: const Color(0xFFFF8B8B),
                             content: card.meaningReversed,
                           ),
+                          const SizedBox(height: 14),
+
+                          // Wallpaper Forge Button
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                WallpaperStudioScreen.show(context, card: card);
+                              },
+                              icon: const Icon(Icons.wallpaper, color: AppColors.goldBright, size: 16),
+                              label: Text(
+                                'FORGE SACRED 4K WALLPAPER',
+                                style: GoogleFonts.cinzel(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.goldBright,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(color: AppColors.goldBright.withValues(alpha: 0.5)),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -420,6 +451,16 @@ class _TarotCodexScreenState extends ConsumerState<TarotCodexScreen> {
                             ),
                           ],
                         ),
+                      ),
+                      IconButton(
+                        tooltip: 'Deck Sanctuary',
+                        icon: const Icon(Icons.auto_awesome, color: AppColors.goldBright, size: 20),
+                        onPressed: () => DeckSwitcherModal.show(context),
+                      ),
+                      IconButton(
+                        tooltip: 'Wallpaper Studio',
+                        icon: const Icon(Icons.wallpaper, color: AppColors.goldBright, size: 20),
+                        onPressed: () => WallpaperStudioScreen.show(context),
                       ),
                     ],
                   ),

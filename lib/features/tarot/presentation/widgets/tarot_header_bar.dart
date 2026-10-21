@@ -27,6 +27,8 @@ import '../../../altar/presentation/widgets/smoke_purification_modal.dart';
 import '../../../altar/presentation/widgets/sacred_breathing_modal.dart';
 import '../../../altar/presentation/widgets/altar_cloth_selector_modal.dart';
 import 'card_back_selector_modal.dart';
+import 'deck_switcher_modal.dart';
+import '../../../wallpaper/presentation/screens/wallpaper_studio_screen.dart';
 import '../../../meditation/presentation/screens/pathworking_sanctuary_screen.dart';
 import '../../../notifications/presentation/widgets/cosmic_notification_modal.dart';
 import '../../../subscription/presentation/oracle_pro_modal.dart';
@@ -267,6 +269,10 @@ class TarotHeaderBar extends ConsumerWidget {
                     CardBackSelectorModal.show(context);
                   } else if (value == 'altar_cloths') {
                     AltarClothSelectorModal.show(context);
+                  } else if (value == 'deck_styles') {
+                    DeckSwitcherModal.show(context);
+                  } else if (value == 'wallpaper_studio') {
+                    WallpaperStudioScreen.show(context);
                   } else if (value.startsWith('deck:')) {
                     final themeId = value.replaceFirst('deck:', '');
                     final theme = TarotDeckTheme.values.firstWhere((t) => t.id == themeId);
@@ -283,6 +289,40 @@ class TarotHeaderBar extends ConsumerWidget {
                   }
                 },
                 itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'deck_styles',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.auto_awesome, size: 16, color: AppColors.goldBright),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Deck Sanctuary & Styles',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.goldBright,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'wallpaper_studio',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.wallpaper, size: 16, color: AppColors.goldBright),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Sacred Wallpaper Studio',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.goldBright,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   PopupMenuItem(
                     value: 'card_backs',
                     child: Row(

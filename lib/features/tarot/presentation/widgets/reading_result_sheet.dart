@@ -13,6 +13,8 @@ import 'glass_container.dart';
 import 'live_reader_card.dart';
 import 'social_share_card.dart';
 import 'social_story_export_modal.dart';
+import 'deck_switcher_modal.dart';
+import '../../../wallpaper/presentation/screens/wallpaper_studio_screen.dart';
 import 'tarot_card_widget.dart';
 
 /// Immersive Glassmorphic Bottom Sheet displaying the AI Oracle's reading,
@@ -358,36 +360,100 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                         separatorBuilder: (_, _) => const SizedBox(width: 12),
                         itemBuilder: (context, index) {
                           final card = reading.cards[index];
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              TarotCardWidget(
+                          return GestureDetector(
+                            onTap: () {
+                              WallpaperStudioScreen.show(
+                                context,
                                 card: card,
-                                isFaceUp: true,
-                                width: 85,
-                                height: 125,
-                                index: index,
-                                deckTheme: state.deckTheme,
-                              ),
-                              const SizedBox(height: 4),
-                              SizedBox(
-                                width: 90,
-                                child: Text(
-                                  card.positionName ?? 'Card ${index + 1}',
-                                  textAlign: TextAlign.center,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 9,
-                                    color: AppColors.etherealLavender,
-                                    fontWeight: FontWeight.w600,
+                                isReversed: card.isReversed,
+                              );
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                TarotCardWidget(
+                                  card: card,
+                                  isFaceUp: true,
+                                  width: 85,
+                                  height: 125,
+                                  index: index,
+                                  deckTheme: state.deckTheme,
+                                ),
+                                const SizedBox(height: 4),
+                                SizedBox(
+                                  width: 90,
+                                  child: Text(
+                                    card.positionName ?? 'Card ${index + 1}',
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 9,
+                                      color: AppColors.etherealLavender,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           );
                         },
                       ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Quick Action Row: Sacred Wallpaper Studio & Deck Sanctuary
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              final firstCard = reading.cards.isNotEmpty ? reading.cards.first : null;
+                              WallpaperStudioScreen.show(
+                                context,
+                                card: firstCard,
+                                isReversed: firstCard?.isReversed ?? false,
+                              );
+                            },
+                            icon: const Icon(Icons.wallpaper, size: 14, color: AppColors.goldBright),
+                            label: Text(
+                              'SACRED WALLPAPER',
+                              style: GoogleFonts.cinzel(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.goldBright,
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: AppColors.goldBright.withValues(alpha: 0.35)),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () => DeckSwitcherModal.show(context),
+                            icon: const Icon(Icons.auto_awesome, size: 14, color: AppColors.goldBright),
+                            label: Text(
+                              'DECK SANCTUARY',
+                              style: GoogleFonts.cinzel(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.goldBright,
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: AppColors.goldBright.withValues(alpha: 0.35)),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 18),
 
