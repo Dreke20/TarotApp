@@ -147,12 +147,12 @@ timeline
    - [x] **Collapsible Mystic Banners ([`MysticAdBanner`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/lib/features/monetization/presentation/widgets/mystic_ad_banner.dart)):** Gold-framed dark obsidian banner placed unobtrusively at the foot of secondary compendiums ([`TarotCodexScreen`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/lib/features/tarot/presentation/screens/tarot_codex_screen.dart) and [`ReadingsHistoryScreen`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/lib/features/tarot/presentation/screens/readings_history_screen.dart)), collapsible by the user, and never placed on the active tarot altar.
    - [x] **Absolute Pro Suppression:** When a seeker unlocks Oracle Pro (`isProUserProvider`), 100% of ads (banners, interstitials, and rewarded prompts) are suppressed and vanish across all screens.
 
-8. **Whispers and Warnings Luxury Gothic Minor Arcana Art Pipeline (In Progress 🎨 - 76/78 Cards Complete • 97.4%):**
+8. **Whispers and Warnings Luxury Gothic Minor Arcana Art Pipeline (Completed 🎨 - 78/78 Cards Complete • 100% 🌟):**
    - [x] **Major Arcana (22/22 Complete ✅):** Full 22 Major Arcana cards in obsidian black frame with 24k antique gold filigree and Roman numeral medallions.
    - [x] **Suit of Wands (14/14 Complete ✅):** Ace through 10, Page, Knight, Queen, King depicting the sacred elemental fire of willpower, inspiration, and creative energy.
    - [x] **Suit of Cups (14/14 Complete ✅):** Ace through 10, Page, Knight, Queen, King capturing the fluid elemental water of intuition, emotional depths, romantic harmony, and spiritual chalices.
    - [x] **Suit of Swords (14/14 Complete ✅):** Full 14 cards complete! Ace through 10, Page, Knight, Queen, and King of Swords depicting the sharp elemental air of intellect, truth, sorrow, mental respite, and clarity before dawn.
-   - [x] **Suit of Pentacles (12/14 Complete 🪙 • 85.7%):** Ace through 10, Page of Pentacles, and Knight of Pentacles complete! Depicting the elemental earth of material wealth, craftsmanship, manifestation, diligence, and steadfast honor. (Final 2 Court cards: Queen and King of Pentacles scheduled for generation at 20:25 UTC when quota resets).
+   - [x] **Suit of Pentacles (14/14 Complete ✅):** Full 14 cards complete! Ace through 10, Page, Knight, Queen, and King of Pentacles depicting the elemental earth of material wealth, craftsmanship, manifestation, diligence, and steadfast honor. Full 78-card canon 100% finished!
 
 9. **Android Home Screen / Glance Widget (Completed ✅):**
    - [x] **Native AppWidget Architecture:** Built [`OraculumWidgetProvider`](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/android/app/src/main/kotlin/com/tarotapp/tarot_app/OraculumWidgetProvider.kt) with RemoteViews layout in luxury obsidian gradient and antique gold borders (`widget_bg.xml`, `widget_gold_badge.xml`, `widget_gold_button.xml`).
