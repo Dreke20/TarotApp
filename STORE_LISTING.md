@@ -93,9 +93,9 @@ Oraculum is intended solely for personal reflection, meditation, and creative mi
 
 - **Developer / Publisher Name:** Rodriguez Edwards / Oraculum Sanctuary
 - **Contact / Support Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
-- **Developer Website / Landing Page:** `https://<your-site-name>.netlify.app` *(or `https://github.com/Dreke20/TarotApp`)*
-- **Privacy Policy URL:** `https://<your-site-name>.netlify.app/privacy` *(or `https://github.com/Dreke20/TarotApp/blob/main/PRIVACY_POLICY.md`)*
-- **Account Deletion URL:** `https://<your-site-name>.netlify.app/delete-account` *(or `https://github.com/Dreke20/TarotApp/blob/main/ACCOUNT_DELETION.md`)*
+- **Developer Website / Landing Page:** `https://oracalum.netlify.app`
+- **Privacy Policy URL:** `https://oracalum.netlify.app/privacy`
+- **Account Deletion URL:** `https://oracalum.netlify.app/delete-account`
 
 ---
 

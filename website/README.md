@@ -30,10 +30,8 @@ Netlify provides free static hosting with global SSL certificates, ultra-fast CD
    `c:\Users\dreke\OneDrive\Desktop\TarotApp\`
 4. Drag and drop the **`website`** folder directly into the browser window.
 5. Netlify will deploy your site in ~3 seconds and give you a live URL!
-6. **Rename your site (Optional):**
-   - In the Netlify dashboard, go to **Site configuration > Change site name**.
-   - Set it to something memorable like `oraculum-tarot` or `oraculum-sanctuary`.
-   - Your live site will now be: `https://oraculum-tarot.netlify.app`!
+6. **Your Live Website:**
+   - Your live site is active at: **`https://oracalum.netlify.app`**!
 
 ---
 
@@ -65,11 +63,12 @@ Log in when prompted by the browser, select **"Create & configure a new site"**,
 
 ## 📋 Google Play Console Store Links
 
-Once published on Netlify (e.g. `https://oraculum-tarot.netlify.app`), copy these exact links into your **Google Play Console**:
+Copy these exact links directly into your **Google Play Console**:
 
 1. **Privacy Policy URL:**  
-   `https://oraculum-tarot.netlify.app/privacy`
+   `https://oracalum.netlify.app/privacy`
 2. **Account Deletion URL:**  
-   `https://oraculum-tarot.netlify.app/delete-account`
+   `https://oracalum.netlify.app/delete-account`
 3. **Developer Website:**  
-   `https://oraculum-tarot.netlify.app/`
+   `https://oracalum.netlify.app/`
+

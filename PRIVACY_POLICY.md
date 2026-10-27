@@ -66,7 +66,7 @@ If you explore Oraculum as an anonymous guest without signing in, all card draws
 - **Encryption in Transit & at Rest:** All network communication is enforced over TLS 1.3 / HTTPS (`cleartextTrafficPermitted="false"`). Server databases enforce PostgreSQL Row Level Security (RLS) restricting all access to `auth.uid()`.
 - **In-App Account & Data Deletion:** Seekers can delete their account and purge all cloud records instantly inside the application by navigating to **Profile > DELETE ACCOUNT & DATA**. This immediately purges your Supabase profile, cloud reading history, and clears local cached storage.
 - **Web-Based Deletion Portal:** In compliance with Google Play policies, seekers can also request complete account and data deletion online without opening the application:  
-  - **Portal URL:** `https://oraculumtarot.com/delete-account`  
+  - **Portal URL:** `https://oracalum.netlify.app/delete-account`  
   - **Public Repository Form:** `https://github.com/Dreke20/TarotApp/blob/main/ACCOUNT_DELETION.md`  
   - **Email Request:** Email `privacy@oraculumtarot.com` or `dreke.dev@gmail.com` with the subject *"Data Deletion Request"*. All records will be permanently erased within 30 days.
 
@@ -93,6 +93,6 @@ Oraculum is designed for seekers aged **13 and older** (Teen / Everyone 10+). We
 ### 8. Contact & Sanctuary Desk
 For inquiries, rights requests, or feedback regarding this Privacy Policy:
 - **Privacy & Security Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
-- **Official Website:** `https://oraculumtarot.com`
-- **Account Deletion Portal:** `https://oraculumtarot.com/delete-account`
+- **Official Website:** `https://oracalum.netlify.app`
+- **Account Deletion Portal:** `https://oracalum.netlify.app/delete-account`
 - **Developer GitHub:** `https://github.com/Dreke20/TarotApp`

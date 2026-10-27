@@ -81,7 +81,7 @@ In the left-hand navigation menu, scroll down to **Grow** and click **Store pres
   - **Tags:** Click *Manage tags*, search and select: `Astrology`, `Lifestyle`, `Meditation`, `Entertainment`.
   - **Store listing contact details:**
     - **Email address:** `privacy@oraculumtarot.com` (or your personal developer email `dreke.dev@gmail.com`)
-    - **Website URL:** `https://github.com/Dreke20/TarotApp`
+    - **Website URL:** `https://oracalum.netlify.app`
 
 Click **Save** at the bottom right.
 
@@ -96,7 +96,7 @@ Complete each declaration as follows:
 ### 1. Privacy Policy
 - Click **Start / Manage**.
 - Enter your Privacy Policy URL:
-  - **Netlify Live Website (Recommended):** `https://<your-site-name>.netlify.app/privacy`
+  - **Netlify Live Website (Recommended):** `https://oracalum.netlify.app/privacy`
   - *(Alternative GitHub Fallback: `https://raw.githubusercontent.com/Dreke20/TarotApp/main/PRIVACY_POLICY.md`)*
 - Click **Save**.
 
@@ -164,7 +164,7 @@ Complete each declaration as follows:
 | *Audio* | **No** (Microphone transcription is processed ephemerally, not stored) |
 
 - Enter Account Deletion URL:
-  - **Netlify Live Website (Recommended):** `https://<your-site-name>.netlify.app/delete-account`
+  - **Netlify Live Website (Recommended):** `https://oracalum.netlify.app/delete-account`
   - *(Alternative GitHub Fallback: `https://github.com/Dreke20/TarotApp/blob/main/ACCOUNT_DELETION.md`)*
 - Click **Submit**.
 
@@ -292,4 +292,5 @@ Google mandates **20 testers opted-in for at least 14 days** before you can appl
 If Google Play reviewers request any additional clarifications during the review:
 - **Review Access Promo Code:** `CELESTIAL_PRO` grants instant 1-year Pro testing.
 - **Support Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
+- **Live Netlify Sanctuary:** `https://oracalum.netlify.app`
 - **Source Code Repository:** `https://github.com/Dreke20/TarotApp`
