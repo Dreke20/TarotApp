@@ -195,11 +195,11 @@ Click **Subscriptions > Create subscription**:
 - **Subscription 1: Annual Sanctuary (Featured Best Value)**
   - **Product ID:** `oracle_pro_yearly`
   - **Name:** `Oracle Pro Yearly`
-  - **Base plan:** Set billing period to **Yearly**, price to **`$29.99/year`** (equivalent to `$2.50/mo`, Save 50%), and add a **3-day free trial**.
+  - **Base plan:** Set billing period to **Yearly**, price to **`$49.99/year`** (equivalent to `$4.17/mo`, Save 58%), and add a **3-day free trial**.
 - **Subscription 2: Monthly Sanctuary**
   - **Product ID:** `oracle_pro_monthly`
   - **Name:** `Oracle Pro Monthly`
-  - **Base plan:** Set billing period to **Monthly**, price to **`$4.99/month`**.
+  - **Base plan:** Set billing period to **Monthly**, price to **`$9.99/month`**.
 
 ### 2. In-App Products (Lifetime Pass & Starlight Shards)
 Click **In-app products > Create product**:
@@ -208,7 +208,7 @@ Click **In-app products > Create product**:
 - **Product ID:** `oracle_pro_lifetime`
   - **Name:** `Oracle Pro Lifetime Pass`
   - **Description:** Permanent unlimited access to all Oracle Pro divination spreads, voice narration, and sacred tools without recurring charges.
-  - **Price:** **`$69.99`**
+  - **Price:** **`$99.99`**
   - **Status:** Active.
 
 #### B. Consumable Starlight Shard Bundles (A-la-carte for Non-Subscribers)

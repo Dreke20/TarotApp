@@ -205,7 +205,7 @@ void main() {
       expect(SubscriptionPlan.allProductIds.contains('oracle_pro_lifetime'), isTrue);
       expect(SubscriptionPlan.fromId('oracle_pro_yearly'), SubscriptionPlan.yearly);
       expect(SubscriptionPlan.fromId('oracle_pro_monthly'), SubscriptionPlan.monthly);
-      expect(SubscriptionPlan.yearly.defaultPrice, '\$29.99 / yr');
+      expect(SubscriptionPlan.yearly.defaultPrice, '\$49.99 / yr');
     });
 
     test('SubscriptionState maintains immutable plan pricing and defaults', () {
@@ -213,13 +213,13 @@ void main() {
       expect(state.selectedPlan, SubscriptionPlan.yearly);
       expect(state.isAvailable, isFalse);
       expect(state.isLoading, isFalse);
-      expect(state.priceFor(SubscriptionPlan.yearly), '\$29.99 / yr');
+      expect(state.priceFor(SubscriptionPlan.yearly), '\$49.99 / yr');
 
       final withLocalized = state.copyWith(
         localizedPrices: {'oracle_pro_yearly': '€27.99 / yr'},
       );
       expect(withLocalized.priceFor(SubscriptionPlan.yearly), '€27.99 / yr');
-      expect(withLocalized.priceFor(SubscriptionPlan.monthly), '\$4.99 / mo');
+      expect(withLocalized.priceFor(SubscriptionPlan.monthly), '\$9.99 / mo');
     });
 
     test('InAppPurchaseService instantiates with clean stream defaults', () {

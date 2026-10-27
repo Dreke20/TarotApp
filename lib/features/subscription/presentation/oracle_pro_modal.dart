@@ -647,7 +647,7 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Text(
-                          'SAVE 50%',
+                          'SAVE 58%',
                           style: GoogleFonts.cinzel(
                             fontSize: 8.5,
                             fontWeight: FontWeight.w900,
@@ -689,7 +689,7 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Only \$2.50/month · Cancel anytime',
+                    'Only \$4.17/month · Cancel anytime',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 10,
                       color: AppColors.textSecondary,

@@ -3,21 +3,21 @@ enum SubscriptionPlan {
   yearly(
     id: 'oracle_pro_yearly',
     title: 'ANNUAL PLAN',
-    defaultPrice: '\$29.99 / yr',
-    savings: 'SAVE 50%',
+    defaultPrice: '\$49.99 / yr',
+    savings: 'SAVE 58%',
     billingPeriod: 'per year',
   ),
   monthly(
     id: 'oracle_pro_monthly',
     title: 'MONTHLY',
-    defaultPrice: '\$4.99 / mo',
+    defaultPrice: '\$9.99 / mo',
     savings: null,
     billingPeriod: 'per month',
   ),
   lifetime(
     id: 'oracle_pro_lifetime',
     title: 'LIFETIME ACCESS',
-    defaultPrice: '\$69.99',
+    defaultPrice: '\$99.99',
     savings: 'ONE-TIME',
     billingPeriod: 'lifetime',
   );
