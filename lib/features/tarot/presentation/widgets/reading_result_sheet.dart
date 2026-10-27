@@ -8,6 +8,7 @@ import '../../../auth/presentation/auth_notifier.dart';
 import '../../../monetization/presentation/widgets/starlight_offering_modal.dart';
 import '../../domain/oracle_persona.dart';
 import '../../domain/reading.dart';
+import '../../domain/spread_type.dart';
 import '../notifiers/reading_notifier.dart';
 import 'glass_container.dart';
 import 'live_reader_card.dart';
@@ -15,7 +16,12 @@ import 'social_share_card.dart';
 import 'social_story_export_modal.dart';
 import 'deck_switcher_modal.dart';
 import '../../../wallpaper/presentation/screens/wallpaper_studio_screen.dart';
+import '../../../monetization/presentation/widgets/grimoire_parchment_exporter.dart';
 import 'tarot_card_widget.dart';
+import 'card_synergy_modal.dart';
+import 'alchemical_crucible_modal.dart';
+import 'seeker_voice_note_recorder.dart';
+import 'typewriter_prophecy_view.dart';
 
 /// Immersive Glassmorphic Bottom Sheet displaying the AI Oracle's reading,
 /// conversational multi-turn follow-ups, personal reflections, and audio narration.
@@ -53,6 +59,8 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
   final TextEditingController _followUpController = TextEditingController();
   late final TextEditingController _notesController;
   bool _isPlayingNarration = false;
+  CelestialVoiceChannel? _currentChannel;
+  final Set<int> _selectedCardIndices = {};
 
   @override
   void initState() {
@@ -63,7 +71,15 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
       if (mounted) setState(() => _isPlayingNarration = true);
     };
     CelestialVoiceService.instance.onStopped = () {
-      if (mounted) setState(() => _isPlayingNarration = false);
+      if (mounted) {
+        setState(() {
+          _isPlayingNarration = false;
+          _currentChannel = null;
+        });
+      }
+    };
+    CelestialVoiceService.instance.onChannelChanged = (channel) {
+      if (mounted) setState(() => _currentChannel = channel);
     };
   }
 
@@ -216,6 +232,12 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                         }
                       },
                     ),
+                    // Grimoire Parchment Export
+                    IconButton(
+                      tooltip: 'Grimoire Parchment Export',
+                      icon: const Icon(Icons.history_edu, color: AppColors.goldBright, size: 20),
+                      onPressed: () => GrimoireParchmentExporter.show(context, reading: reading),
+                    ),
                     // Social Share
                     IconButton(
                       icon: const Icon(Icons.share, color: AppColors.textSecondary, size: 19),
@@ -274,81 +296,193 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                     ],
 
                     // Spoken Prophecy Voice Narration Bar
-                    GestureDetector(
-                      onTap: () async {
-                        final voice = CelestialVoiceService.instance;
-                        if (_isPlayingNarration) {
-                          await voice.stop();
-                        } else {
-                          final ritualText = (reading.microRitual != null && reading.microRitual!.isNotEmpty)
-                              ? " Somatic Integration Ritual: ${reading.microRitual}"
-                              : "";
-                          final textToSpeak = "${reading.summary} ${reading.interpretation} Guidance: ${reading.advice}$ritualText";
-                          await voice.speak(textToSpeak, persona: persona);
+                    Builder(
+                      builder: (context) {
+                        final isSolAndLuna = reading.spreadType == SpreadType.solAndLuna.title ||
+                            reading.spreadType == SpreadType.solAndLuna.id ||
+                            reading.spreadType.toLowerCase().contains('sol & luna');
 
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: _isPlayingNarration
-                              ? (persona?.accentColor.withValues(alpha: 0.18) ?? AppColors.goldBright.withValues(alpha: 0.15))
-                              : AppColors.glassFill,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: _isPlayingNarration
-                                ? (persona?.accentColor ?? AppColors.goldBright)
-                                : AppColors.glassBorder,
+                        return GestureDetector(
+                          onTap: () async {
+                            final voice = CelestialVoiceService.instance;
+                            if (_isPlayingNarration) {
+                              await voice.stop();
+                            } else if (isSolAndLuna) {
+                              final cards = reading.cards;
+                              final partnerAName = 'Seeker';
+                              final partnerBName = 'Beloved Counterpart';
+                              final cardA = cards.isNotEmpty
+                                  ? '${cards[0].name}. ${cards[0].meaningUpright}'
+                                  : 'Solar conscious will.';
+                              final cardB = cards.length > 1
+                                  ? '${cards[1].name}. ${cards[1].meaningUpright}'
+                                  : 'Lunar subconscious reflection.';
+                              final cardBridge = cards.length > 2
+                                  ? '${cards[2].name}. ${cards[2].meaningUpright}'
+                                  : 'The Conjunction Bridge.';
+
+                              await voice.speakSynastrySequence(
+                                partnerAName: partnerAName,
+                                partnerAText: cardA,
+                                partnerBName: partnerBName,
+                                partnerBText: cardB,
+                                conjunctionText: cardBridge,
+                              );
+                            } else {
+                              final ritualText = (reading.microRitual != null && reading.microRitual!.isNotEmpty)
+                                  ? " Somatic Integration Ritual: ${reading.microRitual}"
+                                  : "";
+                              final textToSpeak = "${reading.summary} ${reading.interpretation} Guidance: ${reading.advice}$ritualText";
+                              await voice.speak(textToSpeak, persona: persona);
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                            decoration: BoxDecoration(
+                              color: _isPlayingNarration
+                                  ? (isSolAndLuna
+                                      ? const Color(0xFFD4AF37).withValues(alpha: 0.2)
+                                      : (persona?.accentColor.withValues(alpha: 0.18) ?? AppColors.goldBright.withValues(alpha: 0.15)))
+                                  : AppColors.glassFill,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: _isPlayingNarration
+                                    ? (isSolAndLuna ? const Color(0xFFFFD700) : (persona?.accentColor ?? AppColors.goldBright))
+                                    : AppColors.glassBorder,
+                              ),
+                            ),
+                            child: isSolAndLuna
+                                ? Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            _isPlayingNarration ? Icons.waves_rounded : Icons.record_voice_over,
+                                            color: const Color(0xFFFFD700),
+                                            size: 18,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              _isPlayingNarration
+                                                  ? 'WEAVING DUAL-FREQUENCY SYNASTRY...'
+                                                  : '✦ HEAR DUAL-VOICE SYNASTRY WEAVER ✦',
+                                              overflow: TextOverflow.ellipsis,
+                                              style: GoogleFonts.cinzel(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                                color: const Color(0xFFFFD700),
+                                                letterSpacing: 0.8,
+                                              ),
+                                            ),
+                                          ),
+                                          if (_isPlayingNarration)
+                                            const SizedBox(
+                                              width: 14,
+                                              height: 14,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                valueColor: AlwaysStoppedAnimation(Color(0xFFFFD700)),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      if (_isPlayingNarration) ...[
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            _buildVoiceChannelBadge(
+                                              label: '☀️ SOLAR (A)',
+                                              isActive: _currentChannel == CelestialVoiceChannel.solar,
+                                              accentColor: const Color(0xFFFFD700),
+                                            ),
+                                            const SizedBox(width: 6),
+                                            _buildVoiceChannelBadge(
+                                              label: '🌙 LUNAR (B)',
+                                              isActive: _currentChannel == CelestialVoiceChannel.lunar,
+                                              accentColor: const Color(0xFF80E5FF),
+                                            ),
+                                            const SizedBox(width: 6),
+                                            _buildVoiceChannelBadge(
+                                              label: '⚡ CONJUNCTION',
+                                              isActive: _currentChannel == CelestialVoiceChannel.alchemical,
+                                              accentColor: const Color(0xFFE0B0FF),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ],
+                                  )
+                                : Row(
+                                    children: [
+                                      Icon(
+                                        _isPlayingNarration ? Icons.volume_up : Icons.volume_mute,
+                                        color: _isPlayingNarration ? (persona?.accentColor ?? AppColors.goldBright) : AppColors.textSecondary,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          _isPlayingNarration
+                                              ? 'NARRATING PROPHECY (${persona?.name ?? "ORACLE"})...'
+                                              : 'HEAR ${persona?.name ?? "ORACLE"} (${persona?.timbreTitle.toUpperCase() ?? "CELESTIAL HARMONY"})',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: GoogleFonts.cinzel(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: _isPlayingNarration ? (persona?.accentColor ?? AppColors.goldBright) : AppColors.textPrimary,
+                                            letterSpacing: 0.8,
+                                          ),
+                                        ),
+                                      ),
+                                      if (_isPlayingNarration) ...[
+                                        const SizedBox(width: 8),
+                                        SizedBox(
+                                          width: 14,
+                                          height: 14,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor: AlwaysStoppedAnimation(persona?.accentColor ?? AppColors.goldBright),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
                           ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              _isPlayingNarration ? Icons.volume_up : Icons.volume_mute,
-                              color: _isPlayingNarration ? (persona?.accentColor ?? AppColors.goldBright) : AppColors.textSecondary,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                _isPlayingNarration
-                                    ? 'NARRATING PROPHECY (${persona?.name ?? "ORACLE"})...'
-                                    : 'HEAR ${persona?.name ?? "ORACLE"} (${persona?.timbreTitle.toUpperCase() ?? "CELESTIAL HARMONY"})',
-                                overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.cinzel(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: _isPlayingNarration ? (persona?.accentColor ?? AppColors.goldBright) : AppColors.textPrimary,
-                                  letterSpacing: 0.8,
-                                ),
-                              ),
-                            ),
-                            if (_isPlayingNarration) ...[
-                              const SizedBox(width: 8),
-                              SizedBox(
-                                width: 14,
-                                height: 14,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation(persona?.accentColor ?? AppColors.goldBright),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 18),
 
                     // Drawn Cards Thumbnail Row
-                    Text(
-                      'THE CARDS UNVEILED (${reading.cards.length})',
-                      style: GoogleFonts.cinzel(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textSecondary,
-                        letterSpacing: 1.2,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'THE CARDS UNVEILED (${reading.cards.length})',
+                          style: GoogleFonts.cinzel(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textSecondary,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        if (reading.cards.length >= 2)
+                          Text(
+                            _selectedCardIndices.length == 2
+                                ? '2 CARDS CHOSEN'
+                                : 'TAP 2 FOR ALCHEMY',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w600,
+                              color: _selectedCardIndices.length == 2
+                                  ? AppColors.goldBright
+                                  : AppColors.etherealLavender,
+                              letterSpacing: 0.6,
+                            ),
+                          ),
+                      ],
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
@@ -357,27 +491,84 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
                         itemCount: reading.cards.length,
-                        separatorBuilder: (_, _) => const SizedBox(width: 12),
+                        separatorBuilder: (context, index) => const SizedBox(width: 12),
                         itemBuilder: (context, index) {
                           final card = reading.cards[index];
+                          final isSelected = _selectedCardIndices.contains(index);
+                          final selectionOrder = isSelected
+                              ? _selectedCardIndices.toList().indexOf(index) + 1
+                              : null;
+
                           return GestureDetector(
                             onTap: () {
-                              WallpaperStudioScreen.show(
-                                context,
-                                card: card,
-                                isReversed: card.isReversed,
-                              );
+                              setState(() {
+                                if (_selectedCardIndices.contains(index)) {
+                                  _selectedCardIndices.remove(index);
+                                } else {
+                                  if (_selectedCardIndices.length >= 2) {
+                                    _selectedCardIndices.clear();
+                                  }
+                                  _selectedCardIndices.add(index);
+                                }
+                              });
                             },
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                TarotCardWidget(
-                                  card: card,
-                                  isFaceUp: true,
-                                  width: 85,
-                                  height: 125,
-                                  index: index,
-                                  deckTheme: state.deckTheme,
+                                Stack(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? AppColors.goldBright
+                                              : Colors.transparent,
+                                          width: 2.5,
+                                        ),
+                                        boxShadow: isSelected
+                                            ? [
+                                                BoxShadow(
+                                                  color: AppColors.goldBright.withValues(alpha: 0.5),
+                                                  blurRadius: 10,
+                                                  spreadRadius: 1,
+                                                ),
+                                              ]
+                                            : null,
+                                      ),
+                                      child: TarotCardWidget(
+                                        card: card,
+                                        isFaceUp: true,
+                                        width: 85,
+                                        height: 125,
+                                        index: index,
+                                        deckTheme: state.deckTheme,
+                                      ),
+                                    ),
+                                    if (isSelected)
+                                      Positioned(
+                                        top: 4,
+                                        right: 4,
+                                        child: Container(
+                                          width: 20,
+                                          height: 20,
+                                          decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: AppColors.goldBright,
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              '$selectionOrder',
+                                              style: GoogleFonts.cinzel(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.bold,
+                                                color: AppColors.backgroundMidnight,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
                                 const SizedBox(height: 4),
                                 SizedBox(
@@ -389,8 +580,10 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                                     overflow: TextOverflow.ellipsis,
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 9,
-                                      color: AppColors.etherealLavender,
-                                      fontWeight: FontWeight.w600,
+                                      color: isSelected
+                                          ? AppColors.goldBright
+                                          : AppColors.etherealLavender,
+                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                                     ),
                                   ),
                                 ),
@@ -400,11 +593,119 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                         },
                       ),
                     ),
+                    if (_selectedCardIndices.length == 2) ...[
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () {
+                          final selected = _selectedCardIndices.toList();
+                          CardSynergyModal.show(
+                            context,
+                            spreadCards: reading.cards,
+                            card1: reading.cards[selected[0]],
+                            card2: reading.cards[selected[1]],
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppColors.goldBright.withValues(alpha: 0.25),
+                                AppColors.etherealLavender.withValues(alpha: 0.25),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppColors.goldBright, width: 1.2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.goldBright.withValues(alpha: 0.25),
+                                blurRadius: 10,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.hub, size: 15, color: AppColors.goldBright),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: Text(
+                                  'WEAVE ALCHEMY: ${reading.cards[_selectedCardIndices.elementAt(0)].name} + ${reading.cards[_selectedCardIndices.elementAt(1)].name}',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.cinzel(
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.goldBright,
+                                    letterSpacing: 0.8,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              const Icon(Icons.arrow_forward_ios, size: 10, color: AppColors.goldBright),
+                            ],
+                          ),
+                        ),
+                      ).animate().fadeIn(duration: 250.ms).scale(begin: const Offset(0.96, 0.96)),
+                    ],
                     const SizedBox(height: 12),
 
-                    // Quick Action Row: Sacred Wallpaper Studio & Deck Sanctuary
+                    // Quick Action Row: Dual Synergy, Deck Sanctuary & Wallpaper Studio
                     Row(
                       children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              if (reading.cards.length >= 2) {
+                                AlchemicalCrucibleModal.show(context, drawnCards: reading.cards);
+                              } else if (reading.cards.isNotEmpty) {
+                                CardSynergyModal.show(
+                                  context,
+                                  spreadCards: reading.cards,
+                                  card1: reading.cards.first,
+                                  card2: reading.cards.first,
+                                );
+                              }
+                            },
+                            icon: const Text('⚡', style: TextStyle(fontSize: 12)),
+                            label: Text(
+                              'CRUCIBLE FUSION',
+                              style: GoogleFonts.cinzel(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.goldBright,
+                                letterSpacing: 0.6,
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: AppColors.goldBright.withValues(alpha: 0.35)),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () => DeckSwitcherModal.show(context),
+                            icon: const Icon(Icons.auto_awesome, size: 13, color: AppColors.goldBright),
+                            label: Text(
+                              'SANCTUARY',
+                              style: GoogleFonts.cinzel(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.goldBright,
+                                letterSpacing: 0.6,
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: AppColors.goldBright.withValues(alpha: 0.35)),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: () {
@@ -415,35 +716,14 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                                 isReversed: firstCard?.isReversed ?? false,
                               );
                             },
-                            icon: const Icon(Icons.wallpaper, size: 14, color: AppColors.goldBright),
+                            icon: const Icon(Icons.wallpaper, size: 13, color: AppColors.goldBright),
                             label: Text(
-                              'SACRED WALLPAPER',
+                              'WALLPAPER',
                               style: GoogleFonts.cinzel(
-                                fontSize: 10,
+                                fontSize: 9.5,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.goldBright,
-                                letterSpacing: 0.8,
-                              ),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: AppColors.goldBright.withValues(alpha: 0.35)),
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () => DeckSwitcherModal.show(context),
-                            icon: const Icon(Icons.auto_awesome, size: 14, color: AppColors.goldBright),
-                            label: Text(
-                              'DECK SANCTUARY',
-                              style: GoogleFonts.cinzel(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.goldBright,
-                                letterSpacing: 0.8,
+                                letterSpacing: 0.6,
                               ),
                             ),
                             style: OutlinedButton.styleFrom(
@@ -539,28 +819,30 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
 
                     // Elemental Chemistry, Cosmic Weather & Altar Consecration Matrix
                     if (reading.elementalChemistry != null || reading.cosmicWeather != null || reading.altarConsecration != null) ...[
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          if (reading.altarConsecration != null && reading.altarConsecration!.isNotEmpty)
+                          if (reading.altarConsecration != null && reading.altarConsecration!.isNotEmpty) ...[
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
                                 color: const Color(0xFF1C152E),
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(14),
                                 border: Border.all(color: AppColors.goldBright.withValues(alpha: 0.5)),
                               ),
                               child: Row(
-                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text('✦', style: TextStyle(fontSize: 11, color: AppColors.goldBright)),
-                                  const SizedBox(width: 6),
-                                  Flexible(
+                                  const Padding(
+                                    padding: EdgeInsets.only(top: 2),
+                                    child: Text('✦', style: TextStyle(fontSize: 11, color: AppColors.goldBright)),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
                                     child: Text(
                                       reading.altarConsecration!,
                                       style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 10.5,
+                                        fontSize: 11,
                                         fontWeight: FontWeight.w600,
                                         color: AppColors.goldBright,
                                       ),
@@ -569,48 +851,60 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                                 ],
                               ),
                             ),
-                          if (reading.cosmicWeather != null && reading.cosmicWeather!.isNotEmpty)
+                            const SizedBox(height: 8),
+                          ],
+                          if (reading.cosmicWeather != null && reading.cosmicWeather!.isNotEmpty) ...[
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
                                 color: AppColors.glassFillStrong,
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(14),
                                 border: Border.all(color: AppColors.goldBright.withValues(alpha: 0.3)),
                               ),
                               child: Row(
-                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(Icons.nightlight_round, size: 13, color: AppColors.goldBright),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    reading.cosmicWeather!,
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 11,
-                                      color: AppColors.textPrimary,
-                                      fontWeight: FontWeight.w500,
+                                  const Padding(
+                                    padding: EdgeInsets.only(top: 2),
+                                    child: Icon(Icons.nightlight_round, size: 14, color: AppColors.goldBright),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      reading.cosmicWeather!,
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 11,
+                                        color: AppColors.textPrimary,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                          if (reading.elementalChemistry != null && reading.elementalChemistry!.isNotEmpty)
+                            const SizedBox(height: 8),
+                          ],
+                          if (reading.elementalChemistry != null && reading.elementalChemistry!.isNotEmpty) ...[
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
                                 color: AppColors.glassFill,
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(14),
                                 border: Border.all(color: AppColors.goldBright.withValues(alpha: 0.35)),
                               ),
                               child: Row(
-                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(Icons.auto_awesome, size: 12, color: AppColors.goldBright),
-                                  const SizedBox(width: 6),
-                                  Flexible(
+                                  const Padding(
+                                    padding: EdgeInsets.only(top: 2),
+                                    child: Icon(Icons.auto_awesome, size: 13, color: AppColors.goldBright),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
                                     child: Text(
                                       reading.elementalChemistry!,
                                       style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 10.5,
+                                        fontSize: 11,
                                         fontWeight: FontWeight.w600,
                                         color: AppColors.goldBright,
                                       ),
@@ -619,6 +913,7 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                                 ],
                               ),
                             ),
+                          ],
                         ],
                       ),
                       const SizedBox(height: 14),
@@ -642,13 +937,8 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: AppColors.glassBorder),
                       ),
-                      child: Text(
-                        reading.interpretation,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 14,
-                          color: AppColors.textPrimary,
-                          height: 1.65,
-                        ),
+                      child: TypewriterProphecyView(
+                        text: reading.interpretation,
                       ),
                     ),
                     // AI Transparency & Spiritual Reflection Disclaimer (Google Play AI Policy Compliance)
@@ -1039,6 +1329,8 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    SeekerVoiceNoteRecorder(readingId: reading.id),
                     const SizedBox(height: 18),
 
                     // Connect with a real human intuitive reader
@@ -1200,6 +1492,40 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
           },
         );
       },
+    );
+  }
+
+  Widget _buildVoiceChannelBadge({
+    required String label,
+    required bool isActive,
+    required Color accentColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: isActive ? accentColor.withValues(alpha: 0.25) : AppColors.glassFill,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isActive ? accentColor : AppColors.glassBorder,
+          width: isActive ? 1.4 : 1.0,
+        ),
+        boxShadow: isActive
+            ? [
+                BoxShadow(
+                  color: accentColor.withValues(alpha: 0.35),
+                  blurRadius: 8,
+                ),
+              ]
+            : null,
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.cinzel(
+          fontSize: 8.5,
+          fontWeight: FontWeight.bold,
+          color: isActive ? accentColor : AppColors.textMuted,
+        ),
+      ),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/services/external_launch_service.dart';
 import '../../monetization/presentation/widgets/starlight_offering_modal.dart';
+import '../../monetization/presentation/widgets/mystic_bazaar_modal.dart';
 import '../../tarot/presentation/widgets/glass_container.dart';
 import '../domain/subscription_plan.dart';
 import 'subscription_notifier.dart';
@@ -433,6 +434,21 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
               ),
             ),
             const SizedBox(height: 4),
+            TextButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop();
+                MysticBazaarModal.show(context);
+              },
+              icon: const Text('🏛️', style: TextStyle(fontSize: 14)),
+              label: Text(
+                'Looking for Starlight Shards or 7-Day Intention Candles? Visit Mystic Bazaar ↗',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 10.5,
+                  color: AppColors.goldBright,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

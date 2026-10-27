@@ -1,26 +1,117 @@
-import 'dart:math';
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/supabase/supabase_config.dart';
 import '../../tarot/data/tarot_card_data.dart';
 import '../../tarot/domain/tarot_card.dart';
 import '../domain/tarot_lens_scan_result.dart';
 
+/// What Gemini recognized in a card photo.
+class TarotLensIdentification {
+  final TarotCard card;
+  final bool isReversed;
+  final int confidencePercent;
+  final List<String> visibleSymbols;
+
+  const TarotLensIdentification({
+    required this.card,
+    required this.isReversed,
+    required this.confidencePercent,
+    this.visibleSymbols = const [],
+  });
+}
+
 /// Service responsible for real-world photo capture and multimodal card scrying.
 class TarotLensService {
-  final ImagePicker _picker;
-  final Random _random;
+  /// Confidence used when the seeker picked the card themselves.
+  static const int manualSelectionConfidence = 100;
 
-  TarotLensService({ImagePicker? picker, Random? random})
-      : _picker = picker ?? ImagePicker(),
-        _random = random ?? Random();
+  /// Confidence used when the photo could not be recognized.
+  static const int unrecognizedConfidence = 0;
+
+  /// Below this, the Lens asks the seeker to confirm the card.
+  static const int highConfidenceThreshold = 75;
+
+  final ImagePicker _picker;
+  final SupabaseClient? client;
+
+  TarotLensService({ImagePicker? picker, this.client})
+      : _picker = picker ?? ImagePicker();
+
+  /// Sends the photo to the `tarot-reader` Edge Function, which asks Gemini
+  /// which card it shows. Returns null when recognition is unavailable or
+  /// the card could not be identified, so the seeker can pick it manually.
+  Future<TarotLensIdentification?> identifyCard(String imagePath) async {
+    if (!SupabaseConfig.isConfigured) return null;
+    SupabaseClient supabase;
+    try {
+      supabase = client ?? Supabase.instance.client;
+    } catch (_) {
+      return null;
+    }
+
+    try {
+      final bytes = await XFile(imagePath).readAsBytes();
+      final lower = imagePath.toLowerCase();
+      final mimeType = lower.endsWith('.png')
+          ? 'image/png'
+          : lower.endsWith('.webp')
+              ? 'image/webp'
+              : lower.endsWith('.heic')
+                  ? 'image/heic'
+                  : 'image/jpeg';
+
+      final response = await supabase.functions.invoke(
+        'tarot-reader',
+        body: {
+          'lens_image_base64': base64Encode(bytes),
+          'lens_mime_type': mimeType,
+          'card_catalog': TarotCardData.allCards
+              .map((c) => {'id': c.id, 'name': c.name})
+              .toList(),
+        },
+      );
+      if (response.status != 200 || response.data == null) return null;
+
+      final data = response.data is String
+          ? jsonDecode(response.data as String)
+          : response.data;
+      if (data is! Map) return null;
+
+      final id = data['card_id'];
+      if (id is! String) return null;
+      final matches = TarotCardData.allCards.where((c) => c.id == id);
+      if (matches.isEmpty) return null;
+
+      final rawConfidence = data['confidence'];
+      final confidence = rawConfidence is num
+          ? rawConfidence.round().clamp(1, 99)
+          : 50;
+      final symbols = data['visible_symbols'] is List
+          ? (data['visible_symbols'] as List).whereType<String>().toList()
+          : <String>[];
+
+      return TarotLensIdentification(
+        card: matches.first,
+        isReversed: data['is_reversed'] == true,
+        confidencePercent: confidence,
+        visibleSymbols: symbols,
+      );
+    } catch (e) {
+      debugPrint('Tarot Lens recognition failed: $e');
+      return null;
+    }
+  }
 
   /// Captures a card photo using the device camera
   Future<String?> captureFromCamera() async {
     try {
       final XFile? file = await _picker.pickImage(
         source: ImageSource.camera,
-        imageQuality: 88,
-        maxWidth: 1440,
-        maxHeight: 1920,
+        imageQuality: 80,
+        maxWidth: 1080,
+        maxHeight: 1440,
       );
       return file?.path;
     } catch (_) {
@@ -33,9 +124,9 @@ class TarotLensService {
     try {
       final XFile? file = await _picker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 88,
-        maxWidth: 1440,
-        maxHeight: 1920,
+        imageQuality: 80,
+        maxWidth: 1080,
+        maxHeight: 1440,
       );
       return file?.path;
     } catch (_) {
@@ -48,15 +139,18 @@ class TarotLensService {
     String? imagePath,
     TarotCard? preferredCard,
     bool isReversed = false,
+    int confidencePercent = manualSelectionConfidence,
+    List<String> visibleSymbols = const [],
   }) async {
     // If a card is explicitly selected or preferred, match it
     final card = preferredCard ?? TarotCardData.allCards.first;
 
-    // Confidence score (92% - 99% for optical matches)
-    final confidence = 92 + _random.nextInt(8);
+    // Real confidence comes from Gemini; manual picks are certain by definition.
+    final confidence = confidencePercent;
 
-    // Extract esoteric symbols
-    final symbols = _extractCardSymbols(card);
+    // Prefer symbols Gemini actually saw in the photo, else the card's canon.
+    final symbols =
+        visibleSymbols.isNotEmpty ? visibleSymbols : _extractCardSymbols(card);
 
     // Generate physical altar practice
     final ritual = _generateAltarPractice(card, isReversed);
@@ -72,7 +166,7 @@ class TarotLensService {
       scryingAnalysis: scrying,
       physicalAltarRitual: ritual,
       capturedImagePath: imagePath,
-      isHighConfidence: confidence >= 90,
+      isHighConfidence: confidence >= highConfidenceThreshold,
     );
   }
 

@@ -5,12 +5,14 @@ import '../../features/auth/domain/user_profile.dart';
 import '../../features/tarot/domain/reading.dart';
 import '../../features/dream/domain/dream_entry.dart';
 import '../../features/tarot/domain/custom_spread.dart';
+import 'encrypted_vault_storage.dart';
 
 part 'storage_service.g.dart';
 
 class StorageService {
   static const String _keyReadings = 'oraculum_readings_cache_v1';
   static const String _keyProfile = 'oraculum_profile_cache_v1';
+  static const String _keyProfileProSig = 'oraculum_profile_is_pro_sig';
   static const String _keyDreams = 'oraculum_dreams_cache_v1';
   static const String _keyCustomSpreads = 'oraculum_custom_spreads_cache_v1';
   static const String _keyNotificationHour = 'oraculum_notif_hour';
@@ -48,6 +50,8 @@ class StorageService {
   Future<void> saveProfile(UserProfile profile) async {
     final prefs = await _getPrefs();
     await prefs.setString(_keyProfile, jsonEncode(profile.toJson()));
+    // Cryptographically sign the isPro entitlement with hardware Keystore HMAC
+    await EncryptedVaultStorage.instance.setSignedBool(_keyProfileProSig, profile.isPro);
   }
 
   Future<UserProfile?> loadProfile() async {
@@ -56,7 +60,18 @@ class StorageService {
     if (raw == null || raw.isEmpty) return null;
 
     try {
-      return UserProfile.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+      final profile = UserProfile.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+      // Verify isPro against the cryptographically signed vault
+      final verifiedPro = await EncryptedVaultStorage.instance.getSignedBool(
+        _keyProfileProSig,
+        defaultValue: false,
+      );
+      // If the plaintext JSON was tampered with (e.g. isPro modified to true without valid HMAC),
+      // enforce the cryptographically verified entitlement.
+      if (profile.isPro && !verifiedPro) {
+        return profile.copyWith(isPro: false);
+      }
+      return profile;
     } catch (_) {
       return null;
     }

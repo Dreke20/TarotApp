@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tarot_app/core/widgets/holographic_foil_card.dart';
 import 'package:tarot_app/core/widgets/stardust_particle_field.dart';
@@ -45,12 +46,14 @@ void main() {
 
     testWidgets('StardustParticleField renders without layout overflows', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: StardustParticleField(
-              enableAmbientDrift: true,
-              enableTouchTrails: true,
-              child: Center(child: Text('Cosmic Altar')),
+        const ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: StardustParticleField(
+                enableAmbientDrift: true,
+                enableTouchTrails: true,
+                child: Center(child: Text('Cosmic Altar')),
+              ),
             ),
           ),
         ),
@@ -62,16 +65,18 @@ void main() {
 
     testWidgets('HolographicFoilCard renders child and specular overlay safely', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: Center(
-              child: SizedBox(
-                width: 120,
-                height: 200,
-                child: HolographicFoilCard(
-                  enableSensorTilt: false,
-                  enableTouchTilt: false,
-                  child: Text('The Magician'),
+        const ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: SizedBox(
+                  width: 120,
+                  height: 200,
+                  child: HolographicFoilCard(
+                    enableSensorTilt: false,
+                    enableTouchTilt: false,
+                    child: Text('The Magician'),
+                  ),
                 ),
               ),
             ),

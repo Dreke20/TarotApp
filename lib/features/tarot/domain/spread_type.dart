@@ -92,6 +92,17 @@ enum SpreadType {
       '11th House: Aquarius • Community & Hopes',
       '12th House: Pisces • Transcendent Unconscious',
     ],
+  ),
+  solAndLuna(
+    id: 'sol_and_luna',
+    title: 'Sol & Luna Synastry',
+    subtitle: '3 cards mapping Partner A (Solar), Partner B (Lunar), and their Conjunction Bridge',
+    cardCount: 3,
+    positionTitles: [
+      'Partner A (Solar Essence & Conscious Will)',
+      'Partner B (Lunar Reflection & Emotional Core)',
+      'The Conjunction (Alchemical Nexus & Shared Destiny)',
+    ],
   );
 
   const SpreadType({

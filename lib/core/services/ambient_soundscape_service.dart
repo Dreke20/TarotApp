@@ -125,6 +125,21 @@ class AmbientAudioNotifier extends _$AmbientAudioNotifier {
     }
   }
 
+  double _preDuckVolume = 0.5;
+
+  Future<void> duckVolume([double target = 0.15]) async {
+    _preDuckVolume = state.volume;
+    try {
+      await _player.setVolume(target);
+    } catch (_) {}
+  }
+
+  Future<void> restoreVolume() async {
+    try {
+      await _player.setVolume(_preDuckVolume);
+    } catch (_) {}
+  }
+
   Future<void> setVolume(double volume) async {
     state = state.copyWith(volume: volume);
     try {

@@ -26,11 +26,14 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   Future<void> loadProfile() async {
+    if (!ref.mounted) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final profile = await _repository.getCurrentProfile();
+      if (!ref.mounted) return;
       state = state.copyWith(profile: profile, isLoading: false);
     } catch (e) {
+      if (!ref.mounted) return;
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
   }

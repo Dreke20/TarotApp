@@ -177,7 +177,7 @@ class _PathworkingPlayerModalState
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(15),
                           child: Image.asset(
-                            'assets/cards/${widget.pathworking.cardId}.jpg',
+                            'assets/cards/${widget.pathworking.cardId}.webp',
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) => Container(
                               color: const Color(0xFF130E20),

@@ -8,12 +8,14 @@ import 'tarot_card_widget.dart';
 class DeckPileWidget extends StatelessWidget {
   final bool isShuffling;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
   final int cardsRemaining;
 
   const DeckPileWidget({
     super.key,
     required this.isShuffling,
     required this.onTap,
+    this.onLongPress,
     this.cardsRemaining = 78,
   });
 
@@ -21,6 +23,7 @@ class DeckPileWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: isShuffling ? null : onTap,
+      onLongPress: isShuffling ? null : onLongPress,
       child: Stack(
         alignment: Alignment.center,
         children: [

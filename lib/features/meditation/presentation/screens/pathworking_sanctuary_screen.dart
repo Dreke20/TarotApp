@@ -174,7 +174,7 @@ class PathworkingSanctuaryScreen extends ConsumerWidget {
                                         borderRadius:
                                             BorderRadius.circular(11),
                                         child: Image.asset(
-                                          'assets/cards/${journey.cardId}.jpg',
+                                          'assets/cards/${journey.cardId}.webp',
                                           cacheWidth: 300,
                                           fit: BoxFit.cover,
                                           errorBuilder:

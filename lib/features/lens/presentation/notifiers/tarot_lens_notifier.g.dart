@@ -87,7 +87,7 @@ final class TarotLensNotifierProvider
   }
 }
 
-String _$tarotLensNotifierHash() => r'583914845469cd862244dec42b5a50aa1d853ca7';
+String _$tarotLensNotifierHash() => r'daf820b71819153651979b8df9a9147576ac3709';
 
 abstract class _$TarotLensNotifier extends $Notifier<TarotLensState> {
   TarotLensState build();

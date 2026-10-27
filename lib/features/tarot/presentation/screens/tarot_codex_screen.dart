@@ -19,6 +19,11 @@ import '../../../monetization/presentation/widgets/mystic_ad_banner.dart';
 class TarotCodexScreen extends ConsumerStatefulWidget {
   const TarotCodexScreen({super.key});
 
+  /// Public static inspector modal that can be summoned from anywhere (Codex, Omni-Search, etc.)
+  static void showCardInspection(BuildContext context, WidgetRef ref, TarotCard card) {
+    _TarotCodexScreenState.showCardInspection(context, ref, card);
+  }
+
   @override
   ConsumerState<TarotCodexScreen> createState() => _TarotCodexScreenState();
 }
@@ -36,7 +41,20 @@ class _TarotCodexScreenState extends ConsumerState<TarotCodexScreen> {
 
   List<TarotCard> _getFilteredCards() {
     return TarotCardData.allCards.where((card) {
-      final matchesArcana = _filterArcana == 'all' || card.arcana == _filterArcana;
+      bool matchesArcana = true;
+      if (_filterArcana == 'major') {
+        matchesArcana = card.arcana == 'major';
+      } else if (_filterArcana == 'minor') {
+        matchesArcana = card.arcana == 'minor';
+      } else if (_filterArcana == 'wands' ||
+          _filterArcana == 'cups' ||
+          _filterArcana == 'swords' ||
+          _filterArcana == 'pentacles') {
+        matchesArcana = card.suit?.toLowerCase() == _filterArcana;
+      } else {
+        matchesArcana = true; // 'all'
+      }
+
       final matchesSearch = _searchQuery.isEmpty ||
           card.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           (card.keywords.any((k) => k.toLowerCase().contains(_searchQuery.toLowerCase()))) ||
@@ -45,7 +63,10 @@ class _TarotCodexScreenState extends ConsumerState<TarotCodexScreen> {
     }).toList();
   }
 
-  void _showCardInspection(TarotCard card) {
+  void _showCardInspection(TarotCard card) => showCardInspection(context, ref, card);
+
+  /// Public static inspector modal that can be summoned from anywhere (Codex, Omni-Search, etc.)
+  static void showCardInspection(BuildContext context, WidgetRef ref, TarotCard card) {
     final state = ref.read(readingNotifierProvider);
 
     showDialog(
@@ -347,7 +368,7 @@ class _TarotCodexScreenState extends ConsumerState<TarotCodexScreen> {
     ).whenComplete(() => CelestialVoiceService.instance.stop());
   }
 
-  Widget _buildMeaningBlock({
+  static Widget _buildMeaningBlock({
     required String title,
     required IconData icon,
     required Color iconColor,
@@ -505,16 +526,24 @@ class _TarotCodexScreenState extends ConsumerState<TarotCodexScreen> {
                 ),
                 const SizedBox(height: 12),
 
-                // Arcana Filter Tabs
-                Padding(
+                // Arcana & Suit Filter Tabs (Horizontal Scrollable)
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.symmetric(horizontal: 18),
                   child: Row(
                     children: [
+                      _buildFilterTab('Full Deck (78)', 'all'),
+                      const SizedBox(width: 8),
                       _buildFilterTab('Major Arcana (22)', 'major'),
                       const SizedBox(width: 8),
-                      _buildFilterTab('Minor Arcana (56)', 'minor'),
+                      _buildFilterTab('Wands 🔥 (14)', 'wands'),
                       const SizedBox(width: 8),
-                      _buildFilterTab('Full Deck (78)', 'all'),
+                      _buildFilterTab('Cups 🌊 (14)', 'cups'),
+                      const SizedBox(width: 8),
+                      _buildFilterTab('Swords ⚔️ (14)', 'swords'),
+                      const SizedBox(width: 8),
+                      _buildFilterTab('Pentacles 🪙 (14)', 'pentacles'),
                     ],
                   ),
                 ),
@@ -582,31 +611,32 @@ class _TarotCodexScreenState extends ConsumerState<TarotCodexScreen> {
 
   Widget _buildFilterTab(String label, String value) {
     final isSelected = _filterArcana == value;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() => _filterArcana = value),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? AppColors.goldBright.withValues(alpha: 0.2)
-                : AppColors.glassFillStrong,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: isSelected ? AppColors.goldBright : AppColors.glassBorder,
-              width: isSelected ? 1.4 : 1.0,
-            ),
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        setState(() => _filterArcana = value);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.goldBright.withValues(alpha: 0.2)
+              : AppColors.glassFillStrong,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isSelected ? AppColors.goldBright : AppColors.glassBorder,
+            width: isSelected ? 1.4 : 1.0,
           ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.cinzel(
-              fontSize: 10,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-              color: isSelected ? AppColors.goldBright : AppColors.textSecondary,
-              letterSpacing: 0.6,
-            ),
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.cinzel(
+            fontSize: 10.5,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+            color: isSelected ? AppColors.goldBright : AppColors.textSecondary,
+            letterSpacing: 0.6,
           ),
         ),
       ),

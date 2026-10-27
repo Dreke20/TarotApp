@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Primary Meta Tags -->
+  <title>Oraculum • Channeled AI Tarot, Runes & Natal Astrology</title>
+  <meta name="title" content="Oraculum • Channeled AI Tarot, Runes & Natal Astrology">
+  <meta name="description" content="Step onto the celestial altar. Experience tactile 3D perspective tarot spreads, empathetic Google Gemini Flash AI oracle interpretations, complete natal ephemeris, and Elder Futhark rune castings.">
+  <meta name="keywords" content="tarot, ai tarot, tarot cards, celtic cross, horoscope, astrology, zodiac, natal chart, ephemeris, elder futhark, runes, i ching, gemini ai, oraculum">
+  <meta name="author" content="Oraculum Studios">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://oraculum-tarot.netlify.app/">
+  <meta property="og:title" content="Oraculum • Channeled AI Tarot, Runes & Natal Astrology">
+  <meta property="og:description" content="Step onto the celestial altar. Tactile 3D perspective tarot cards, empathetic Gemini AI prophecy, and real-time planetary ephemeris.">
+  <meta property="og:image" content="images/feature_graphic.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://oraculum-tarot.netlify.app/">
+  <meta property="twitter:title" content="Oraculum • Channeled AI Tarot & Astral Guidance">
+  <meta property="twitter:description" content="Immersive 3D AI Tarot readings, daily cosmic guidance & astrological harmony.">
+  <meta property="twitter:image" content="images/feature_graphic.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="images/icon.png">
+  <link rel="apple-touch-icon" href="images/icon.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Schema.org Application Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Oraculum Tarot & Astrology",
+    "operatingSystem": "Android",
+    "applicationCategory": "LifestyleApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "1250"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Ambient Animated Starfield Background -->
+  <canvas id="star-canvas"></canvas>
+
+  <!-- Navigation Bar -->
+  <header class="site-nav">
+    <div class="nav-wrapper">
+      <a href="#" class="brand">
+        <img src="images/icon.png" alt="Oraculum Celestial Eye Logo" class="brand-icon">
+        <span class="brand-name gold-text">ORACULUM</span>
+      </a>
+      
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#altar-demo">Interactive Altar</a></li>
+        <li><a href="#pillars">Sacred Pillars</a></li>
+        <li><a href="#screenshots">Sanctuary Gallery</a></li>
+        <li><a href="#pricing">Treasury</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="terms.html">Terms</a></li>
+      </ul>
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <a href="#download" class="btn-primary">
+          <span>✦ GET THE APP</span>
+        </a>
+        <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Navigation">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main>
+    <section class="hero container" id="hero">
+      <div class="hero-pill">
+        <span>✦ Channeled AI Tarot & Astral Guidance ✦</span>
+      </div>
+      
+      <h1 class="hero-title">
+        Ancient Mysticism.<br>
+        <span class="gold-text">Empathetic AI Prophecy.</span>
+      </h1>
+      
+      <p class="hero-desc">
+        Step onto the sacred celestial altar. Experience true 3D perspective tarot card flips, deep astrological ephemeris alignment, Elder Futhark runes, and whispered counsel powered by Google Vertex AI.
+      </p>
+
+      <div class="hero-actions" id="download">
+        <a href="https://play.google.com/store/apps/details?id=oraculum.dirtysouth" target="_blank" rel="noopener" class="store-badge">
+          <svg viewBox="0 0 24 24">
+            <path d="M3.609 1.814L13.792 12 3.61 22.186a1.996 1.996 0 0 1-.61-.908V2.722c0-.34.08-.667.21-.908zm11.606 11.61l2.453-2.453-12.06-6.953 9.607 9.406zm0 1.152L5.608 23.98l12.06-6.952-2.453-2.452zm1.616-1.615l3.498 2.015c.954.55.954 1.45 0 2l-3.498 2.016-2.03-2.03 2.03-2.001z"/>
+          </svg>
+          <div style="text-align: left;">
+            <span class="sub">Available On</span>
+            <span class="main">Google Play</span>
+          </div>
+        </a>
+
+        <a href="#altar-demo" class="btn-secondary">
+          <span>🔮 TRY THE WEB ORACLE DEMO</span>
+        </a>
+      </div>
+
+      <!-- Feature Graphic Banner -->
+      <div class="hero-banner-container">
+        <img src="images/feature_graphic.png" alt="Oraculum Tarot Obsidian and Gold Altar" class="hero-banner-img">
+      </div>
+    </section>
+
+    <!-- Interactive Altar Demo Section -->
+    <section class="oracle-demo-section container" id="altar-demo">
+      <p class="section-tag">✦ LIVE ESOTERIC PROTOTYPE ✦</p>
+      <h2 class="section-title">Draw from the <span class="gold-text">Celestial Ribbon</span></h2>
+      <p class="section-desc">
+        Center your breath, focus your intent, and tap the 3D card below to receive an authentic channeled prophecy from the Oracle Codex.
+      </p>
+
+      <div class="interactive-altar glass-panel">
+        <div class="tarot-card-scene">
+          <div class="tarot-card-flip" id="interactive-tarot-card">
+            <!-- Back of Card -->
+            <div class="tarot-card-face tarot-card-back">
+              <div class="back-pattern">
+                <div style="font-size: 2.2rem; filter: drop-shadow(0 0 8px rgba(226, 190, 118, 0.5));">👁️</div>
+                <div style="font-family: var(--font-cinzel); font-size: 0.75rem; letter-spacing: 0.2em; color: var(--gold-primary);">
+                  ORACULUM
+                </div>
+                <div style="font-size: 0.8rem; color: var(--gold-muted);">✦ TAP TO FLIP ✦</div>
+              </div>
+            </div>
+
+            <!-- Front of Card -->
+            <div class="tarot-card-face tarot-card-front">
+              <div class="card-front-art">
+                <span class="card-numeral" id="demo-card-numeral">X</span>
+                <div class="card-icon-art" id="demo-card-icon">☸️</div>
+                <div class="card-title-label" id="demo-card-title">THE WHEEL OF FORTUNE</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="draw-card-btn" style="margin-bottom: 12px;">
+          ✦ TAP TO DIVINE YOUR ARCHETYPE ✦
+        </button>
+
+        <!-- Dynamic Prophecy Display -->
+        <div class="oracle-prophecy-box" id="demo-prophecy-container">
+          <div class="prophecy-headline" id="demo-prophecy-headline">
+            ✦ Cyclic Turning & Auspicious Momentum
+          </div>
+          <p class="prophecy-text" id="demo-prophecy-text">
+            Look deeply into the solitary eye of the Wheel, where cosmic forces realign mundane circumstances in your favor. A karmic cycle culminates today, dissolving stagnant barriers into kinetic forward motion.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 Sacred Pillars Showcase -->
+    <section class="features-section container" id="pillars">
+      <div style="text-align: center;">
+        <p class="section-tag">✦ SACRED ESOTERIC CANON ✦</p>
+        <h2 class="section-title">The Five Foundations of <span class="gold-text">Oraculum</span></h2>
+        <p class="section-desc">
+          Crafted for high-order divination, astrological timing, and meditative stillness.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <!-- Pillar 1 -->
+        <div class="feature-card glass-panel">
+          <div class="feature-icon-wrapper">🎴</div>
+          <h3>78-Card Obsidian Ribbon</h3>
+          <p>
+            Experience true tactile 3D perspective flips with realistic depth, gold foil filigree, and fluid card manipulation across Daily 1-Card, 3-Fates, and the iconic 10-card Celtic Cross.
+          </p>
+        </div>
+
+        <!-- Pillar 2 -->
+        <div class="feature-card glass-panel">
+          <div class="feature-icon-wrapper">🪵</div>
+          <h3>60-Second Micro-Rituals</h3>
+          <p>
+            Purify your sacred space before inquiry using digital Palo Santo, White Sage, and Golden Copal smudges with interactive waft smoke particle simulations.
+          </p>
+        </div>
+
+        <!-- Pillar 3 -->
+        <div class="feature-card glass-panel">
+          <div class="feature-icon-wrapper">💫</div>
+          <h3>Cosmic Synastry Mirror</h3>
+          <p>
+            Map karmic soul connections, elemental synergy, and planetary synastry between two seekers through tailored 5-card relational spreads.
+          </p>
+        </div>
+
+        <!-- Pillar 4 -->
+        <div class="feature-card glass-panel">
+          <div class="feature-icon-wrapper">🪐</div>
+          <h3>Natal Ephemeris & Transits</h3>
+          <p>
+            Calculate your Sun, Moon, and Rising sign placements, elemental balance (Fire, Earth, Air, Water), and real-time transiting celestial aspects.
+          </p>
+        </div>
+
+        <!-- Pillar 5 -->
+        <div class="feature-card glass-panel">
+          <div class="feature-icon-wrapper">ᚦ</div>
+          <h3>Elder Futhark & Solfeggio</h3>
+          <p>
+            Cast the 24 sacred Norse runes across the Three Norns with Merkstave wisdom, accompanied by pure 432Hz, 528Hz, and 741Hz harmonic soundscapes.
+          </p>
+        </div>
+
+        <!-- Pillar 6 -->
+        <div class="feature-card glass-panel">
+          <div class="feature-icon-wrapper">📜</div>
+          <h3>Sacred Grimoire Export</h3>
+          <p>
+            Save readings into your encrypted journal archive or export high-resolution antique parchment manuscripts to print or share to your Instagram Story.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- In-App Screenshot Showcase -->
+    <section class="screenshots-section container" id="screenshots">
+      <p class="section-tag">✦ VISUAL SANCTUARY ✦</p>
+      <h2 class="section-title">Designed for <span class="gold-text">Transcendence</span></h2>
+      <p class="section-desc">
+        Inspect the actual high-definition screens rendered live on Android.
+      </p>
+
+      <div class="screenshot-carousel">
+        <div class="screenshot-card">
+          <img src="images/screen_altar.png" alt="Altar Sanctum & 78-Card Obsidian Ribbon" loading="lazy">
+          <div class="caption">
+            <h4>Altar Sanctum</h4>
+            <p>78-Card Ribbon & 3D Deck Cuts</p>
+          </div>
+        </div>
+
+        <div class="screenshot-card">
+          <img src="images/screen_prophecy.png" alt="Channeled AI Prophecy Parchment" loading="lazy">
+          <div class="caption">
+            <h4>Channeled AI Prophecy</h4>
+            <p>Sacred Grimoire Manuscript</p>
+          </div>
+        </div>
+
+        <div class="screenshot-card">
+          <img src="images/screen_synastry.png" alt="Twin Flame Synastry Blueprint" loading="lazy">
+          <div class="caption">
+            <h4>Cosmic Synastry</h4>
+            <p>Dual-Seeker Astrological Mirror</p>
+          </div>
+        </div>
+
+        <div class="screenshot-card">
+          <img src="images/screen_ephemeris.png" alt="Complete Natal Ephemeris Chart" loading="lazy">
+          <div class="caption">
+            <h4>Natal Ephemeris</h4>
+            <p>Placements & Elemental Balance</p>
+          </div>
+        </div>
+
+        <div class="screenshot-card">
+          <img src="images/screen_runes.png" alt="Elder Futhark Runes Casting" loading="lazy">
+          <div class="caption">
+            <h4>Elder Futhark Runes</h4>
+            <p>Three Norns Norse Oracle</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing / Celestial Bazaar -->
+    <section class="pricing-section container" id="pricing">
+      <div style="text-align: center;">
+        <p class="section-tag">✦ THE CELESTIAL BAZAAR ✦</p>
+        <h2 class="section-title">Choose Your <span class="gold-text">Sacred Path</span></h2>
+        <p class="section-desc">
+          Begin your journey freely or unlock unlimited access with Oracle Pro.
+        </p>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- Free Seeker -->
+        <div class="pricing-card glass-panel">
+          <div>
+            <h3>SEEKER INITIATE</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">Free Exploration</p>
+            <div class="price">$0 <span>/ forever</span></div>
+            <ul class="pricing-features">
+              <li class="check">Daily 1-Card Archetype</li>
+              <li class="check">Three Fates Past/Present/Future</li>
+              <li class="check">Full 78-Card Codex Lookup</li>
+              <li class="check">+1 Free Starlight Shard Offerings</li>
+              <li class="check">Standard Altar Smudge Rite</li>
+            </ul>
+          </div>
+          <a href="#download" class="btn-secondary" style="width: 100%; justify-content: center;">
+            BEGIN JOURNEY
+          </a>
+        </div>
+
+        <!-- Oracle Pro -->
+        <div class="pricing-card glass-panel featured">
+          <div class="pricing-badge">MOST REVERED</div>
+          <div>
+            <h3>ORACLE PRO</h3>
+            <p style="color: var(--gold-bright); font-size: 0.85rem; margin-top: 4px;">Full Mastery & Unlimited AI</p>
+            <div class="price">$4.99 <span>/ month</span></div>
+            <ul class="pricing-features">
+              <li class="check"><strong>Unlimited Gemini Flash Channeled AI</strong></li>
+              <li class="check">10-Card Celtic Cross & Year Wheel</li>
+              <li class="check">Complete Natal Ephemeris & Transits</li>
+              <li class="check">Twin Flame Synastry Blueprints</li>
+              <li class="check">Elder Futhark Runes & I Ching</li>
+              <li class="check">High-Res Grimoire Parchment Exports</li>
+              <li class="check"><strong>100% Ad-Free Pure Sanctuary</strong></li>
+            </ul>
+          </div>
+          <a href="#download" class="btn-primary" style="width: 100%; justify-content: center;">
+            UNLOCK ORACLE PRO
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="brand">
+            <img src="images/icon.png" alt="Oraculum Celestial Eye Logo" class="brand-icon">
+            <span class="brand-name gold-text">ORACULUM</span>
+          </a>
+          <p>
+            Ancient divination harmonized with contemporary artificial intelligence. Available on Android devices worldwide.
+          </p>
+          <p style="margin-top: 10px; font-size: 0.75rem; color: var(--gold-muted);">
+            Package ID: <code>oraculum.dirtysouth</code>
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h5>Sanctuary</h5>
+          <ul>
+            <li><a href="#altar-demo">Interactive Altar</a></li>
+            <li><a href="#pillars">78-Card Deck</a></li>
+            <li><a href="#pillars">Elder Runes</a></li>
+            <li><a href="#pillars">Natal Ephemeris</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Legal & Safety</h5>
+          <ul>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms of Service</a></li>
+            <li><a href="delete-account.html">Account Deletion</a></li>
+            <li><a href="https://support.google.com/googleplay" target="_blank" rel="noopener">Google Play Terms</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Support</h5>
+          <ul>
+            <li><a href="mailto:privacy@oraculumtarot.com">Contact Oracle Desk</a></li>
+            <li><a href="mailto:dreke.dev@gmail.com">Developer Inquiries</a></li>
+            <li><a href="delete-account.html">Data Erasure Portal</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          © 2026 Oraculum Studios / Rodriguez Edwards (Dreke20). All sacred rights reserved.
+        </div>
+        <div style="display: flex; gap: 16px;">
+          <a href="privacy.html" style="color: inherit; text-decoration: none;">Privacy Policy</a>
+          <a href="terms.html" style="color: inherit; text-decoration: none;">Terms of Service</a>
+          <a href="delete-account.html" style="color: inherit; text-decoration: none;">Data Erasure</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -267,13 +267,15 @@ class ReadingNotifier extends _$ReadingNotifier {
       // Check for respectful in-app review prompt on milestone satisfaction
       await ReviewService.instance.checkAndPromptForReview(streak: newStreak);
 
-      // Synchronize newly drawn card to Android home screen widget
+      // Synchronize newly drawn card to Android home screen widget according to seeker preferences
       if (state.drawnCards.isNotEmpty) {
         final primaryCard = state.drawnCards.first;
-        ref.read(tarotWidgetServiceProvider).updateHomeScreenWidget(
-          card: primaryCard,
+        final widgetService = ref.read(tarotWidgetServiceProvider);
+        await widgetService.recordDrawnCard(
+          primaryCard,
           isReversed: primaryCard.isReversed,
         );
+        await widgetService.syncFromPreferences();
       }
     } catch (e) {
       state = state.copyWith(

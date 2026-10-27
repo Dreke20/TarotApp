@@ -42,7 +42,7 @@ final class AmbientAudioNotifierProvider
 }
 
 String _$ambientAudioNotifierHash() =>
-    r'68347ded231ec911ce739961863f49696bd84f04';
+    r'598dd36f269d39c3fd611d3dc01669b5d6a86c0e';
 
 abstract class _$AmbientAudioNotifier extends $Notifier<AmbientAudioState> {
   AmbientAudioState build();

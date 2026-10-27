@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../voice_oracle/presentation/widgets/hands_free_communion_modal.dart';
 import '../notifiers/reading_notifier.dart';
 import 'glass_container.dart';
-import 'voice_invocation_modal.dart';
 
 /// Cosmic inquiry search bar with curated prompt suggestion chips.
 class OracleQuestionBar extends StatelessWidget {
@@ -77,9 +77,9 @@ class OracleQuestionBar extends StatelessWidget {
                   padding: const EdgeInsets.all(7),
                   constraints: const BoxConstraints(),
                   onPressed: () {
-                    VoiceInvocationModal.show(
+                    HandsFreeCommunionModal.show(
                       context,
-                      onQuestionSpoken: (spoken) {
+                      onQuestionCommitted: (spoken) {
                         controller.text = spoken;
                         notifier.setQuestion(spoken);
                       },

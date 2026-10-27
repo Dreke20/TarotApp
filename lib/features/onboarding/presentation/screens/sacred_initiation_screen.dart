@@ -521,7 +521,7 @@ class _SacredInitiationScreenState extends ConsumerState<SacredInitiationScreen>
               child: HolographicFoilCard(
                 borderRadius: BorderRadius.circular(14),
                 child: Image.asset(
-                  'assets/cards/${soul.id}.jpg',
+                  'assets/cards/${soul.id}.webp',
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
                     color: const Color(0xFF1B1430),

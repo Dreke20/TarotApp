@@ -75,5 +75,11 @@
 			<string>cstr6suwn9.skadnetwork</string>
 		</dict>
 	</array>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>The Conversational Oracle listens to your spoken questions so it can answer you aloud.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Your spoken questions are transcribed so the Oracle can understand and respond.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>The AR Altar and Tarot Lens use the camera to project your spread onto your real surroundings.</string>
 </dict>
 </plist>

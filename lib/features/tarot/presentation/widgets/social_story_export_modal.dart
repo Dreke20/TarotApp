@@ -232,7 +232,7 @@ class _SocialStoryExportModalState extends State<SocialStoryExportModal> {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
                                     child: Image.asset(
-                                      'assets/cards/${widget.card.id}.jpg',
+                                      'assets/cards/${widget.card.id}.webp',
                                       fit: BoxFit.cover,
                                       errorBuilder: (context, error, stackTrace) => Container(
                                         color: const Color(0xFF1E1436),

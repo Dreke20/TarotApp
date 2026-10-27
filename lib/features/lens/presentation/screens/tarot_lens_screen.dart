@@ -12,6 +12,7 @@ import '../../../tarot/domain/tarot_card.dart';
 import '../../../tarot/presentation/notifiers/reading_notifier.dart';
 import '../../../tarot/presentation/widgets/glass_container.dart';
 import '../../../tarot/presentation/widgets/tarot_card_widget.dart';
+import '../../data/tarot_lens_service.dart';
 import '../../domain/tarot_lens_scan_result.dart';
 import '../notifiers/tarot_lens_notifier.dart';
 
@@ -77,6 +78,14 @@ class _TarotLensScreenState extends ConsumerState<TarotLensScreen> {
   Widget build(BuildContext context) {
     final lensState = ref.watch(tarotLensProvider);
     final lensNotifier = ref.read(tarotLensProvider.notifier);
+    ref.listen(tarotLensProvider, (previous, next) {
+      final message = next.errorMessage;
+      if (message != null && message != previous?.errorMessage) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(message)));
+      }
+    });
     final scanResult = lensState.scanResult;
 
     final filteredCards = TarotCardData.allCards.where((c) {
@@ -566,7 +575,11 @@ class _TarotLensScreenState extends ConsumerState<TarotLensScreen> {
                     const Icon(Icons.auto_awesome, color: AppColors.goldBright, size: 12),
                     const SizedBox(width: 5),
                     Text(
-                      '${result.confidencePercent}% OPTICAL MATCH',
+                      result.confidencePercent >= TarotLensService.manualSelectionConfidence
+                          ? 'CHOSEN CARD'
+                          : result.confidencePercent <= TarotLensService.unrecognizedConfidence
+                              ? 'NOT RECOGNIZED'
+                              : '${result.confidencePercent}% OPTICAL MATCH',
                       style: GoogleFonts.cinzel(
                         fontSize: 9,
                         fontWeight: FontWeight.bold,

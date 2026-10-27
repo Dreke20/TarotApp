@@ -191,7 +191,7 @@ class _TarotCardWidgetState extends ConsumerState<TarotCardWidget>
   Widget _buildCardFront() {
     final card = widget.card;
     final isReversed = card.isReversed;
-    final cardAsset = card.assetPath ?? 'assets/cards/${card.id}.jpg';
+    final cardAsset = card.assetPath ?? 'assets/cards/${card.id}.webp';
     final CardDeckStyle activeStyle =
         widget.deckStyleOverride ?? ref.watch(deckStyleProvider);
 
@@ -329,23 +329,27 @@ class _TarotCardWidgetState extends ConsumerState<TarotCardWidget>
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 5, vertical: 1.5),
-                    decoration: BoxDecoration(
-                      color: AppColors.glassFillStrong,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: _getElementColor(card.element).withValues(alpha: 0.5),
-                        width: 0.6,
+                  Flexible(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 1.5),
+                      decoration: BoxDecoration(
+                        color: AppColors.glassFillStrong,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: _getElementColor(card.element).withValues(alpha: 0.5),
+                          width: 0.6,
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      card.element ?? (card.arcana == 'major' ? 'MAJOR' : 'MINOR'),
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 7.5,
-                        color: _getElementColor(card.element),
-                        fontWeight: FontWeight.w600,
+                      child: Text(
+                        card.element ?? (card.arcana == 'major' ? 'MAJOR' : 'MINOR'),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 7.5,
+                          color: _getElementColor(card.element),
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),

@@ -1,5 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../services/mystic_performance_service.dart';
 
 /// Interactive celestial stardust particle model.
 class StardustParticle {
@@ -43,7 +45,7 @@ class StardustParticle {
 
 /// A responsive, GPU-accelerated celestial stardust particle field
 /// that emits interactive gold and amethyst spark trails on touch/drag.
-class StardustParticleField extends StatefulWidget {
+class StardustParticleField extends ConsumerStatefulWidget {
   final Widget? child;
   final bool enableTouchTrails;
   final bool enableAmbientDrift;
@@ -56,10 +58,10 @@ class StardustParticleField extends StatefulWidget {
   });
 
   @override
-  State<StardustParticleField> createState() => _StardustParticleFieldState();
+  ConsumerState<StardustParticleField> createState() => _StardustParticleFieldState();
 }
 
-class _StardustParticleFieldState extends State<StardustParticleField>
+class _StardustParticleFieldState extends ConsumerState<StardustParticleField>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final List<StardustParticle> _particles = [];
@@ -97,8 +99,12 @@ class _StardustParticleFieldState extends State<StardustParticleField>
         .clamp(0.001, 0.05);
     _lastFrameTime = now;
 
+    final perf = ref.read(mysticPerformanceProvider);
+    final maxCount = perf.isBatterySaverEnabled ? 16 : 80;
+    final spawnChance = perf.isBatterySaverEnabled ? 0.08 : 0.25;
+
     // Ambient background drift spawning
-    if (widget.enableAmbientDrift && _random.nextDouble() < 0.25 && _particles.length < 80) {
+    if (widget.enableAmbientDrift && _random.nextDouble() < spawnChance && _particles.length < maxCount) {
       final size = MediaQuery.maybeOf(context)?.size ?? const Size(400, 800);
       _spawnParticle(
         x: _random.nextDouble() * size.width,

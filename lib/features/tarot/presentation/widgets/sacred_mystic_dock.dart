@@ -8,8 +8,13 @@ import '../../../divination/presentation/screens/iching_screen.dart';
 import '../../../divination/presentation/screens/rune_casting_screen.dart';
 import '../../../dream/presentation/screens/dream_journal_screen.dart';
 import '../../../lens/presentation/screens/tarot_lens_screen.dart';
+import '../../../ar_altar/presentation/screens/ar_altar_screen.dart';
+import '../../../oracle_dialogue/presentation/screens/conversational_oracle_screen.dart';
 import '../screens/custom_spread_builder_screen.dart';
 import 'glass_container.dart';
+import '../../../sanctuary/presentation/screens/mystic_sanctum_hub_modal.dart';
+import '../../../astral_circle/presentation/widgets/astral_circle_hub_modal.dart';
+import '../../../monetization/presentation/widgets/mystic_bazaar_modal.dart';
 
 class SacredMysticDock extends StatelessWidget {
   const SacredMysticDock({super.key});
@@ -38,6 +43,45 @@ class SacredMysticDock extends StatelessWidget {
                     title: 'ALTAR',
                     isActive: true,
                     onTap: () {},
+                  ),
+                  _buildDivider(),
+                  _buildDockItem(
+                    context,
+                    iconText: '🏛️',
+                    title: 'BAZAAR',
+                    onTap: () => MysticBazaarModal.show(context),
+                  ),
+                  _buildDivider(),
+                  _buildDockItem(
+                    context,
+                    iconText: '✦',
+                    title: 'SANCTUM',
+                    onTap: () => MysticSanctumHubModal.show(context),
+                  ),
+                  _buildDivider(),
+                  _buildDockItem(
+                    context,
+                    iconText: '🔮',
+                    title: 'CIRCLE',
+                    onTap: () => AstralCircleHubModal.show(context),
+                  ),
+                  _buildDivider(),
+                  _buildDockItem(
+                    context,
+                    iconText: '🎙️',
+                    title: 'VOICE',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const ConversationalOracleScreen()),
+                    ),
+                  ),
+                  _buildDivider(),
+                  _buildDockItem(
+                    context,
+                    iconText: '🕯️',
+                    title: 'AR ALTAR',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const ArAltarScreen()),
+                    ),
                   ),
                   _buildDivider(),
                   _buildDockItem(

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy • Oraculum Tarot & Astrology</title>
+  <meta name="description" content="Official Privacy Policy and Data Safety disclosures for Oraculum (oraculum.dirtysouth) on Google Play.">
+  <link rel="icon" type="image/png" href="images/icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <canvas id="star-canvas"></canvas>
+
+  <header class="site-nav">
+    <div class="nav-wrapper">
+      <a href="index.html" class="brand">
+        <img src="images/icon.png" alt="Oraculum Celestial Eye Logo" class="brand-icon">
+        <span class="brand-name gold-text">ORACULUM</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html#pillars">Sanctuary</a></li>
+        <li><a href="terms.html">Terms of Service</a></li>
+        <li><a href="delete-account.html">Account Deletion</a></li>
+      </ul>
+      <a href="index.html" class="btn-secondary">← BACK TO SANCTUARY</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="legal-content glass-panel">
+      <h1 class="gold-text">Privacy Policy & Data Safety</h1>
+      <p class="meta-info">Effective Date: October 27, 2026 • Application ID: oraculum.dirtysouth</p>
+
+      <h2>1. Overview & Sacred Trust</h2>
+      <p>
+        At <strong>Oraculum</strong> (developed by Oraculum Studios / Whispers & Warnings), your spiritual inquiries, personal journal entries, and astrological data are treated with sacred confidentiality. This policy outlines how information is handled across our Android mobile app and associated cloud services.
+      </p>
+
+      <h2>2. Data We Collect & How We Handle It</h2>
+      <ul>
+        <li><strong>Spiritual Inquiries & Cards:</strong> When you consult the Oracle, your selected tarot archetypes and question text are transmitted via encrypted HTTPS/TLS to our secure Supabase Edge Functions to generate empathetic interpretations with Google Vertex AI. Questions are never used to train generalized third-party machine learning models.</li>
+        <li><strong>Astrological Profile:</strong> Your date of birth, time, and geographic coordinates are stored locally on your device in secure storage (with HMAC cryptographic verification) to calculate your Natal Ephemeris. We do not sell or monetize personal birth charts.</li>
+        <li><strong>Microphone & Camera Permissions:</strong>
+          <ul>
+            <li><em>Microphone:</em> Used exclusively during the active session when you choose to use the Conversational Voice Oracle via Android SpeechRecognizer. Audio is processed on-device or via secure system pipes; raw audio recordings are never stored on remote servers.</li>
+            <li><em>Camera:</em> Used strictly during active sessions in the AR Altar and Tarot Lens features to project spreads into your physical space. No camera video streams or frames are uploaded or saved.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h2>3. Advertising & Monetization (Google AdMob)</h2>
+      <p>
+        Oraculum utilizes Google Mobile Ads SDK (AdMob) to provide optional rewarded offerings (e.g. watching a video to earn Starlight Shards) and discreet banner placements for non-paying users:
+      </p>
+      <ul>
+        <li>AdMob may collect diagnostic identifiers and device metrics in compliance with Google Play Store Policies.</li>
+        <li>We enforce strict frequency caps to preserve a peaceful sanctuary.</li>
+        <li>Subscribers to Oracle Pro enjoy an entirely 100% ad-free experience.</li>
+      </ul>
+
+      <h2>4. Data Storage, Security & Row Level Security (RLS)</h2>
+      <p>
+        All cloud databases employ PostgreSQL Row Level Security (RLS) enforced at the database kernel. A seeker can only read or modify records linked strictly to their authenticated account identifier (<code>auth.uid()</code>). Data in transit is secured with TLS 1.3 encryption.
+      </p>
+
+      <h2>5. User Rights & Data Deletion</h2>
+      <p>
+        You have the absolute right under GDPR, CCPA, and Google Play Data Safety policies to access, export, or permanently delete your account and all associated readings. You can initiate instant deletion within the app or through our dedicated web portal:
+      </p>
+      <p>
+        <a href="delete-account.html" class="btn-primary" style="margin-top: 10px;">✦ VISIT ACCOUNT DELETION PORTAL ✦</a>
+      </p>
+
+      <h2>6. Children's Privacy</h2>
+      <p>
+        Oraculum is designed for general audiences and spiritual seekers aged 13 and above. We do not knowingly collect personal data from children under 13 in compliance with COPPA.
+      </p>
+
+      <h2>7. Contact Information</h2>
+      <p>
+        If you have questions regarding this Privacy Policy or wish to file a data inquiry, please contact our Data Protection Officer:
+      </p>
+      <p>
+        <strong>Data Protection Email:</strong> <a href="mailto:privacy@oraculumtarot.com" class="gold-link">privacy@oraculumtarot.com</a> or <a href="mailto:dreke.dev@gmail.com" class="gold-link">dreke.dev@gmail.com</a><br>
+        <strong>Publisher &amp; Developer:</strong> Rodriguez Edwards (Dreke20)<br>
+        <strong>GitHub Repository:</strong> <a href="https://github.com/Dreke20/TarotApp" class="gold-link" target="_blank" rel="noopener">github.com/Dreke20/TarotApp</a>
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-bottom" style="max-width: 860px; margin: 0 auto; padding: 24px 0;">
+      <p>&copy; 2026 Oraculum Studios / Rodriguez Edwards (Dreke20). All sacred rights reserved.</p>
+      <div class="compliance-links" style="display: flex; gap: 16px;">
+        <a href="privacy.html" style="color: inherit; text-decoration: none;">Privacy Policy</a>
+        <a href="terms.html" style="color: inherit; text-decoration: none;">Terms of Service</a>
+        <a href="delete-account.html" style="color: inherit; text-decoration: none;">Account Deletion</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

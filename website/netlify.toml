@@ -1,0 +1,45 @@
+# Netlify Configuration for Oraculum Website
+
+[build]
+  publish = "."
+
+# Clean URL Rewrites for Google Play Compliance & Store Links
+[[redirects]]
+  from = "/privacy"
+  to = "/privacy.html"
+  status = 200
+
+[[redirects]]
+  from = "/terms"
+  to = "/terms.html"
+  status = 200
+
+[[redirects]]
+  from = "/delete-account"
+  to = "/delete-account.html"
+  status = 200
+
+[[redirects]]
+  from = "/data-safety"
+  to = "/privacy.html"
+  status = 301
+
+[[redirects]]
+  from = "/account-deletion"
+  to = "/delete-account.html"
+  status = 301
+
+# Security & Performance Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

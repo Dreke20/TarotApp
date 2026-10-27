@@ -58,6 +58,31 @@ void main() {
       final priestessResult = await service.analyzeCard(preferredCard: priestess);
       expect(priestessResult.detectedSymbols, contains('Twin Pillars of Boaz & Jachin'));
       expect(priestessResult.physicalAltarRitual, contains('Center Altar Practice'));
+
+      // Manual picks never invent a confidence score
+      expect(priestessResult.confidencePercent, TarotLensService.manualSelectionConfidence);
+    });
+
+    test('Recognized scans carry Gemini confidence and visible symbols', () async {
+      final service = TarotLensService();
+      final tower = TarotCardData.allCards.firstWhere((c) => c.id == 'major_16_the_tower');
+      final low = await service.analyzeCard(
+        preferredCard: tower,
+        confidencePercent: 60,
+        visibleSymbols: const ['Lightning bolt', 'Falling crown'],
+      );
+      expect(low.confidencePercent, 60);
+      expect(low.isHighConfidence, false);
+      expect(low.detectedSymbols, ['Lightning bolt', 'Falling crown']);
+
+      final high = await service.analyzeCard(preferredCard: tower, confidencePercent: 93);
+      expect(high.isHighConfidence, true);
+      expect(high.detectedSymbols, isNotEmpty);
+    });
+
+    test('identifyCard returns null instead of guessing when it cannot reach Gemini', () async {
+      final service = TarotLensService();
+      expect(await service.identifyCard('/does/not/exist.jpg'), isNull);
     });
 
     test('TarotLensNotifier updates state on card selection and orientation toggle', () async {
@@ -108,8 +133,9 @@ void main() {
       expect(find.byType(TextField), findsOneWidget);
       expect(find.text('THE FOOL'), findsOneWidget);
 
-      // Verify Optical Match Badge
-      expect(find.textContaining('OPTICAL MATCH'), findsWidgets);
+      // Before any photo, the default card is shown as a chosen card, not a fake match
+      expect(find.text('CHOSEN CARD'), findsOneWidget);
+      expect(find.textContaining('OPTICAL MATCH'), findsNothing);
 
       // Verify Anchor to Sacred Altar Table action button
       expect(find.text('ANCHOR TO SACRED ALTAR TABLE'), findsOneWidget);

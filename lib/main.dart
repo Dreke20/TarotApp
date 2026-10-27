@@ -78,7 +78,7 @@ Future<void> main() async {
   // Initialize and synchronize Android Home Screen Widget (Daily Card & Moon Phase)
   try {
     final widgetService = TarotWidgetService();
-    await widgetService.updateHomeScreenWidget();
+    await widgetService.syncFromPreferences();
   } catch (e) {
     debugPrint('Home widget initialization note: $e');
   }

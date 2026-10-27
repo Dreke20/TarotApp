@@ -47,6 +47,12 @@ class SpreadSelector extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           _buildSpreadOption(
+            type: SpreadType.solAndLuna,
+            icon: Icons.brightness_medium,
+            isPro: true,
+          ),
+          const SizedBox(width: 10),
+          _buildSpreadOption(
             type: SpreadType.careerCrossroads,
             icon: Icons.explore,
             isPro: true,

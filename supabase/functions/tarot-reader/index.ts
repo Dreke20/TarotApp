@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.42.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -43,14 +44,39 @@ interface TarotRequest {
   elemental_chemistry?: string;
   dream_narrative?: string;
   altar_consecration?: string;
+  dialogue_prompt?: string;
+  dialogue_history?: { role: string; content: string }[];
+  // Tarot Lens: photo of a physical card to identify
+  lens_image_base64?: string;
+  lens_mime_type?: string;
+  card_catalog?: { id: string; name: string }[];
 }
 
+// gemini-2.0 and 1.5 models were retired (404), so lead with current ones.
 const CANDIDATE_MODELS = [
-  "gemini-2.0-flash",
-  "gemini-1.5-flash",
-  "gemini-1.5-pro",
+  "gemini-2.5-flash",
   "gemini-flash-latest",
+  "gemini-2.5-flash-lite",
 ];
+
+function sanitizeInput(text: unknown, maxLength = 600): string {
+  if (typeof text !== "string") return "";
+  let sanitized = text
+    // Strip control characters (except standard whitespace)
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "")
+    // Strip HTML/script tags
+    .replace(/<[^>]*>?/gm, "")
+    // Defang markdown delimiters used for prompt injection
+    .replace(/```/g, "'''")
+    // Defang system override tokens
+    .replace(/\[\/?(?:system|instruction|admin|override|developer)\]/gi, "")
+    .trim();
+
+  if (sanitized.length > maxLength) {
+    sanitized = sanitized.slice(0, maxLength);
+  }
+  return sanitized;
+}
 
 async function callGemini(
   apiKey: string,
@@ -87,6 +113,22 @@ serve(async (req) => {
   }
 
   try {
+    // 1. Verify Authorization or API Key Header
+    const authHeader = req.headers.get("Authorization") || req.headers.get("authorization");
+    const apiKeyHeader = req.headers.get("apikey");
+
+    if (!authHeader && !apiKeyHeader) {
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized access: Valid credentials or session token required.",
+        }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
     const body: TarotRequest = await req.json();
     const {
       user_question,
@@ -105,10 +147,99 @@ serve(async (req) => {
       elemental_chemistry,
       dream_narrative,
       altar_consecration,
+      dialogue_prompt,
+      dialogue_history,
     } = body;
 
     const geminiApiKey =
       Deno.env.get("GEMINI_API_KEY") || Deno.env.get("VERTEX_AI_API_KEY");
+
+    // L. Tarot Lens: identify a physical card from a photo with Gemini vision.
+    // The photo is only forwarded to Gemini for this request; nothing is stored.
+    if (body.lens_image_base64) {
+      const jsonHeaders = { ...corsHeaders, "Content-Type": "application/json" };
+      const catalog = Array.isArray(body.card_catalog)
+        ? body.card_catalog.filter((c) => c && typeof c.id === "string").slice(0, 100)
+        : [];
+      const validIds = new Set(catalog.map((c) => c.id));
+      const imageData = String(body.lens_image_base64);
+      const mimeType = ["image/jpeg", "image/png", "image/webp", "image/heic"].includes(
+        String(body.lens_mime_type),
+      )
+        ? String(body.lens_mime_type)
+        : "image/jpeg";
+
+      // ~4.5 MB of raw image data is plenty for one card photo.
+      if (imageData.length > 6_000_000) {
+        return new Response(JSON.stringify({ error: "image_too_large" }), {
+          status: 413,
+          headers: jsonHeaders,
+        });
+      }
+      if (!geminiApiKey || validIds.size === 0) {
+        return new Response(
+          JSON.stringify({ card_id: null, reason: "recognition_unavailable" }),
+          { headers: jsonHeaders },
+        );
+      }
+
+      const catalogText = catalog.map((c) => `${c.id}: ${String(c.name).slice(0, 60)}`).join("\n");
+      const lensPrompt = `You identify physical tarot cards from photos.
+Look at the photo and decide which single tarot card is the main card shown. Use the printed title, numeral, suit symbols, pip count and artwork. Decks vary in art style, so rely on the title and numbering when the art differs from Rider-Waite-Smith.
+The card is reversed when its artwork and title are upside down from the viewer's perspective.
+If no tarot card is clearly visible, or you cannot tell which card it is, return null for card_id.
+Respond with strictly valid JSON matching exactly:
+{"card_id": "<one id from the list below, or null>", "is_reversed": <true|false>, "confidence": <integer 0-100, how sure you are of the card_id>, "visible_symbols": ["up to 6 short phrases naming symbols actually visible in the photo"]}
+Card list (id: name):
+${catalogText}`;
+
+      const text = await callGemini(geminiApiKey, {
+        systemInstruction: {
+          parts: [{ text: "You are an expert Tarot Vision identifier. Output strictly valid JSON." }],
+        },
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { inline_data: { mime_type: mimeType, data: imageData } },
+              { text: lensPrompt },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0,
+          // 2.5 models spend part of this budget thinking; 300 truncated the JSON.
+          maxOutputTokens: 2048,
+          responseMimeType: "application/json",
+        },
+      });
+
+      let result: Record<string, unknown> = { card_id: null, reason: "not_recognized" };
+      if (text) {
+        try {
+          const cleaned = text.trim().replace(/^```(?:json)?\s*/, "").replace(/```$/, "").trim();
+          const parsed = JSON.parse(cleaned);
+          const id = typeof parsed.card_id === "string" ? parsed.card_id : null;
+          if (id && validIds.has(id)) {
+            const conf = Math.round(Number(parsed.confidence));
+            result = {
+              card_id: id,
+              is_reversed: parsed.is_reversed === true,
+              confidence: Number.isFinite(conf) ? Math.min(99, Math.max(1, conf)) : 50,
+              visible_symbols: Array.isArray(parsed.visible_symbols)
+                ? parsed.visible_symbols
+                    .filter((s: unknown) => typeof s === "string")
+                    .slice(0, 6)
+                    .map((s: string) => s.slice(0, 60))
+                : [],
+            };
+          }
+        } catch (e) {
+          console.warn("Tarot Lens: could not parse Gemini response", e);
+        }
+      }
+      return new Response(JSON.stringify(result), { headers: jsonHeaders });
+    }
 
     // Dynamic Oracle Persona Voice
     let personaPrompt =
@@ -127,8 +258,63 @@ serve(async (req) => {
         "You speak as The Shadow Mirror: raw, psychologically rigorous truth, confronting ego traps, unintegrated shadows, and uncomfortable honesty.";
     }
 
+    // 0. Two-way spoken dialogue mode (Conversational Voice Oracle)
+    if (dialogue_prompt) {
+      const sanitizedDialogue = sanitizeInput(dialogue_prompt, 400);
+      const drawn = (drawn_cards || [])
+        .map((c) => {
+          if (typeof c === "string") return c;
+          const orient = c.is_reversed ? "Reversed" : "Upright";
+          const meaning = c.is_reversed ? c.meaning_reversed : c.meaning_upright;
+          return `${c.name} (${orient}) - ${meaning ?? ""}`;
+        })
+        .join("; ");
+
+      const dialogueSystem = `You are a legendary spiritual Oracle holding a live, spoken conversation. ${personaPrompt}
+Rules:
+- Your words will be read aloud by a voice engine: reply in at most 90 words, plain sentences, no markdown, no lists, no emojis.
+- Speak directly to the seeker in second person with mystical warmth and practical clarity.
+- ${drawn ? `A card was just drawn for this turn: ${drawn}. Weave it naturally into your answer.` : "No new card was drawn this turn; draw on earlier cards in the conversation if relevant."}
+- End with one short, open question that invites the seeker to continue.
+- Strict Safety Rule: Never give medical, legal, or financial directives; gently suggest a qualified professional when such topics arise.`;
+
+      let dialogueAnswer = "";
+      if (geminiApiKey) {
+        const history = (dialogue_history || []).slice(-12).map((msg) => ({
+          role: msg.role === "model" ? "model" : "user",
+          parts: [{ text: sanitizeInput(msg.content, 500) }],
+        }));
+        history.push({
+          role: "user",
+          parts: [{ text: `Seeker says: "${sanitizedDialogue}"` }],
+        });
+        const text = await callGemini(geminiApiKey, {
+          systemInstruction: {
+            parts: [{ text: dialogueSystem }],
+          },
+          contents: history,
+          generationConfig: { temperature: 0.8, maxOutputTokens: 1024 },
+        });
+        if (text) dialogueAnswer = text.trim();
+      }
+
+      if (!dialogueAnswer) {
+        dialogueAnswer = drawn
+          ? `I hear you. ${drawn.split(" - ")[0]} rises to meet your words, asking you to trust what you already sense. Where in your life does this feel most alive right now?`
+          : "I hear you, seeker. Sit with that feeling a moment longer. What part of it asks for your attention first?";
+      }
+
+      return new Response(JSON.stringify({ answer: dialogueAnswer }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // 1. Follow-up conversational inquiry mode with full contextual memory
     if (follow_up_prompt) {
+      const sanitizedFollowUp = sanitizeInput(follow_up_prompt, 400);
+      const sanitizedQuestion = sanitizeInput(user_question, 300) || "Daily Guidance";
+      const sanitizedSpread = sanitizeInput(spread_type, 60) || "Tarot Spread";
+
       let cardsContext = "";
       if (drawn_cards && drawn_cards.length > 0) {
         cardsContext = drawn_cards
@@ -144,33 +330,37 @@ serve(async (req) => {
 
       const systemPrompt = `You are a legendary spiritual Oracle. ${personaPrompt}
 Answer this seeker inquiry in the exact context of the sacred reading already unveiled:
-- Seeker Question: "${user_question || "Daily Guidance"}"
-- Spread Layout: "${spread_type || "Tarot Spread"}"
+- Seeker Question: "${sanitizedQuestion}"
+- Spread Layout: "${sanitizedSpread}"
 - Drawn Cards & Placements:
 ${cardsContext || "Sacred Tarot Spread"}
-${reading_summary ? `- Prophecy Summary: "${reading_summary}"` : ""}
-${reading_advice ? `- Spiritual Guidance: "${reading_advice}"` : ""}
-${reading_interpretation ? `- Prophecy Excerpt: "${reading_interpretation.slice(0, 400)}..."` : ""}
+${reading_summary ? `- Prophecy Summary: "${sanitizeInput(reading_summary, 200)}"` : ""}
+${reading_advice ? `- Spiritual Guidance: "${sanitizeInput(reading_advice, 200)}"` : ""}
+${reading_interpretation ? `- Prophecy Excerpt: "${sanitizeInput(reading_interpretation.slice(0, 400), 400)}..."` : ""}
 
-Address the seeker directly with profound mystical gravitas, archetypal continuity, and actionable psychological/spiritual clarity. Directly reference the specific cards, their positions, or their reversals when relevant to the seeker's inquiry.`;
+Address the seeker directly with profound mystical gravitas, archetypal continuity, and actionable psychological/spiritual clarity. Directly reference the specific cards, their positions, or their reversals when relevant to the seeker's inquiry.
+Strict Safety Rule: Never give medical, legal, or financial directives; advise consulting licensed professionals.`;
 
       let followUpAnswer = "";
       if (geminiApiKey) {
         const historyParts = (chat_history || []).map((msg) => ({
           role: msg.role === "model" ? "model" : "user",
-          parts: [{ text: msg.content }],
+          parts: [{ text: sanitizeInput(msg.content, 500) }],
         }));
 
         historyParts.push({
           role: "user",
           parts: [
             {
-              text: `${systemPrompt}\n\nSeeker Inquiry: "${follow_up_prompt}"`,
+              text: `Seeker Inquiry: "${sanitizedFollowUp}"`,
             },
           ],
         });
 
         const text = await callGemini(geminiApiKey, {
+          systemInstruction: {
+            parts: [{ text: systemPrompt }],
+          },
           contents: historyParts,
           generationConfig: { temperature: 0.75 },
         });
@@ -184,7 +374,7 @@ Address the seeker directly with profound mystical gravitas, archetypal continui
         const firstCardName = drawn_cards && drawn_cards.length > 0
           ? (typeof drawn_cards[0] === "string" ? drawn_cards[0] : drawn_cards[0].name)
           : "The Oracle";
-        followUpAnswer = `In response to your inquiry—"${follow_up_prompt}"—the energy of ${firstCardName} reminds you that your inner discernment is your true anchor. Look deeper into where you feel tension, for therein lies the hidden doorway to breakthrough.`;
+        followUpAnswer = `In response to your inquiry—"${sanitizedFollowUp}"—the energy of ${firstCardName} reminds you that your inner discernment is your true anchor. Look deeper into where you feel tension, for therein lies the hidden doorway to breakthrough.`;
       }
 
       return new Response(JSON.stringify({ answer: followUpAnswer }), {
@@ -202,6 +392,11 @@ Address the seeker directly with profound mystical gravitas, archetypal continui
         }
       );
     }
+
+    const sanitizedQuestion = sanitizeInput(user_question, 300) || "What guidance does the cosmos have for me at this juncture?";
+    const sanitizedSpread = sanitizeInput(spread_type, 60) || "Custom Spread";
+    const sanitizedDream = sanitizeInput(dream_narrative, 500);
+    const sanitizedAltar = sanitizeInput(altar_consecration, 200);
 
     // Format cards description for prompt
     const cardsDescription = drawn_cards
@@ -228,7 +423,7 @@ Address the seeker directly with profound mystical gravitas, archetypal continui
 
     const journeyDetails =
       recent_journey_context && recent_journey_context.length > 0
-        ? `\nRecent Seeker Inquiries & History: ${recent_journey_context.join(" | ")}`
+        ? `\nRecent Seeker Inquiries & History: ${recent_journey_context.map((c) => sanitizeInput(c, 150)).join(" | ")}`
         : "";
 
     const recurringDetails =
@@ -248,12 +443,12 @@ Address the seeker directly with profound mystical gravitas, archetypal continui
       ? `\nElemental Composition & Alchemy: ${elemental_chemistry}. Analyze the chemical reaction between the dominant elements.`
       : "";
 
-    const dreamContext = dream_narrative
-      ? `\nJungian Dream Narrative: "${dream_narrative}". Synthesize the dream's subconscious archetypes into this reading.`
+    const dreamContext = sanitizedDream
+      ? `\nJungian Dream Narrative: "${sanitizedDream}". Synthesize the dream's subconscious archetypes into this reading.`
       : "";
 
-    const altarContext = altar_consecration
-      ? `\nAltar Consecration Anchor: "${altar_consecration}". Weave this sacred intention through the reading.`
+    const altarContext = sanitizedAltar
+      ? `\nAltar Consecration Anchor: "${sanitizedAltar}". Weave this sacred intention through the reading.`
       : "";
 
     const systemPrompt = `You are a legendary spiritual Oracle. ${personaPrompt}
@@ -261,11 +456,12 @@ Analyze the cards through the lens of master tarot hermeneutics:
 1. OPTICAL GAZE & SPATIAL TENSION: Examine the visual dialogue between adjacent cards. Notice whether figures gaze towards each other (dialogue, confrontation, synthesis) or turn away (avoidance, departure, unresolved past). Highlight this directional tension in the narrative.
 2. KARMIC WEIGHTING: Calculate Major Arcana presence. If 2 or more Major Arcana cards are present, declare that the seeker is navigating an initiatory, fated Soul Crossroads rather than mundane day-to-day circumstance.
 3. ELEMENTAL DIGNITIES: Synthesize the elemental chemistry (Fire/Water/Air/Earth) and how they harmonize or clash.
-4. TANGIBLE 60-SECOND MICRO-RITUAL: Provide an actionable, somatic 60-second integration ritual (breathwork cadence, grounding touch, or focus prompt) tailored to the elemental alchemy that grounds this prophecy into the physical body.`;
+4. TANGIBLE 60-SECOND MICRO-RITUAL: Provide an actionable, somatic 60-second integration ritual (breathwork cadence, grounding touch, or focus prompt) tailored to the elemental alchemy that grounds this prophecy into the physical body.
+5. STRICT SAFETY GUARDRAIL: Never give medical, legal, or financial directives; gently suggest qualified professionals when such themes emerge.
+6. OUTPUT FORMAT: Respond strictly in valid JSON matching the requested schema.`;
 
-    const userPrompt = `
-Seeker Question: "${user_question || "What guidance does the cosmos have for me at this juncture?"}"
-Spread Type: "${spread_type || "Custom Spread"}"${astroDetails}${weatherDetails}${synergyDetails}${journeyDetails}${recurringDetails}${dreamContext}${altarContext}
+    const userPrompt = `Seeker Question: "${sanitizedQuestion}"
+Spread Type: "${sanitizedSpread}"${astroDetails}${weatherDetails}${synergyDetails}${journeyDetails}${recurringDetails}${dreamContext}${altarContext}
 
 Drawn Cards:
 ${cardsDescription}
@@ -298,10 +494,13 @@ Provide your reading in strictly valid JSON format matching this schema:
     let aiResponseText = "";
     if (geminiApiKey) {
       const text = await callGemini(geminiApiKey, {
+        systemInstruction: {
+          parts: [{ text: systemPrompt }],
+        },
         contents: [
           {
             role: "user",
-            parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }],
+            parts: [{ text: userPrompt }],
           },
         ],
         generationConfig: {
@@ -336,7 +535,7 @@ Provide your reading in strictly valid JSON format matching this schema:
       aiResponseText = JSON.stringify({
         summary: `The cosmos reflects your search through ${firstCardName}, urging conscious alignment with inner truth.`,
         interpretation: `As the veil parts, your question—"${
-          user_question || "Daily Guidance"
+          sanitizedQuestion
         }"—reveals a significant spiritual pivot. The optical dialogue between your cards reflects a profound threshold: tensions dissolve when conscious presence meets shadow truth. By honoring the directional gaze of these archetypes, old loops yield to grounded wisdom.`,
         card_insights: drawn_cards.map((c, idx) => ({
           card_name: typeof c === "string" ? c : c.name,

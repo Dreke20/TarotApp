@@ -1,5 +1,5 @@
 # 🛡️ Google Play Store Compliance & Policy Declarations Playbook
-## Oraculum: Sacred AI Tarot (`com.tarotapp.tarot_app`)
+## Oraculum: Sacred AI Tarot (`oraculum.dirtysouth`)
 
 This document serves as the authoritative, comprehensive guide for completing all mandatory **App Content**, **Policy Declarations**, **Play App Signing**, and **US Export Laws** requirements in the **Google Play Console**.
 
@@ -19,9 +19,11 @@ Select: **"Confirm" / "I confirm that my app complies with Developer Program Pol
 
 | Policy Area | Play Store Requirement | Oraculum Implementation & Safeguard | Status |
 | :--- | :--- | :--- | :--- |
-| **Generative AI Content** | • Must prevent prohibited/harmful outputs<br>• Must provide in-app user reporting<br>• Must be transparent about AI generation | • [`PromptSanitizerService`](lib/core/services/prompt_sanitizer_service.dart) sanitizes injection attacks, hate speech, and delimiter tampering.<br>• [`ReadingResultSheet`](lib/features/tarot/presentation/widgets/reading_result_sheet.dart) includes an in-app **"Report"** modal allowing seekers to flag inappropriate responses.<br>• Explicit AI disclosure badge and spiritual contemplation disclaimer displayed on all AI outputs. | **Compliant ✅** |
+| **Generative AI Content** | • Must prevent prohibited/harmful outputs<br>• Must provide in-app user reporting<br>• Must be transparent about AI generation | • [`PromptSanitizerService`](lib/core/services/prompt_sanitizer_service.dart) sanitizes injection attacks, hate speech, and delimiter tampering.<br>• [`ReadingResultSheet`](lib/features/tarot/presentation/widgets/reading_result_sheet.dart) includes an in-app **"Report"** modal allowing seekers to flag inappropriate responses.<br>• Edge Function enforces Gemini `systemInstruction` isolation and server-side defanging.<br>• Explicit AI disclosure badge and spiritual contemplation disclaimer displayed on all AI outputs. | **Compliant ✅** |
 | **Account & Data Deletion** | • In-app deletion path<br>• Public web deletion URL | • In-app deletion: **Profile > DELETE ACCOUNT & DATA** with permanent local cache & Supabase purge.<br>• Web deletion link: `https://oraculumtarot.com/delete-account` (listed in [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md) and [`STORE_LISTING.md`](STORE_LISTING.md)). | **Compliant ✅** |
 | **Exact Alarm Policy** | • Restricted permission; only allowed for alarm clocks or calendar event apps | • `android.permission.SCHEDULE_EXACT_ALARM` has been **completely removed** from [`AndroidManifest.xml`](android/app/src/main/AndroidManifest.xml).<br>• [`SanctuaryNotificationService`](lib/features/notifications/data/sanctuary_notification_service.dart) uses `AndroidScheduleMode.inexactAllowWhileIdle`, eliminating restricted alarm review rejections. | **Compliant ✅** |
+| **Camera & Microphone Permissions** | • Must declare `android.hardware.camera` and `android.hardware.microphone` as optional (`required="false"`)<br>• Ephemeral data processing | • In `AndroidManifest.xml`, both camera and microphone hardware are set to `required="false"` so devices without them can still install.<br>• Card photos and speech audio are processed ephemerally in RAM and never written to persistent server storage. | **Compliant ✅** |
+| **Hardware Keystore & Anti-Tamper** | • Data safety and secure storage on-device | • Uses `flutter_secure_storage: ^11.2.0` with dynamic 256-bit Keystore master keys and HMAC-SHA256 signatures to protect pass tokens and offline entitlements from local XML manipulation. | **Compliant ✅** |
 | **Misleading Claims & Health/Finance** | • Cannot make medical, health, or guaranteed financial predictions | • Strict disclaimer in store listing and reading sheets: *"For spiritual reflection, creative inspiration, and personal insight. Oraculum does not offer licensed medical, psychological, legal, or financial advice."* | **Compliant ✅** |
 | **Google Play Billing** | • Digital goods and subscriptions must use Google Play In-App Billing | • [`InAppPurchaseService`](lib/features/subscription/data/in_app_purchase_service.dart) uses `in_app_purchase: ^3.3.1` (Google Play Billing Library). No external payment gateways. | **Compliant ✅** |
 | **Advertising & AdMob** | • Ads must not interfere with normal app usage<br>• Target audience compliance | • [`AdMobService`](lib/core/services/admob_service.dart) enforces strict 4-minute cooldowns, never shows ads during active divination rituals, and suppresses 100% of ads for Oracle Pro subscribers. | **Compliant ✅** |
@@ -39,27 +41,12 @@ Select: **"Accept the Play App Signing Terms of Service"** and **"Use Google-gen
 
 ### 2. How Play App Signing Works for Oraculum
 1. **Google Manages the App Signing Key:** Google safely stores the master key used to sign APKs delivered to users' devices.
-2. **Developer Signs with Upload Key:** You create an **Upload Key** once, sign your Android App Bundle (`.aab`), and upload it to Google Play.
+2. **Developer Signs with Upload Key:** You sign your Android App Bundle (`.aab`) with your keystore and upload it to Google Play.
 3. **Google Verifies & Re-Signs:** Google verifies your upload key, strips the upload certificate, and signs the distributed APKs with the master Play App Signing Key.
 
-### 3. Generating Your Upload Key (If not already created)
-Run the standard JDK `keytool` command in PowerShell / Terminal:
-```bash
-keytool -genkey -v -keystore android/oraculum-upload-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias oraculum-upload -storetype JKS
-```
-
-### 4. Configuring `android/key.properties`
-Create `android/key.properties` (this file is excluded in `.gitignore`):
-```properties
-storePassword=your-chosen-password
-keyPassword=your-chosen-password
-keyAlias=oraculum-upload
-storeFile=../oraculum-upload-key.jks
-```
-
-### 5. Compiled Production App Bundle
-- Production App Bundle ready for upload: [`Oraculum-Release.aab`](Oraculum-Release.aab) (224.8 MB).
-- Location: `build/app/outputs/bundle/release/app-release.aab`.
+### 3. Production App Bundle
+- **Location:** `build/app/outputs/bundle/release/app-release.aab` (95.7 MB).
+- **Format:** Android App Bundle (AAB), optimized with R8 shrinking and tree-shaken resources.
 
 ---
 
@@ -128,7 +115,7 @@ To test premium features (Celtic Cross 10-card spread, multi-turn AI conversatio
 | **Financial Info** | No | No | Managed 100% by Google Play Billing | Yes (Google) | N/A (Handled by Google) |
 | **Health & Fitness** | No | No | N/A | N/A | N/A |
 | **Messages / Audio** | No | No | Voice recognition is on-device TTS/STT | Ephemeral | Not stored |
-| **Photos / Videos** | No | No | N/A | N/A | N/A |
+| **Photos / Videos** (Photos) | Yes | No | App functionality: Tarot Lens sends the card photo to Google Gemini (service provider) to identify the card. Optional; users can pick a card by hand. | Yes (TLS 1.3) | Processed ephemerally, not stored |
 | **Location Data** | No | No | Birth place lookup is client-side text | No | Not tracked |
 | **App Activity** | Yes | No | Spread usage & local reading history | Yes (TLS 1.3) | User can purge anytime |
 | **App Info / Diagnostics** | Yes | No | Crash reports & error monitoring | Yes (TLS 1.3) | Diagnostic only |

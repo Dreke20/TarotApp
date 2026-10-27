@@ -7,6 +7,7 @@ import '../../../auth/presentation/auth_notifier.dart';
 import '../../../tarot/presentation/widgets/glass_container.dart';
 import '../../data/ephemeris_calculator.dart';
 import '../../domain/natal_chart.dart';
+import 'package:tarot_app/features/astrology/synastry/presentation/screens/lunar_synastry_screen.dart';
 
 class NatalChartScreen extends ConsumerWidget {
   const NatalChartScreen({super.key});
@@ -67,6 +68,11 @@ class NatalChartScreen extends ConsumerWidget {
 
               // Elemental Alchemy Breakdown
               _buildElementalAlchemy(chart),
+
+              const SizedBox(height: 18),
+
+              // Lunar Synastry Portal Card
+              _buildSynastryPortal(context),
 
               const SizedBox(height: 22),
 
@@ -353,5 +359,65 @@ class NatalChartScreen extends ConsumerWidget {
         ),
       ),
     ).animate().fadeIn(duration: 350.ms, delay: (index * 40).ms).slideY(begin: 0.05, end: 0);
+  }
+
+  Widget _buildSynastryPortal(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFF2C1B4D).withValues(alpha: 0.8),
+            const Color(0xFF19122C).withValues(alpha: 0.8),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFFF758F).withValues(alpha: 0.4), width: 1.0),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFF758F).withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Text('💞', style: TextStyle(fontSize: 22)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'LUNAR SYNASTRY & COMPATIBILITY',
+                  style: GoogleFonts.cinzel(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFFFF758F),
+                    letterSpacing: 1.1,
+                  ),
+                ),
+                Text(
+                  'Scry planetary aspects & Tarot archetypes with a beloved partner',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.white.withValues(alpha: 0.7),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFFFF758F), size: 16),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const LunarSynastryScreen()),
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

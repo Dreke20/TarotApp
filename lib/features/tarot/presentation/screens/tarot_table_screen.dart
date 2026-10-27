@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:home_widget/home_widget.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../auth/presentation/auth_notifier.dart';
 import '../../domain/spread_type.dart';
@@ -18,6 +20,7 @@ import '../widgets/mystic_background.dart';
 import '../widgets/oracle_channeling_view.dart';
 import '../widgets/oracle_question_bar.dart';
 import '../widgets/reading_result_sheet.dart';
+import '../widgets/sacred_riffle_shuffle_modal.dart';
 import '../widgets/spread_board_view.dart';
 import '../widgets/spread_selector.dart';
 import '../widgets/tarot_header_bar.dart';
@@ -34,9 +37,17 @@ import '../../../altar/presentation/widgets/crystal_grid_overlay.dart';
 import '../../../altar/presentation/widgets/smoke_purification_modal.dart';
 import '../../../altar/presentation/widgets/sacred_breathing_modal.dart';
 import '../../../altar/presentation/widgets/altar_cloth_selector_modal.dart';
+import '../../../altar/presentation/widgets/custom_ritual_forge_modal.dart';
+import '../../../astrology/transit/presentation/screens/celestial_transit_screen.dart';
+import '../../../../core/services/mystic_performance_service.dart';
 import '../widgets/card_back_selector_modal.dart';
 import '../../../meditation/presentation/screens/pathworking_sanctuary_screen.dart';
 import '../../../notifications/presentation/widgets/cosmic_notification_modal.dart';
+import '../../../sanctuary/presentation/screens/mystic_sanctum_hub_modal.dart';
+import '../../../astral_circle/presentation/widgets/astral_circle_banner.dart';
+import '../../../astral_circle/presentation/widgets/astral_circle_hub_modal.dart';
+import '../../../voice_oracle/presentation/widgets/hands_free_communion_modal.dart';
+import '../../../monetization/presentation/widgets/celestial_flash_banner.dart';
 
 /// The central Tarot Altar Table where cards are shuffled, drawn, flipped in 3D,
 /// and synthesized by the AI Oracle with multi-deck themes, Celtic Cross, and astrological alignment.
@@ -56,6 +67,7 @@ class TarotTableScreen extends ConsumerStatefulWidget {
 
 class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
   late final TextEditingController _questionController;
+  StreamSubscription<Uri?>? _widgetSubscription;
 
   final List<String> _quickPrompts = const [
     'What energy surrounds my path today?',
@@ -74,10 +86,43 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
         ref.read(readingNotifierProvider.notifier).setSpread(widget.initialSpread!);
       });
     }
+    _initHomeWidgetDeepLink();
+  }
+
+  void _initHomeWidgetDeepLink() {
+    try {
+      HomeWidget.initiallyLaunchedFromHomeWidget().then((uri) {
+        if (uri != null) _handleWidgetUri(uri);
+      });
+      _widgetSubscription = HomeWidget.widgetClicked.listen((uri) {
+        if (uri != null) _handleWidgetUri(uri);
+      });
+    } catch (e) {
+      debugPrint('[TarotTableScreen] HomeWidget deep link note: $e');
+    }
+  }
+
+  void _handleWidgetUri(Uri uri) {
+    if (uri.scheme == 'oraculum' || uri.host == 'daily') {
+      ref.read(readingNotifierProvider.notifier).setSpread(SpreadType.dailyGuidance);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '✦ Daily Mystic Widget: Daily Guidance altar opened.',
+              style: GoogleFonts.plusJakartaSans(color: AppColors.goldBright),
+            ),
+            backgroundColor: AppColors.backgroundMidnight,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 
   @override
   void dispose() {
+    _widgetSubscription?.cancel();
     _questionController.dispose();
     super.dispose();
   }
@@ -148,8 +193,14 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                         children: [
                           const SizedBox(height: 8),
 
+                          // Synchronized Multiplayer Circle Banner
+                          const AstralCircleBanner(),
+
                           // Real-Time Lunar Transit & Cosmic Timing
                           const LunarTransitBanner(),
+
+                          // Astrological Milestone Flash Discount Banner
+                          const CelestialFlashBanner(),
 
                           // Spread Selector
                           SpreadSelector(
@@ -224,6 +275,7 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
     ReadingState state,
     ReadingNotifier notifier,
   ) {
+    final perfSettings = ref.watch(mysticPerformanceProvider);
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 460),
       child: GlassContainer(
@@ -277,6 +329,10 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
             DeckPileWidget(
               isShuffling: state.isShuffling,
               onTap: () => notifier.startReading(),
+              onLongPress: () {
+                HapticFeedback.heavyImpact();
+                SacredRiffleShuffleModal.show(context);
+              },
             ),
 
             const SizedBox(height: 26),
@@ -354,6 +410,17 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                       children: [
                         _buildAltarToolButton(
                           context,
+                          icon: const Text('🎴', style: TextStyle(fontSize: 13)),
+                          title: '3D RIFFLE',
+                          onTap: state.isShuffling
+                              ? null
+                              : () {
+                                  HapticFeedback.selectionClick();
+                                  SacredRiffleShuffleModal.show(context);
+                                },
+                        ),
+                        _buildAltarToolButton(
+                          context,
                           icon: const Icon(Icons.style, size: 15, color: AppColors.goldBright),
                           title: 'CUT DECK',
                           onTap: state.isShuffling
@@ -397,6 +464,65 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                             );
                           },
                         ),
+                        _buildAltarToolButton(
+                          context,
+                          icon: const Text('📜', style: TextStyle(fontSize: 13)),
+                          title: 'RITUAL SPELLS',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            CustomRitualForgeModal.show(context);
+                          },
+                        ),
+                        _buildAltarToolButton(
+                          context,
+                          icon: const Text('🪐', style: TextStyle(fontSize: 13)),
+                          title: 'TRANSITS',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => const CelestialTransitScreen()),
+                            );
+                          },
+                        ),
+                        _buildAltarToolButton(
+                          context,
+                          icon: const Text('♾️', style: TextStyle(fontSize: 13)),
+                          title: 'ASTRAL CIRCLE',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            AstralCircleHubModal.show(context);
+                          },
+                        ),
+                        _buildAltarToolButton(
+                          context,
+                          icon: const Icon(Icons.mic, size: 15, color: AppColors.goldBright),
+                          title: 'VOICE COMMUNION',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            HandsFreeCommunionModal.show(context);
+                          },
+                        ),
+                        _buildAltarToolButton(
+                          context,
+                          icon: Text(perfSettings.isBatterySaverEnabled ? '⚡' : '🌱', style: const TextStyle(fontSize: 13)),
+                          title: perfSettings.isBatterySaverEnabled ? 'ECO: ON' : 'ECO SAVER',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            ref.read(mysticPerformanceProvider.notifier).toggleBatterySaver();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: AppColors.backgroundMidnight,
+                                duration: const Duration(seconds: 2),
+                                content: Text(
+                                  perfSettings.isBatterySaverEnabled
+                                      ? '✦ Mystic Eco Mode deactivated. Full 60fps & sensor reflections active.'
+                                      : '✦ Mystic Eco Mode activated! Particles and sensors throttled for long battery life.',
+                                  style: GoogleFonts.plusJakartaSans(color: AppColors.goldBright),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -426,6 +552,13 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                 children: [
                   _buildQuickPortalChip(
                     context,
+                    glyph: '✦',
+                    title: 'All Sanctuaries',
+                    onTap: () => MysticSanctumHubModal.show(context),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickPortalChip(
+                    context,
                     glyph: '🫁',
                     title: '4-7-8 Breath',
                     onTap: () => SacredBreathingModal.show(
@@ -437,6 +570,22 @@ class _TarotTableScreenState extends ConsumerState<TarotTableScreen> {
                           notifier.setQuestion(intention);
                         }
                       },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickPortalChip(
+                    context,
+                    glyph: '📜',
+                    title: 'Ritual Forge',
+                    onTap: () => CustomRitualForgeModal.show(context),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildQuickPortalChip(
+                    context,
+                    glyph: '🪐',
+                    title: 'Sky Transits',
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const CelestialTransitScreen()),
                     ),
                   ),
                   const SizedBox(width: 8),

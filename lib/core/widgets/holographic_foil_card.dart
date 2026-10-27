@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import '../services/mystic_performance_service.dart';
 
 /// Wraps any widget (e.g. a Tarot Card) with a 3D perspective tilt and
 /// dynamic iridescent gold foil reflection responding to physical device
 /// gyroscope/accelerometer sensors or touchscreen gesture drags.
-class HolographicFoilCard extends StatefulWidget {
+class HolographicFoilCard extends ConsumerStatefulWidget {
   final Widget child;
   final double maxTiltAngle;
   final bool enableSensorTilt;
@@ -24,10 +26,10 @@ class HolographicFoilCard extends StatefulWidget {
   });
 
   @override
-  State<HolographicFoilCard> createState() => _HolographicFoilCardState();
+  ConsumerState<HolographicFoilCard> createState() => _HolographicFoilCardState();
 }
 
-class _HolographicFoilCardState extends State<HolographicFoilCard>
+class _HolographicFoilCardState extends ConsumerState<HolographicFoilCard>
     with SingleTickerProviderStateMixin {
   double _tiltX = 0.0; // pitch (rotation around X)
   double _tiltY = 0.0; // roll (rotation around Y)
@@ -49,7 +51,8 @@ class _HolographicFoilCardState extends State<HolographicFoilCard>
   }
 
   void _initSensor() {
-    if (!widget.enableSensorTilt) return;
+    final perf = ref.read(mysticPerformanceProvider);
+    if (!widget.enableSensorTilt || !perf.enableHolographicSensors) return;
     // Only attempt hardware sensor listener on mobile platforms
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
 

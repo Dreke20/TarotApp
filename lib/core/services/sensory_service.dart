@@ -97,6 +97,30 @@ class SensoryService {
     } catch (_) {}
   }
 
+  /// General light haptic feedback
+  void lightImpact() {
+    if (!hapticsEnabled) return;
+    HapticFeedback.lightImpact();
+  }
+
+  /// General medium haptic feedback
+  void mediumImpact() {
+    if (!hapticsEnabled) return;
+    HapticFeedback.mediumImpact();
+  }
+
+  /// General heavy haptic feedback
+  void heavyImpact() {
+    if (!hapticsEnabled) return;
+    HapticFeedback.heavyImpact();
+  }
+
+  /// General selection click haptic feedback
+  void selectionClick() {
+    if (!hapticsEnabled) return;
+    HapticFeedback.selectionClick();
+  }
+
   /// Haptic feedback when touching or selecting a card
   void cardSelectionHaptic() {
     if (!hapticsEnabled) return;

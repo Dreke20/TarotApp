@@ -1,5 +1,5 @@
 # 📱 Google Play Store Listing Specification
-## Oraculum: Sacred AI Tarot & Astrology (`com.tarotapp.tarot_app`)
+## Oraculum: Sacred AI Tarot & Astrology (`oraculum.dirtysouth`)
 
 This document contains the exact, character-verified copy and configuration settings ready to copy-paste directly into the **Google Play Console** under **Grow > Store presence > Main store listing**.
 
@@ -54,7 +54,7 @@ Whether you seek urgent clarity on love, career guidance at a crossroads, or dee
 🕊️ 6. Multi-Tradition Divination Sanctuaries
 • Elder Futhark Runes: Consecrated 24-stone casting sanctuary across Freya's, Heimdall's, and Tyr's Aetts with Merkstave (inverted) interpretations.
 • I Ching Book of Changes: Authentic 3-coin bronze casting ritual with yin/yang line generation and hexagram judgments.
-• Tarot Lens: Optical card scanner for physical tarot decks on your table.
+• Tarot Lens: Snap a photo of a card from your own deck and Gemini AI identifies it, upright or reversed. Or pick the card by hand.
 • Astral Dream Journal: Jungian archetype decoder linking nocturnal dreams to Major Arcana symbols and consecrated 3-card altar spreads.
 • Custom Spread Builder: Forge custom 1 to 10-card altar layouts with bespoke position intentions.
 
@@ -67,7 +67,7 @@ Whether you seek urgent clarity on love, career guidance at a crossroads, or dee
 • Export 4K 9:16 vertical story cards directly to Instagram Stories, TikTok, and Pinterest.
 
 PRIVACY & ETHICAL DIVINATION
-• Guest Readings Stay On-Device: We respect your spiritual privacy. Guest readings never leave your local phone storage.
+• Guest History Stays On-Device: We respect your spiritual privacy. Guest reading history is saved only on your phone, never in our cloud database.
 • Zero Data Selling: Your questions, birth data, and readings are never sold or shared.
 • In-App Account & Data Deletion: Complete deletion of all personal and remote records available anytime from Profile settings.
 
@@ -93,9 +93,9 @@ Oraculum is intended solely for personal reflection, meditation, and creative mi
 
 - **Developer / Publisher Name:** Rodriguez Edwards / Oraculum Sanctuary
 - **Contact / Support Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
-- **Developer Website / Repository:** `https://github.com/Dreke20/TarotApp`
-- **Privacy Policy URL:** `https://github.com/Dreke20/TarotApp/blob/main/PRIVACY_POLICY.md`
-- **Account Deletion URL:** `https://github.com/Dreke20/TarotApp/blob/main/ACCOUNT_DELETION.md`
+- **Developer Website / Landing Page:** `https://<your-site-name>.netlify.app` *(or `https://github.com/Dreke20/TarotApp`)*
+- **Privacy Policy URL:** `https://<your-site-name>.netlify.app/privacy` *(or `https://github.com/Dreke20/TarotApp/blob/main/PRIVACY_POLICY.md`)*
+- **Account Deletion URL:** `https://<your-site-name>.netlify.app/delete-account` *(or `https://github.com/Dreke20/TarotApp/blob/main/ACCOUNT_DELETION.md`)*
 
 ---
 

@@ -68,4 +68,5 @@ supabase/.temp/
 # Binary artifacts
 *.apk
 *.aab
+emulator_screen.png
 

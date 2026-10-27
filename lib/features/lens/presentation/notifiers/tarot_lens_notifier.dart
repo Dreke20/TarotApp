@@ -21,7 +21,7 @@ class TarotLensNotifier extends _$TarotLensNotifier {
       isScanning: false,
       scanResult: TarotLensScanResult(
         card: defaultCard,
-        confidencePercent: 98,
+        confidencePercent: TarotLensService.manualSelectionConfidence,
         isReversed: false,
         detectedSymbols: const [
           'White Rose of Purity',
@@ -39,46 +39,44 @@ class TarotLensNotifier extends _$TarotLensNotifier {
   }
 
   Future<void> scanFromCamera() async {
-    state = state.copyWith(isScanning: true, errorMessage: null);
-    final service = ref.read(tarotLensServiceProvider);
-    final path = await service.captureFromCamera();
-    if (path == null) {
-      state = state.copyWith(isScanning: false);
-      return;
-    }
-
-    final result = await service.analyzeCard(
-      imagePath: path,
-      preferredCard: state.scanResult?.card,
-      isReversed: state.scanResult?.isReversed ?? false,
-    );
-
-    state = state.copyWith(
-      isScanning: false,
-      capturedImagePath: path,
-      scanResult: result,
-    );
+    final path = await ref.read(tarotLensServiceProvider).captureFromCamera();
+    await _scanPhoto(path);
   }
 
   Future<void> scanFromGallery() async {
+    final path = await ref.read(tarotLensServiceProvider).selectFromGallery();
+    await _scanPhoto(path);
+  }
+
+  /// Asks Gemini which card the photo shows. If it can't tell, the seeker
+  /// is asked to pick the card from the list instead of being shown a guess.
+  Future<void> _scanPhoto(String? path) async {
+    if (path == null) return;
     state = state.copyWith(isScanning: true, errorMessage: null);
     final service = ref.read(tarotLensServiceProvider);
-    final path = await service.selectFromGallery();
-    if (path == null) {
-      state = state.copyWith(isScanning: false);
-      return;
-    }
+    final match = await service.identifyCard(path);
 
     final result = await service.analyzeCard(
       imagePath: path,
-      preferredCard: state.scanResult?.card,
-      isReversed: state.scanResult?.isReversed ?? false,
+      preferredCard: match?.card ?? state.scanResult?.card,
+      isReversed: match?.isReversed ?? state.scanResult?.isReversed ?? false,
+      confidencePercent:
+          match?.confidencePercent ?? TarotLensService.unrecognizedConfidence,
+      visibleSymbols: match?.visibleSymbols ?? const [],
     );
+
+    String? message;
+    if (match == null) {
+      message = "The Lens couldn't recognize this card. Choose it from the list below.";
+    } else if (!result.isHighConfidence) {
+      message = 'Not fully sure about this one. If it looks wrong, choose the right card below.';
+    }
 
     state = state.copyWith(
       isScanning: false,
       capturedImagePath: path,
       scanResult: result,
+      errorMessage: message,
     );
   }
 
@@ -95,13 +93,21 @@ class TarotLensNotifier extends _$TarotLensNotifier {
     state = state.copyWith(
       isScanning: false,
       scanResult: result,
+      errorMessage: null,
     );
   }
 
   Future<void> toggleOrientation() async {
     if (state.scanResult == null) return;
     final current = state.scanResult!;
-    await selectCard(current.card, isReversed: !current.isReversed);
+    final service = ref.read(tarotLensServiceProvider);
+    final result = await service.analyzeCard(
+      imagePath: state.capturedImagePath,
+      preferredCard: current.card,
+      isReversed: !current.isReversed,
+      confidencePercent: current.confidencePercent,
+    );
+    state = state.copyWith(scanResult: result);
   }
 
   void clearCapturedImage() {

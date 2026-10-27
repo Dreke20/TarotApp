@@ -475,6 +475,28 @@ class TarotRepository {
           'This card does not dictate fate, but invites you into conscious co-creation with the unfolding moment.';
       advice =
           'Pause and reflect on the core archetype of ${primaryCard.name}. Trust your intuitive pulse and act from inner alignment rather than external urgency.';
+    } else if (spreadType == SpreadType.solAndLuna && cards.length >= 3) {
+      final partnerACard = cards[0];
+      final partnerBCard = cards[1];
+      final bridgeCard = cards[2];
+      final partnerName = astrologyInfo?['partner_name'] ?? 'Beloved Counterpart';
+      final partnerSun = astrologyInfo?['partner_sun'] ?? 'Taurus';
+      final connectionType = astrologyInfo?['connection_type'] ?? 'Soulmate Bond';
+
+      summary =
+          'Sol & Luna Synastry with $partnerName ($connectionType): $sunSign and $partnerSun bridge their destinies through ${bridgeCard.name}.';
+      narrative =
+          '$voicePrefix\n\n✦ SOL & LUNA RELATIONSHIP SYNASTRY ✦\n\n'
+          'Illuminating the energetic nexus between Seeker ($sunSign) and $partnerName ($partnerSun) in this $connectionType:\n\n'
+          '• Partner A (Solar Essence & Will): ${partnerACard.name} (${partnerACard.isReversed ? "Reversed" : "Upright"})\n'
+          'Radiating the conscious purpose and creative impulse you bring into this union: ${partnerACard.isReversed ? partnerACard.meaningReversed : partnerACard.meaningUpright}\n\n'
+          '• Partner B (Lunar Reflection & Heart): ${partnerBCard.name} (${partnerBCard.isReversed ? "Reversed" : "Upright"})\n'
+          'The emotional resonance, sacred subconscious mirror, and receptive truth of $partnerName: ${partnerBCard.isReversed ? partnerBCard.meaningReversed : partnerBCard.meaningUpright}\n\n'
+          '• The Conjunction Bridge (Alchemical Nexus & Future): ${bridgeCard.name} (${bridgeCard.isReversed ? "Reversed" : "Upright"})\n'
+          'The shared destiny, energetic synthesis, and sacred crucible forged between both souls: ${bridgeCard.isReversed ? bridgeCard.meaningReversed : bridgeCard.meaningUpright}\n\n'
+          'Together, the Solar will of ${partnerACard.name} and Lunar depth of ${partnerBCard.name} find their transcendent harmonic equilibrium through ${bridgeCard.name}.';
+      advice =
+          'Honor the radiant autonomy of ${partnerACard.name} while tenderly holding space for the sacred vulnerability of ${partnerBCard.name}. Allow ${bridgeCard.name} to guide your collaborative evolution.';
     } else if (cards.length == 3) {
       final past = cards[0];
       final present = cards[1];

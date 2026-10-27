@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account & Data Deletion • Oraculum Tarot & Astrology</title>
+  <meta name="description" content="Official Google Play compliant Account & Data Deletion portal for Oraculum: Sacred AI Tarot & Astral Guidance (oraculum.dirtysouth).">
+  <link rel="icon" type="image/png" href="images/icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <canvas id="star-canvas"></canvas>
+
+  <header class="site-nav">
+    <div class="nav-wrapper">
+      <a href="index.html" class="brand">
+        <img src="images/icon.png" alt="Oraculum Celestial Eye Logo" class="brand-icon">
+        <span class="brand-name gold-text">ORACULUM</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html#pillars">Sanctuary</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="terms.html">Terms of Service</a></li>
+      </ul>
+      <a href="index.html" class="btn-secondary">← BACK TO SANCTUARY</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="legal-content glass-panel">
+      <h1 class="gold-text">Account &amp; Data Deletion Portal</h1>
+      <p class="meta-info">Google Play Data Safety &amp; Erasure Compliance • App ID: oraculum.dirtysouth • Last Updated: October 27, 2026</p>
+
+      <p class="lead-text">
+        At <strong>Oraculum</strong>, we respect your spiritual autonomy and privacy rights. In full compliance with <strong>Google Play Store Data Safety Policies</strong>, <strong>GDPR (Article 17 - Right to Erasure)</strong>, and <strong>CCPA (Right to Delete)</strong>, you maintain total sovereignty over your account credentials, birth charts, tarot reading history, and stored preferences.
+      </p>
+
+      <h2>Method 1: In-App Instant Deletion (Recommended)</h2>
+      <p>
+        If you have the Oraculum application installed on your Android device, you can permanently erase your account and all associated cloud and local data instantly:
+      </p>
+      <div style="background: rgba(14, 12, 20, 0.7); border: 1px solid var(--glass-border); padding: 20px 24px; border-radius: var(--radius-sm); margin: 20px 0;">
+        <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; color: var(--text-secondary);">
+          <li>Open the <strong>Oraculum</strong> app on your Android device.</li>
+          <li>Tap the <strong>Seeker Profile Avatar</strong> (Zodiac celestial icon) in the upper-left corner of the main altar screen.</li>
+          <li>Scroll to the bottom of the profile dialog and tap the crimson <strong>`DELETE ACCOUNT &amp; DATA`</strong> button.</li>
+          <li>Review the warning dialog detailing the permanent purge.</li>
+          <li>Confirm by tapping <strong>`DELETE EVERYTHING`</strong>.</li>
+        </ol>
+      </div>
+      <p><strong>Immediate Outcome:</strong> Your session is permanently closed, all Supabase authentication records and profile entries are deleted, all tarot invocations are expunged, and local device keys are destroyed.</p>
+
+      <h2>Method 2: Web Deletion Request (Without the App)</h2>
+      <p>
+        If you have uninstalled the app or do not have access to your Android device, submit your deletion request below. We will process the purge from our cloud servers and dispatch a formal confirmation receipt.
+      </p>
+
+      <div id="deletion-confirmation" style="display: none; margin: 24px 0;"></div>
+
+      <form id="account-deletion-form" class="deletion-form">
+        <div class="form-group">
+          <label for="delete-email">Registered Account Email *</label>
+          <input type="email" id="delete-email" required placeholder="seeker@example.com">
+        </div>
+
+        <div class="form-group">
+          <label for="delete-name">Seeker Display Name (Optional)</label>
+          <input type="text" id="delete-name" placeholder="E.g., Celestia">
+        </div>
+
+        <div class="form-group">
+          <label for="delete-reason">Reason for Purge (Optional)</label>
+          <select id="delete-reason" style="padding: 12px 16px; background: rgba(14, 12, 20, 0.8); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); color: #fff; font-family: var(--font-body);">
+            <option value="privacy">Desire complete data erasure</option>
+            <option value="reset">Wishing to start a fresh spiritual cycle</option>
+            <option value="uninstalled">No longer using the application</option>
+            <option value="other">Other reason</option>
+          </select>
+        </div>
+
+        <div style="display: flex; align-items: flex-start; gap: 10px; margin-top: 8px;">
+          <input type="checkbox" id="confirm-check" required style="margin-top: 4px; accent-color: var(--gold-bright);">
+          <label for="confirm-check" style="font-size: 0.85rem; color: var(--text-muted); cursor: pointer;">
+            I confirm that I am requesting the permanent, irreversible erasure of my Oraculum profile, tarot journal entries, astrological ephemeris records, and cloud backup data.
+          </label>
+        </div>
+
+        <button type="submit" class="btn-primary" style="margin-top: 14px; width: 100%; justify-content: center; background: linear-gradient(135deg, #7A1C28 0%, #D83A4E 100%); border-color: #D83A4E; color: #fff;">
+          ✦ SUBMIT PERMANENT ACCOUNT DELETION REQUEST ✦
+        </button>
+      </form>
+
+      <h2>Data Retention &amp; Deletion Matrix</h2>
+      <p>Here is the detailed status of each data category upon account deletion:</p>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Data Category</th>
+              <th>Collected Information</th>
+              <th>Action Upon Deletion</th>
+              <th>Retention Period</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Account Credentials</strong></td>
+              <td>Email address, auth ID, hashed tokens</td>
+              <td>Permanently erased from Supabase Auth servers</td>
+              <td>0 Days (Immediate)</td>
+            </tr>
+            <tr>
+              <td><strong>Seeker Identity</strong></td>
+              <td>Display name, chosen avatar initials</td>
+              <td>Permanently erased from cloud database</td>
+              <td>0 Days (Immediate)</td>
+            </tr>
+            <tr>
+              <td><strong>Astrological Placements</strong></td>
+              <td>Date, time, coordinates, Sun/Moon/Rising signs</td>
+              <td>Permanently erased</td>
+              <td>0 Days (Immediate)</td>
+            </tr>
+            <tr>
+              <td><strong>Tarot Readings &amp; Journal</strong></td>
+              <td>Questions asked, drawn cards, AI scrying responses</td>
+              <td>Permanently erased from cloud and local vault</td>
+              <td>0 Days (Immediate)</td>
+            </tr>
+            <tr>
+              <td><strong>Guest &amp; Anonymous Sessions</strong></td>
+              <td>Local device preferences and cards drawn</td>
+              <td>Erased when you uninstall the app or clear cache</td>
+              <td>0 Days on servers</td>
+            </tr>
+            <tr>
+              <td><strong>Financial &amp; Billing Records</strong></td>
+              <td>Subscription status tokens</td>
+              <td>Managed by Google Play In-App Billing; no card numbers stored by us</td>
+              <td>Governed by Google Play</td>
+            </tr>
+            <tr>
+              <td><strong>Diagnostic Logs</strong></td>
+              <td>Anonymized crash telemetry</td>
+              <td>Purged automatically in server rotation cycles</td>
+              <td>Up to 90 Days</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Regulatory &amp; Store Compliance Disclosures</h2>
+      <p>
+        This portal and our data deletion practices comply with:
+      </p>
+      <ul>
+        <li><strong>Google Play Store User Data &amp; Account Deletion Policy (2024–2026 Standards)</strong></li>
+        <li><strong>GDPR (General Data Protection Regulation, Article 17 - Right to Erasure)</strong></li>
+        <li><strong>CCPA / CPRA (California Consumer Privacy Act - Right to Delete Personal Information)</strong></li>
+      </ul>
+
+      <h2>Contact the Data Protection Officer</h2>
+      <p>For inquiries, verification, or manual compliance audits:</p>
+      <ul>
+        <li><strong>Publisher &amp; Developer:</strong> Rodriguez Edwards (Dreke20)</li>
+        <li><strong>Data Protection Email:</strong> <a href="mailto:privacy@oraculumtarot.com" class="gold-link">privacy@oraculumtarot.com</a> or <a href="mailto:dreke.dev@gmail.com" class="gold-link">dreke.dev@gmail.com</a></li>
+        <li><strong>Application Package:</strong> <code>oraculum.dirtysouth</code></li>
+        <li><strong>GitHub Repository:</strong> <a href="https://github.com/Dreke20/TarotApp" target="_blank" rel="noopener noreferrer" class="gold-link">github.com/Dreke20/TarotApp</a></li>
+      </ul>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-bottom">
+      <p>&copy; 2026 Oraculum Studios. All sacred rights reserved.</p>
+      <div class="compliance-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="delete-account.html">Account Deletion</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

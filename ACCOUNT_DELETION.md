@@ -1,7 +1,7 @@
 # Account & Data Deletion Policy for Oraculum: Sacred AI Tarot
 
 **Application Name:** Oraculum: Sacred AI Tarot  
-**Application ID:** `com.tarotapp.tarot_app`  
+**Application ID:** `oraculum.dirtysouth`  
 **Developer:** Rodriguez Edwards (Dreke20)  
 **Effective Date:** October 16, 2026  
 **Last Updated:** October 16, 2026  

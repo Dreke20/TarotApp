@@ -26,7 +26,12 @@ class AdMobService {
     const customId = String.fromEnvironment('ADMOB_BANNER_ID');
     if (customId.isNotEmpty) return customId;
     if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/6300978111';
+      // In debug mode, use the official Google test unit ID to comply with AdMob
+      // invalid traffic policies during testing. In release builds, use the registered production ad unit.
+      if (kDebugMode) {
+        return 'ca-app-pub-3940256099942544/6300978111';
+      }
+      return 'ca-app-pub-3920607003046699/1326177963';
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3940256099942544/2934735716';
     }
@@ -50,7 +55,12 @@ class AdMobService {
     const customId = String.fromEnvironment('ADMOB_REWARDED_ID');
     if (customId.isNotEmpty) return customId;
     if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/5224354917';
+      // In debug mode, use the official Google test unit ID to comply with AdMob
+      // invalid traffic policies during testing. In release builds, use the registered production ad unit.
+      if (kDebugMode) {
+        return 'ca-app-pub-3940256099942544/5224354917';
+      }
+      return 'ca-app-pub-3920607003046699/1755046667';
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3940256099942544/1712485313';
     }
