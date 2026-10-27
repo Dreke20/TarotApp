@@ -192,22 +192,38 @@ In the left navigation menu under **Monetize with Play**, expand **Products**:
 
 ### 1. Subscriptions
 Click **Subscriptions > Create subscription**:
-- **Subscription 1: Yearly**
+- **Subscription 1: Annual Sanctuary (Featured Best Value)**
   - **Product ID:** `oracle_pro_yearly`
   - **Name:** `Oracle Pro Yearly`
-  - **Base plan:** Set billing period to **Yearly**, set price (e.g., `$39.99/year`), and add an optional 3-day free trial.
-- **Subscription 2: Monthly**
+  - **Base plan:** Set billing period to **Yearly**, price to **`$29.99/year`** (equivalent to `$2.50/mo`, Save 50%), and add a **3-day free trial**.
+- **Subscription 2: Monthly Sanctuary**
   - **Product ID:** `oracle_pro_monthly`
   - **Name:** `Oracle Pro Monthly`
-  - **Base plan:** Set billing period to **Monthly**, set price (e.g., `$4.99/month`).
+  - **Base plan:** Set billing period to **Monthly**, price to **`$4.99/month`**.
 
-### 2. In-App Products (One-Time Purchases)
+### 2. In-App Products (Lifetime Pass & Starlight Shards)
 Click **In-app products > Create product**:
+
+#### A. Non-Consumable Lifetime Access
 - **Product ID:** `oracle_pro_lifetime`
   - **Name:** `Oracle Pro Lifetime Pass`
-  - **Description:** Permanent unlimited access to all Oracle Pro divination spreads and sacred tools.
-  - **Price:** Set price (e.g., `$49.99` or your preferred one-time price).
+  - **Description:** Permanent unlimited access to all Oracle Pro divination spreads, voice narration, and sacred tools without recurring charges.
+  - **Price:** **`$69.99`**
   - **Status:** Active.
+
+#### B. Consumable Starlight Shard Bundles (A-la-carte for Non-Subscribers)
+- **Product ID:** `starlight_shards_small`
+  - **Name:** `10 Starlight Shards (Novice Pouch)`
+  - **Price:** **`$1.99`**
+- **Product ID:** `starlight_shards_medium`
+  - **Name:** `30 Starlight Shards (Adept Chest)`
+  - **Price:** **`$4.99`** *(+25% bonus value)*
+- **Product ID:** `starlight_shards_large`
+  - **Name:** `75 Starlight Shards (Hierophant Vault)`
+  - **Price:** **`$9.99`** *(+60% bonus value)*
+- **Product ID:** `starlight_shards_treasury`
+  - **Name:** `175 Starlight Shards (Sovereign Treasury)`
+  - **Price:** **`$19.99`** *(+100% mega bonus value)*
 
 ---
 

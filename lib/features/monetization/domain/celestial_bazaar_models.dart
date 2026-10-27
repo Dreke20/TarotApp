@@ -8,27 +8,35 @@ part 'celestial_bazaar_models.g.dart';
 enum ShardPack {
   small(
     id: 'starlight_shards_small',
-    shardCount: 5,
-    title: '5 Starlight Shards',
+    shardCount: 10,
+    title: '10 Starlight Shards',
     tagline: 'Novice Seeker Pouch',
     price: '\$1.99',
     bonusText: null,
   ),
   medium(
     id: 'starlight_shards_medium',
-    shardCount: 15,
-    title: '15 Starlight Shards',
+    shardCount: 30,
+    title: '30 Starlight Shards',
     tagline: 'Adept Diviner Chest',
     price: '\$4.99',
     bonusText: 'MOST POPULAR · +25% BONUS',
   ),
   large(
     id: 'starlight_shards_large',
-    shardCount: 40,
-    title: '40 Starlight Shards',
+    shardCount: 75,
+    title: '75 Starlight Shards',
     tagline: 'High Hierophant Vault',
     price: '\$9.99',
     bonusText: 'BEST VALUE · +60% BONUS',
+  ),
+  treasury(
+    id: 'starlight_shards_treasury',
+    shardCount: 175,
+    title: '175 Starlight Shards',
+    tagline: 'Sovereign Celestial Treasury',
+    price: '\$19.99',
+    bonusText: 'MEGA VALUE · +100% BONUS',
   );
 
   final String id;

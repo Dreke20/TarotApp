@@ -325,7 +325,9 @@ class _MysticBazaarModalState extends ConsumerState<MysticBazaarModal>
                         ? '🔮'
                         : pack == ShardPack.medium
                             ? '💎'
-                            : '👑',
+                            : pack == ShardPack.large
+                                ? '👑'
+                                : '🏛️',
                     style: const TextStyle(fontSize: 20),
                   ),
                 ),
@@ -935,7 +937,7 @@ class _MysticBazaarModalState extends ConsumerState<MysticBazaarModal>
             );
           },
           child: Text(
-            isPro ? 'CHANNEL BLUEPRINT (PRO FREE)' : 'CHANNEL BLUEPRINT (5 ✦ or \$4.99)',
+            isPro ? 'CHANNEL BLUEPRINT (PRO FREE)' : 'CHANNEL BLUEPRINT (10 ✦ or \$1.99)',
             style: GoogleFonts.cinzel(fontSize: 11, fontWeight: FontWeight.bold),
           ),
         ),

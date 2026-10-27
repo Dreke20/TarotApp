@@ -254,7 +254,7 @@ class BazaarNotifier extends _$BazaarNotifier {
     required String partnerSign,
     required bool isPro,
   }) async {
-    const cost = 5;
+    const cost = 10;
     if (!isPro && state.shards < cost) {
       state = state.copyWith(
         errorMessage: 'You need $cost Starlight Shards to formulate the Twin Flame Dossier.',

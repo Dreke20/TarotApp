@@ -17,7 +17,7 @@ enum SubscriptionPlan {
   lifetime(
     id: 'oracle_pro_lifetime',
     title: 'LIFETIME ACCESS',
-    defaultPrice: '\$79.99',
+    defaultPrice: '\$69.99',
     savings: 'ONE-TIME',
     billingPeriod: 'lifetime',
   );

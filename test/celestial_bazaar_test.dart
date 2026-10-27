@@ -20,9 +20,10 @@ void main() {
 
   group('Celestial Bazaar Domain & Monetization Tests', () {
     test('ShardPack models have proper pricing and shard counts', () {
-      expect(ShardPack.small.shardCount, 5);
-      expect(ShardPack.medium.shardCount, 15);
-      expect(ShardPack.large.shardCount, 40);
+      expect(ShardPack.small.shardCount, 10);
+      expect(ShardPack.medium.shardCount, 30);
+      expect(ShardPack.large.shardCount, 75);
+      expect(ShardPack.treasury.shardCount, 175);
 
       expect(ShardPack.fromId('starlight_shards_medium'), ShardPack.medium);
     });
@@ -61,8 +62,8 @@ void main() {
       expect(success, isTrue);
 
       final state = container.read(bazaarProvider);
-      expect(state.shards, 15);
-      expect(state.message, contains('15 Starlight Shards received'));
+      expect(state.shards, 30);
+      expect(state.message, contains('30 Starlight Shards received'));
     });
 
     test('Can light candle and deduct shards', () async {
@@ -73,7 +74,7 @@ void main() {
       await pumpEventQueue();
 
       // Give shards first
-      await notifier.buyShardPack(ShardPack.small); // 5 shards
+      await notifier.buyShardPack(ShardPack.small); // 10 shards
 
       final success = await notifier.lightCandle(
         type: CandleType.love,
@@ -83,7 +84,7 @@ void main() {
 
       expect(success, isTrue);
       final state = container.read(bazaarProvider);
-      expect(state.shards, 2); // 5 - 3 = 2
+      expect(state.shards, 7); // 10 - 3 = 7
       expect(state.activeCandles.length, 1);
       expect(state.activeCandles.first.type, CandleType.love);
       expect(state.activeCandles.first.intention, 'Harmony and sacred communion');
@@ -101,11 +102,11 @@ void main() {
       expect(container.read(bazaarProvider).equippedFoil, CardFoilFinish.standard.id);
 
       // Buy enough shards to unlock prismatic
-      await notifier.buyShardPack(ShardPack.medium); // 15 shards
+      await notifier.buyShardPack(ShardPack.medium); // 30 shards
       final unlocked = await notifier.unlockFoil(CardFoilFinish.prismaticIridescent, isPro: false);
       expect(unlocked, isTrue);
       expect(container.read(bazaarProvider).isFoilUnlocked(CardFoilFinish.prismaticIridescent.id), isTrue);
-      expect(container.read(bazaarProvider).shards, 7); // 15 - 8 = 7
+      expect(container.read(bazaarProvider).shards, 22); // 30 - 8 = 22
     });
 
     test('Can generate Twin Flame Synastry Dossier', () async {
@@ -115,7 +116,7 @@ void main() {
       final notifier = container.read(bazaarProvider.notifier);
       await pumpEventQueue();
 
-      await notifier.buyShardPack(ShardPack.small); // 5 shards
+      await notifier.buyShardPack(ShardPack.small); // 10 shards
       final dossier = await notifier.generateSynastryDossier(
         seekerName: 'Aria',
         partnerName: 'Julian',
@@ -129,6 +130,7 @@ void main() {
       expect(dossier.partnerName, 'Julian');
       expect(dossier.harmonyScore, inInclusiveRange(70, 100));
       expect(container.read(bazaarProvider).dossiers.length, 1);
+      expect(container.read(bazaarProvider).shards, 0); // 10 - 10 = 0
     });
   });
 
