@@ -18,61 +18,57 @@ This document contains the exact, character-verified copy and configuration sett
 ---
 
 ## 2. Full Description (Direct Copy-Paste for Google Play Console)
-*Character count: ~3,450 characters (Well under Google's 4,000-character maximum).*
+*Character count: ~3,600 characters (Strictly compliant with Google Play Console's 4,000-character limit).*
 
 ```text
 Step beyond mundane card-pulling into Oraculum—the world’s most visually mesmerizing and mathematically precise esoteric divination platform. Combining high-dimensional artificial intelligence with sacred hermetic traditions, Oraculum transforms your smartphone into a consecrated altar of spiritual revelation.
 
-Whether you seek urgent clarity on love, career guidance at a crossroads, or deep shadow-work introspection, the celestial Oracle channels personalized, poetic, and profound readings tailored to your exact cosmic imprint.
+Whether you seek clarity on love, career guidance at a crossroads, or shadow-work introspection, the celestial Oracle channels poetic, deeply personalized readings tailored to your exact cosmic imprint.
 
 🔮 KEY FEATURES
 
 🪞 1. Channeled AI Divination & Contextual Continuity
-• Real-time intuitive interpretations powered by Google Gemini AI with sub-second revelation speed.
-• 5 Channeled Archetypal Voices: Consult The High Priestess (intuitive & ethereal), The Hermit (stoic & philosophical), The Empress (compassionate & abundant), The Magician (empowering & alchemical), or The Shadow Mirror (uncompromising psychological truth).
-• Multi-Turn Conversational Memory: Converse directly with the Oracle. Ask follow-up questions about specific cards, reversals, or symbols; the Oracle remembers the entire context of your sacred reading.
+• Real-time intuitive interpretations synthesized by AI with empathetic depth.
+• 5 Sacred Archetypes: Consult The High Priestess (intuitive), The Hermit (philosophical), The Empress (compassionate), The Magician (alchemical), or The Shadow Mirror (uncompromising truth).
+• Conversational Memory: Ask follow-up questions directly to the Oracle; full context of your reading is preserved.
 
 ✨ 2. Master Tarot Hermeneutics & Somatic Integration
-• Optical Gaze & Spatial Tension: Real-time analysis of the visual dialogue between cards—whether figures gaze toward one another in union or turn away in release.
-• Karmic Soul Crossroads: Automatic calculation of Major Arcana weighting to distinguish between everyday tactical guidance and life-defining spiritual initiations.
-• 60-Second Somatic Micro-Rituals: Actionable nervous system integration exercises (sacred breathwork cadences, grounding touch, and intention anchors) tailored to every reading.
+• Optical Gaze & Spatial Tension: Analyzes the visual dialogue between figures—whether gazing toward union or turning in release.
+• Karmic Crossroads: Major Arcana weighting distinguishes everyday guidance from life-altering soul initiations.
+• 60-Second Micro-Rituals: Actionable breathwork, grounding touch, and intention anchors for nervous system integration.
 
 🌌 3. The Whispers & Warnings Luxury Gothic Deck
-• 78 bespoke illustrated tarot cards in an obsidian-and-gold luxury aesthetic.
-• 3D Holographic Foil Shimmer: Move your device to experience physical accelerometer-driven depth, light reflections, and iridescent gold sheen.
-• Dynamic Stardust Particle Field: Sacred geometry particle linkage with micro-haptic fanning ribbons.
+• 78 Bespoke Illustrated Cards: Obsidian-and-gold gothic luxury aesthetic.
+• 3D Holographic Foil Shimmer: Move your device to experience physical gyroscope-driven depth, light reflections, and luminous sheen.
+• Dynamic Stardust Field: Particle physics altar with fluid, micro-haptic fanning ribbons.
 
-🕯️ 4. Dual-Seeker Cosmic Synastry & Relationship Mirror
+🕯️ 4. Dual-Seeker Cosmic Synastry
 • Calibrate celestial chemistry between you and a partner, friend, or twin flame.
-• Dynamic elemental balance matrix (Fire, Earth, Air, Water) and connection archetypes (Soulmate, Karmic Mirror, Sacred Catalyst).
-• Dedicated 5-position relational spread analyzing your mutual higher calling, shared karmic lessons, and core dynamics.
+• Elemental balance matrix (Fire, Earth, Air, Water) and connection archetypes (Soulmate, Karmic Mirror, Sacred Catalyst).
+• 5-Card Relational Spread analyzing mutual higher callings, shared lessons, and bond dynamics.
 
-📜 5. Complete Natal Ephemeris & Birth Chart
-• Calculates your exact Sun, Moon, Rising (Ascendant), Mercury, Venus, Mars, Jupiter, and Saturn signs.
-• Animated Elemental Balance matrix and Pythagorean Soul Blueprint Card mapping.
+📜 5. Natal Ephemeris & Soul Blueprint
+• Real-time calculations of Sun, Moon, Rising, Mercury, Venus, Mars, Jupiter, and Saturn signs.
+• Elemental balance breakdown and Pythagorean Soul Blueprint Card mapping.
 
-🕊️ 6. Multi-Tradition Divination Sanctuaries
-• Elder Futhark Runes: Consecrated 24-stone casting sanctuary across Freya's, Heimdall's, and Tyr's Aetts with Merkstave (inverted) interpretations.
-• I Ching Book of Changes: Authentic 3-coin bronze casting ritual with yin/yang line generation and hexagram judgments.
-• Tarot Lens: Snap a photo of a card from your own deck and Gemini AI identifies it, upright or reversed. Or pick the card by hand.
-• Astral Dream Journal: Jungian archetype decoder linking nocturnal dreams to Major Arcana symbols and consecrated 3-card altar spreads.
+🕊️ 6. Multi-Tradition Sanctuaries
+• Elder Futhark Runes: 24-stone casting sanctuary across 3 Aetts with Merkstave (inverted) wisdom.
+• I Ching Book of Changes: Authentic 3-coin bronze casting ritual with hexagram judgments.
+• Tarot Lens: Snap a photo of a physical card from your own deck for instant AI identification and reading.
+• Astral Dream Journal: Jungian archetype decoder linking nocturnal dreams to Major Arcana symbols and 3-card spreads.
 • Custom Spread Builder: Forge custom 1 to 10-card altar layouts with bespoke position intentions.
 
-🎵 7. Sacred Solfeggio Resonator & Spoken Prophecies
-• Mathematically pure stereo audio loops: 432Hz Cosmic Grounding, 528Hz Transformation, 741Hz Intuition Awakening, Tibetan Singing Bowls, and Astral Breeze.
-• Spoken Prophecies: Listen to the Oracle vocalize channeled wisdom aloud over resonant ambient frequencies.
-
-📱 8. Live Home Screen Widget & Social Story Exporter
-• Place the Oraculum Altar on your Android home screen for live lunar illumination, zodiac transits, and daily card of the day.
-• Export 4K 9:16 vertical story cards directly to Instagram Stories, TikTok, and Pinterest.
+🎵 7. Sacred Solfeggio Audio Resonator
+• Pure stereo soundscapes: 432Hz Grounding, 528Hz Transformation, 741Hz Intuition, Tibetan Bowls, and Astral Wind.
+• Spoken Prophecies: Listen to the Oracle vocalize channeled guidance over ambient frequencies.
 
 PRIVACY & ETHICAL DIVINATION
-• Guest History Stays On-Device: We respect your spiritual privacy. Guest reading history is saved only on your phone, never in our cloud database.
+• Guest History Stays On-Device: Guest readings are stored locally on your device, never in a cloud database.
 • Zero Data Selling: Your questions, birth data, and readings are never sold or shared.
-• In-App Account & Data Deletion: Complete deletion of all personal and remote records available anytime from Profile settings.
+• Complete Control: Permanently delete your account and records anytime in settings or online.
 
 DISCLAIMER
-Oraculum is intended solely for personal reflection, meditation, and creative mindfulness. Interpretations are synthesized by artificial intelligence and do not replace licensed medical, psychological, legal, or financial advice.
+Oraculum is intended solely for personal reflection, meditation, and creative mindfulness. Interpretations do not replace licensed medical, psychological, legal, or financial advice.
 ```
 
 ---
