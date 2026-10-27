@@ -254,18 +254,90 @@ Click **In-app products > Create product**:
 
 ---
 
-## 👥 Step 6: Internal Testing & Personal Account Verification
+## 👥 Step 6: How to Invite People to Test the App
 
-### Why Start with Internal Testing?
-- **Zero Review Delay:** Internal testing releases are available to you and your testers **within minutes**, without waiting for Google human review.
-- **Testing In-App Purchases:** You can test purchases without real money using Google Play License Testing.
+Google Play offers two primary testing tracks depending on your goal:
 
-### Steps to Run Internal Testing:
-1. In Google Play Console, go to **Release > Testing > Internal testing**.
-2. Click the **Testers** tab.
-3. Click **Create email list**, name it `Oraculum Inner Circle`, and enter your personal Google email address (`dreke.dev@gmail.com`).
-4. Under **How testers join your test**, copy the **"Join on Android"** link or **"Join on the web"** link.
-5. Open that link on your Android phone, tap **"Become a tester"**, and download the app directly through the Google Play Store!
+### Track Comparison: Which One Should You Use?
+- **Internal Testing (Fastest & Easiest):**
+  - **No Google Review:** App goes live to testers **within 5–10 minutes**.
+  - Up to 100 testers.
+  - Perfect for immediate personal testing, friends, family, and direct team feedback.
+- **Closed Testing (For 20 Testers / 14-Day Requirement):**
+  - Required if you have a personal Google Play account created after Nov 13, 2023.
+  - Requires initial Google review (typically 24–48 hours) before testers can join.
+  - Supports unlimited testers via email lists or Google Groups.
+
+---
+
+### Method A: Inviting Testers via Internal Testing (Instant)
+
+#### 1. Add Testers' Google/Gmail Accounts
+1. In Google Play Console, navigate in the left menu to **Release > Testing > Internal testing**.
+2. Click the **Testers** tab at the top.
+3. Under *Email lists*, click **Create email list** (or click *Manage list* if you already have one):
+   - **List name:** e.g., `Oraculum Inner Circle`
+   - **Add email addresses:** Type or paste your testers' Gmail / Google account addresses separated by commas (e.g., `tester1@gmail.com, tester2@gmail.com`), or upload a `.csv` file.
+   - Click **Save changes** at the bottom-right of the modal.
+4. **Make sure the checkbox next to your list is checked ☑️** to enable it for this track.
+5. In the *Feedback URL or email address* box, enter your support email (e.g., `privacy@oraculumtarot.com` or `dreke.dev@gmail.com`).
+6. Click **Save** at the bottom-right of the page.
+
+#### 2. Get and Share the Invitation Link
+1. On that same **Testers** tab, scroll down to the bottom section: **"How testers join your test"**.
+2. Click **Copy link** next to **"Join on the web"** or **"Join on Android"** (either link works; the web link is best because it opens on any phone or desktop browser).
+3. Send this link to the people on your email list!
+
+---
+
+### Method B: Inviting Testers via Closed Testing (For the 20-Tester / 14-Day Rule)
+
+If you are using Closed Testing to unlock Production access:
+1. Navigate in the left menu to **Release > Testing > Closed testing**.
+2. Select or create your track (e.g., **Closed testing - Alpha**).
+3. Click **Manage track > Testers** tab.
+4. You have two options for managing testers:
+   - **Email lists:** Same as Internal Testing (enter up to 2,000 emails).
+   - **Google Groups (Recommended for community/social recruiting):**
+     1. Create a free Google Group at [groups.google.com](https://groups.google.com) (e.g., `oraculum-beta-testers@googlegroups.com`).
+     2. In Play Console, choose **Google Groups** and enter the group email address.
+     3. *Advantage:* Anyone who joins your Google Group automatically gets test access immediately—you never have to manually edit the list in Play Console every time a new person volunteers!
+5. Scroll down to **"How testers join your test"**, copy the link, and share it.
+
+---
+
+### 📩 Ready-to-Send Invitation Message Template
+
+Copy and send this message to your testers via WhatsApp, Discord, Email, or SMS:
+
+```text
+Hey! 🌟
+
+I’d love your help testing my new app, Oraculum: Sacred AI Tarot & Astral Guidance, on Android!
+
+Here is how to get it through Google Play:
+
+1. Open this invite link on your phone (make sure you're signed into your Google account):
+👉 [PASTE YOUR "JOIN ON ANDROID" OR "JOIN ON THE WEB" LINK HERE]
+
+2. Tap "Accept invite" or "Become a tester".
+
+3. Tap the "Download it on Google Play" link on that page to install the app.
+
+4. Open the app and test out the daily tarot draw, natal chart, or runes! 
+
+If you run into any bugs or have any thoughts on the design, feel free to let me know!
+```
+
+---
+
+### ⚠️ Common Tester Issues & Troubleshooting
+1. **"Item not found" or "App unavailable" Error:**
+   - The tester opened the link while signed into a different Google account than the one you added to the list. They must switch to the Gmail address you registered in the Console.
+   - For Closed Testing: If Google is still reviewing the release, the link will show "App unavailable" until the rollout is approved (check release status on the dashboard).
+   - For Internal Testing: Make sure you clicked **Save** at the bottom of the Testers page and that the release has at least one active build.
+2. **Opt-in Status:**
+   - Testers MUST click **"Become a tester"** at the link first before Google Play will let them download the unreleased build.
 
 ---
 
@@ -273,11 +345,10 @@ Click **In-app products > Create product**:
 
 ### A. For Personal Developer Accounts Created After Nov 13, 2023:
 Google mandates **20 testers opted-in for at least 14 days** before you can apply for Production access:
-1. Promote your internal release to **Closed testing (Alpha/Beta)**.
-2. Invite 20 friends, beta testers, or community members to your closed testing track.
-3. Once 20 testers have had the app installed for 14 continuous days, a button will appear on your Dashboard: **"Apply for production"**.
-4. Answer Google's simple questionnaire regarding feedback received and app stability.
-5. Google will approve production access within 48–72 hours.
+1. Keep your 20+ testers opted-in on your **Closed testing** track.
+2. Once 20 testers have had the app installed for 14 continuous days, a button will appear on your Dashboard: **"Apply for production"**.
+3. Answer Google's simple questionnaire regarding feedback received and app stability.
+4. Google will approve production access within 48–72 hours.
 
 ### B. For Established / Organization Developer Accounts:
 1. Go directly to **Release > Production**.
