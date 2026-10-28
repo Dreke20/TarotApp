@@ -15,7 +15,7 @@ Packages: `firebase_core` ^5.1.0 and `firebase_crashlytics` ^6.0.1. Android Grad
 
 iOS has no `GoogleService-Info.plist`. `PRODUCT_BUNDLE_IDENTIFIER` is still `com.tarotapp.tarotApp`. `initCrashReporting()` catches the missing plist and the app keeps running with crash upload off on iOS.
 
-Store listing docs (`PLAY_STORE_COMPLIANCE.md`, `STORE_LISTING.md`, `GOOGLE_PLAY_PUBLISHING_GUIDE.md`) still name the Play package `oraculum.dirtysouth`. The Android binary id is now `com.tarotapp.tarot_app` so it matches this Firebase app. Confirm which package Play Console actually uses before the next upload. The Gradle `namespace` stays `oraculum.dirtysouth`.
+Play Console uses `com.tarotapp.tarot_app`. No bundle has been uploaded yet, and `applicationId` matches that package. The Gradle `namespace` and Kotlin package directories stay `oraculum.dirtysouth`.
 
 Once the matching json is in place, **release and profile builds upload crashes**. Debug builds do not (`setCrashlyticsCollectionEnabled(!kDebugMode)`), and the manifest / Info.plist keep native collection off until Dart enables it.
 

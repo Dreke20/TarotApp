@@ -1,5 +1,5 @@
 # 🛡️ Google Play Store Compliance & Policy Declarations Playbook
-## Oraculum: Sacred AI Tarot (`oraculum.dirtysouth`)
+## Oraculum: Sacred AI Tarot (`com.tarotapp.tarot_app`)
 
 This document serves as the authoritative, comprehensive guide for completing all mandatory **App Content**, **Policy Declarations**, **Play App Signing**, and **US Export Laws** requirements in the **Google Play Console**.
 
