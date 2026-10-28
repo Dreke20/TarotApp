@@ -99,10 +99,16 @@ void main() {
       expect(profile.risingSign, 'Leo');
     });
 
-    test('AuthRepository verifyAndActivatePro updates profile in local/offline fallback', () async {
+    test('AuthRepository verifyAndActivatePro records a store receipt for guests', () async {
       SharedPreferences.setMockInitialValues({});
       final repo = AuthRepository();
-      final updated = await repo.verifyAndActivatePro(action: 'subscribe', plan: 'yearly');
+      final updated = await repo.verifyAndActivatePro(
+        action: 'subscribe',
+        plan: 'yearly',
+        receipt: 'play-purchase-token',
+        productId: 'oracle_pro_yearly',
+        source: 'google_play',
+      );
       expect(updated.isPro, isTrue);
     });
 

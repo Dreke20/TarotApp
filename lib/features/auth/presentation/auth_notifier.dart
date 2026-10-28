@@ -127,10 +127,10 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
+  /// Activates Pro from a verified store receipt. Promo redemption is rejected.
   Future<bool> activatePro({
     String action = 'subscribe',
     String plan = 'yearly',
-    String? promoCode,
     String? receipt,
     String? productId,
     String? source,
@@ -140,7 +140,6 @@ class AuthNotifier extends _$AuthNotifier {
       final profile = await _repository.verifyAndActivatePro(
         action: action,
         plan: plan,
-        promoCode: promoCode,
         receipt: receipt,
         productId: productId,
         source: source,
@@ -153,9 +152,12 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
+  /// Clears a local Pro flag. Passing `true` does not grant Pro.
   Future<void> setProStatus(bool isPro) async {
     if (isPro) {
-      await activatePro();
+      state = state.copyWith(
+        errorMessage: 'Oracle Pro can only be unlocked with a store purchase.',
+      );
       return;
     }
     final current = state.profile;

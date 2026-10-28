@@ -10,7 +10,9 @@ import '../domain/subscription_plan.dart';
 import 'subscription_notifier.dart';
 
 /// Modal paywall and plan selector for unlocking Oracle Pro with native In-App Purchases.
-class OracleProModal extends ConsumerStatefulWidget {
+///
+/// Oracle Pro is granted only by a store purchase or restore. There is no promo-code field.
+class OracleProModal extends ConsumerWidget {
   const OracleProModal({super.key});
 
   static Future<void> show(BuildContext context) {
@@ -23,21 +25,7 @@ class OracleProModal extends ConsumerStatefulWidget {
   }
 
   @override
-  ConsumerState<OracleProModal> createState() => _OracleProModalState();
-}
-
-class _OracleProModalState extends ConsumerState<OracleProModal> {
-  bool _showPromoField = false;
-  final TextEditingController _promoController = TextEditingController();
-
-  @override
-  void dispose() {
-    _promoController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final mediaQuery = MediaQuery.of(context);
     final subState = ref.watch(subscriptionNotifierProvider);
     final subNotifier = ref.read(subscriptionNotifierProvider.notifier);
@@ -267,77 +255,6 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                       ],
                     ),
                     const SizedBox(height: 16),
-
-                    // Promo Code Toggle / Input
-                    if (!_showPromoField)
-                      TextButton.icon(
-                        icon: const Icon(Icons.confirmation_number_outlined,
-                            size: 15, color: AppColors.etherealLavender),
-                        label: Text(
-                          'Redeem Celestial Code',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11,
-                            color: AppColors.etherealLavender,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                        onPressed: () => setState(() => _showPromoField = true),
-                      )
-                    else ...[
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _promoController,
-                              textCapitalization: TextCapitalization.characters,
-                              style: GoogleFonts.cinzel(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.goldBright,
-                                letterSpacing: 1.5,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: 'ENTER CODE (e.g. CELESTIAL_PRO)',
-                                hintStyle: GoogleFonts.plusJakartaSans(
-                                  fontSize: 10,
-                                  color: AppColors.textMuted,
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 14, vertical: 10),
-                                filled: true,
-                                fillColor: AppColors.glassFill,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(
-                                      color: AppColors.glassBorder),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.goldBright,
-                              foregroundColor: AppColors.backgroundDeep,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            onPressed: subState.isSubmitting
-                                ? null
-                                : () => subNotifier.redeemPromoCode(_promoController.text),
-                            child: Text(
-                              'APPLY',
-                              style: GoogleFonts.cinzel(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                    ],
 
                     // Restore Purchases Button / Link
                     Center(
