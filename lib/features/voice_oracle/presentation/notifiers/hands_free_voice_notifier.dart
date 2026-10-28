@@ -1,5 +1,7 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/services/ambient_soundscape_service.dart';
+import '../../../../core/services/speech_capture.dart';
 import '../../../tarot/presentation/notifiers/reading_notifier.dart';
 import '../../data/hands_free_voice_service.dart';
 import '../../domain/hands_free_voice_state.dart';
@@ -26,10 +28,14 @@ class HandsFreeVoiceNotifier extends _$HandsFreeVoiceNotifier {
   }
 
   /// Begins listening with dynamic background ambient ducking.
+  ///
+  /// A pause ends the microphone session and leaves the transcript editable.
+  /// The question is stored on the reading only when the seeker anchors it,
+  /// the same `setQuestion` path a typed question uses.
   Future<void> startListening() async {
     final service = ref.read(handsFreeVoiceServiceProvider);
+    ref.read(voiceInputNoticeProvider.notifier).clear();
 
-    // 1. Duck background audio to soft whisper
     await ref.read(ambientAudioProvider.notifier).duckVolume(0.15);
 
     state = state.copyWith(
@@ -38,7 +44,7 @@ class HandsFreeVoiceNotifier extends _$HandsFreeVoiceNotifier {
       duckingLevel: 0.15,
     );
 
-    await service.startListening(
+    final result = await service.startListening(
       onResult: (transcript, confidence) {
         state = state.copyWith(
           currentTranscript: transcript,
@@ -49,9 +55,34 @@ class HandsFreeVoiceNotifier extends _$HandsFreeVoiceNotifier {
         state = state.copyWith(soundLevel: level);
       },
       onSilenceCommit: (finalizedText) async {
-        await commitInquiry(finalizedText);
+        await stopListening();
+        if (finalizedText.trim().isNotEmpty) {
+          state = state.copyWith(currentTranscript: finalizedText.trim());
+        }
+      },
+      onFailure: (failure) async {
+        await stopListening();
+        final notice = VoiceInputNotice.forFailure(failure);
+        if (notice != null) {
+          ref.read(voiceInputNoticeProvider.notifier).show(notice);
+        }
       },
     );
+
+    final notice = VoiceInputNotice.forResult(result);
+    if (notice != null) {
+      await stopListening();
+      ref.read(voiceInputNoticeProvider.notifier).show(notice);
+    }
+  }
+
+  /// Lets the seeker correct a partial or final transcript before anchoring it.
+  void editTranscript(String value) {
+    state = state.copyWith(currentTranscript: value);
+  }
+
+  Future<bool> openSettings() {
+    return ref.read(handsFreeVoiceServiceProvider).openSettings();
   }
 
   /// Commits the spoken inquiry to the sacred altar and restores ambient volume.
@@ -94,3 +125,18 @@ class HandsFreeVoiceNotifier extends _$HandsFreeVoiceNotifier {
 
 /// Backward/convenience alias for handsFreeVoiceProvider
 final handsFreeVoiceNotifierProvider = handsFreeVoiceProvider;
+
+/// Permission, timeout, and recognizer messages for the Voice Oracle sheet.
+class VoiceInputNoticeController extends Notifier<VoiceInputNotice?> {
+  @override
+  VoiceInputNotice? build() => null;
+
+  void show(VoiceInputNotice notice) => state = notice;
+
+  void clear() => state = null;
+}
+
+final voiceInputNoticeProvider =
+    NotifierProvider<VoiceInputNoticeController, VoiceInputNotice?>(
+  VoiceInputNoticeController.new,
+);

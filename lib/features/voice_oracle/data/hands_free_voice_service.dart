@@ -1,87 +1,142 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:speech_to_text/speech_to_text.dart';
-import '../../../../core/services/celestial_voice_service.dart';
 
-/// Hands-Free Conversational Voice Engine with Voice Activity Detection (VAD)
-/// and automatic background audio ducking.
+import '../../../core/services/speech_capture.dart';
+import '../../../core/services/speech_to_text_question_recognizer.dart';
+import '../../../core/services/voice_activity_gate.dart';
+
+/// Hands-free speech capture for the Voice Oracle sheet.
+///
+/// Recognition goes through [SpeechQuestionRecognizer]. On-device recognition
+/// is requested first and, if the platform rejects it, the session falls back
+/// to the platform default recognizer. Audio is never stored by this class.
 class HandsFreeVoiceService {
-  final SpeechToText _speech = SpeechToText();
-  bool _isInitialized = false;
+  HandsFreeVoiceService({
+    SpeechQuestionRecognizer? recognizer,
+    VoiceActivityGate? voiceGate,
+  })  : _recognizer = recognizer ?? SpeechToTextQuestionRecognizer(),
+        _voiceGate = voiceGate ?? CelestialVoiceActivityGate();
+
+  final SpeechQuestionRecognizer _recognizer;
+  final VoiceActivityGate _voiceGate;
   Timer? _silenceTimer;
+  bool _fellBackFromOnDevice = false;
 
-  bool get isAvailable => _isInitialized;
-  bool get isListening => _speech.isListening;
+  bool get isListening => false;
 
-  Future<bool> initialize() async {
-    if (_isInitialized) return true;
+  Future<VoiceListenResult> startListening({
+    required void Function(String transcript, double confidence) onResult,
+    required void Function(double soundLevel) onSoundLevel,
+    required void Function(String finalizedText) onSilenceCommit,
+    required void Function(SpeechCaptureFailure failure) onFailure,
+    Duration silenceDuration = const Duration(milliseconds: 1800),
+  }) async {
+    _silenceTimer?.cancel();
+    _fellBackFromOnDevice = false;
+
+    if (_voiceGate.isSpeaking) {
+      await _voiceGate.stopSpeaking();
+    }
+    if (_voiceGate.isSpeaking) {
+      return VoiceListenResult.ttsBusy;
+    }
+
+    final permission = await _recognizer.ensureReady();
+    switch (permission) {
+      case SpeechCapturePermission.granted:
+        break;
+      case SpeechCapturePermission.denied:
+        return VoiceListenResult.denied;
+      case SpeechCapturePermission.permanentlyDenied:
+        return VoiceListenResult.permanentlyDenied;
+      case SpeechCapturePermission.unavailable:
+        return VoiceListenResult.unavailable;
+    }
+
+    final started = await _listen(
+      onDevice: true,
+      onResult: onResult,
+      onSoundLevel: onSoundLevel,
+      onSilenceCommit: onSilenceCommit,
+      onFailure: onFailure,
+      silenceDuration: silenceDuration,
+    );
+    if (!started) return VoiceListenResult.unavailable;
+    return VoiceListenResult.listening;
+  }
+
+  Future<bool> _listen({
+    required bool onDevice,
+    required void Function(String transcript, double confidence) onResult,
+    required void Function(double soundLevel) onSoundLevel,
+    required void Function(String finalizedText) onSilenceCommit,
+    required void Function(SpeechCaptureFailure failure) onFailure,
+    required Duration silenceDuration,
+  }) async {
     try {
-      _isInitialized = await _speech.initialize(
-        onError: (err) => debugPrint('[HandsFreeVoice] Error: ${err.errorMsg}'),
-        onStatus: (status) => debugPrint('[HandsFreeVoice] Status: $status'),
+      await _recognizer.start(
+        onDevice: onDevice,
+        onSoundLevel: onSoundLevel,
+        onTranscript: (update) {
+          if (update.text.trim().isEmpty) return;
+          onResult(update.text, update.isFinal ? 1 : 0);
+          _silenceTimer?.cancel();
+          _silenceTimer = Timer(silenceDuration, () {
+            final text = update.text.trim();
+            if (text.isNotEmpty) onSilenceCommit(text);
+          });
+        },
+        onFailure: (failure) {
+          if (failure.kind == SpeechCaptureFailureKind.onDeviceUnavailable &&
+              onDevice &&
+              !_fellBackFromOnDevice) {
+            _fellBackFromOnDevice = true;
+            _listen(
+              onDevice: false,
+              onResult: onResult,
+              onSoundLevel: onSoundLevel,
+              onSilenceCommit: onSilenceCommit,
+              onFailure: onFailure,
+              silenceDuration: silenceDuration,
+            );
+            return;
+          }
+          _silenceTimer?.cancel();
+          onFailure(failure);
+        },
+        onSessionEnded: () {},
       );
-      return _isInitialized;
-    } catch (e) {
-      debugPrint('[HandsFreeVoice] Init exception: $e');
-      _isInitialized = false;
+      return true;
+    } on OnDeviceRecognitionUnavailable {
+      if (onDevice && !_fellBackFromOnDevice) {
+        _fellBackFromOnDevice = true;
+        return _listen(
+          onDevice: false,
+          onResult: onResult,
+          onSoundLevel: onSoundLevel,
+          onSilenceCommit: onSilenceCommit,
+          onFailure: onFailure,
+          silenceDuration: silenceDuration,
+        );
+      }
+      onFailure(
+        const SpeechCaptureFailure(
+          kind: SpeechCaptureFailureKind.unavailable,
+          message: 'On-device recognition is not available.',
+        ),
+      );
       return false;
     }
   }
 
-  /// Begins continuous hands-free listening with silence commit detection.
-  Future<void> startListening({
-    required Function(String transcript, double confidence) onResult,
-    required Function(double soundLevel) onSoundLevel,
-    required Function(String finalizedText) onSilenceCommit,
-    Duration silenceDuration = const Duration(milliseconds: 1800),
-  }) async {
-    // If Celestial Voice TTS is speaking, interrupt it so Oracle listens to the seeker
-    if (CelestialVoiceService.instance.isPlaying) {
-      await CelestialVoiceService.instance.stop();
-    }
-
-    final ready = await initialize();
-    if (!ready) {
-      debugPrint('[HandsFreeVoice] Speech recognition not available on this platform/device');
-      return;
-    }
-
-    String lastWords = '';
-
-    await _speech.listen(
-      onResult: (result) {
-        lastWords = result.recognizedWords;
-        onResult(result.recognizedWords, result.confidence);
-
-        // Reset silence commit countdown on new words
-        _silenceTimer?.cancel();
-        _silenceTimer = Timer(silenceDuration, () {
-          if (lastWords.trim().isNotEmpty) {
-            onSilenceCommit(lastWords.trim());
-          }
-        });
-      },
-      onSoundLevelChange: onSoundLevel,
-      listenOptions: SpeechListenOptions(
-        listenFor: const Duration(seconds: 45),
-        pauseFor: const Duration(seconds: 4),
-        partialResults: true,
-        cancelOnError: false,
-        listenMode: ListenMode.dictation,
-      ),
-    );
-  }
-
-  /// Stops speech listening and cancels silence timers.
   Future<void> stopListening() async {
     _silenceTimer?.cancel();
-    if (_speech.isListening) {
-      await _speech.stop();
-    }
+    await _recognizer.stop();
   }
+
+  Future<bool> openSettings() => _recognizer.openSettings();
 
   void dispose() {
     _silenceTimer?.cancel();
-    _speech.stop();
+    _recognizer.cancel();
   }
 }
