@@ -53,7 +53,7 @@ void main() {
     expect(state.yearlySavingsLabel, isNull);
   });
 
-  testWidgets('loading and store-unavailable paywalls do not show prices', (tester) async {
+  testWidgets('loading paywall does not show prices', (tester) async {
     await _pumpPaywall(
       tester,
       const SubscriptionState(
@@ -67,7 +67,9 @@ void main() {
     expect(find.text('Save 58%'), findsNothing);
     expect(find.text(PaywallQuote.loadingPrice), findsWidgets);
     expect(tester.widget<ElevatedButton>(find.byType(ElevatedButton)).onPressed, isNull);
+  });
 
+  testWidgets('store-unavailable paywall is not purchasable', (tester) async {
     await _pumpPaywall(tester, const SubscriptionState());
     expect(find.textContaining(r'$'), findsNothing);
     expect(find.textContaining('9.99'), findsNothing);
@@ -85,7 +87,7 @@ SubscriptionState _stateFor(List<GooglePlayProductDetails> products) {
 }
 
 Future<void> _pumpPaywall(WidgetTester tester, SubscriptionState state) async {
-  tester.view.physicalSize = const Size(420, 2400);
+  tester.view.physicalSize = const Size(1400, 2800);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
