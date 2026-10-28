@@ -21,7 +21,6 @@ class SpeechToTextQuestionRecognizer implements SpeechQuestionRecognizer {
   void Function(SpeechTranscript update)? _onTranscript;
   void Function(SpeechCaptureFailure failure)? _onFailure;
   void Function()? _onSessionEnded;
-  void Function(double level)? _onSoundLevel;
   bool _attemptingOnDevice = false;
   bool _hadTranscript = false;
   bool _userEnded = false;
@@ -67,7 +66,6 @@ class SpeechToTextQuestionRecognizer implements SpeechQuestionRecognizer {
     _onTranscript = onTranscript;
     _onFailure = onFailure;
     _onSessionEnded = onSessionEnded;
-    _onSoundLevel = onSoundLevel;
     _attemptingOnDevice = onDevice;
     _hadTranscript = false;
     _userEnded = false;

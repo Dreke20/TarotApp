@@ -27,6 +27,18 @@ class HandsFreeVoiceNotifier extends _$HandsFreeVoiceNotifier {
     state = state.copyWith(handsFreeEnabled: !state.handsFreeEnabled);
   }
 
+  Future<void> _duckAmbient() async {
+    try {
+      await ref.read(ambientAudioProvider.notifier).duckVolume(0.15);
+    } catch (_) {}
+  }
+
+  Future<void> _restoreAmbient() async {
+    try {
+      await ref.read(ambientAudioProvider.notifier).restoreVolume();
+    } catch (_) {}
+  }
+
   /// Begins listening with dynamic background ambient ducking.
   ///
   /// A pause ends the microphone session and leaves the transcript editable.
@@ -36,7 +48,7 @@ class HandsFreeVoiceNotifier extends _$HandsFreeVoiceNotifier {
     final service = ref.read(handsFreeVoiceServiceProvider);
     ref.read(voiceInputNoticeProvider.notifier).clear();
 
-    await ref.read(ambientAudioProvider.notifier).duckVolume(0.15);
+    await _duckAmbient();
 
     state = state.copyWith(
       isListening: true,
@@ -91,7 +103,7 @@ class HandsFreeVoiceNotifier extends _$HandsFreeVoiceNotifier {
     await service.stopListening();
 
     // Restore background ambient soundscape
-    await ref.read(ambientAudioProvider.notifier).restoreVolume();
+    await _restoreAmbient();
 
     state = state.copyWith(
       isListening: false,
@@ -108,7 +120,7 @@ class HandsFreeVoiceNotifier extends _$HandsFreeVoiceNotifier {
   Future<void> stopListening() async {
     final service = ref.read(handsFreeVoiceServiceProvider);
     await service.stopListening();
-    await ref.read(ambientAudioProvider.notifier).restoreVolume();
+    await _restoreAmbient();
 
     state = state.copyWith(
       isListening: false,

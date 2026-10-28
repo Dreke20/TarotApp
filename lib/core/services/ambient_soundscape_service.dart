@@ -68,14 +68,22 @@ class AmbientAudioState {
 
 @Riverpod(keepAlive: true)
 class AmbientAudioNotifier extends _$AmbientAudioNotifier {
-  final AudioPlayer _player = AudioPlayer();
+  /// Tests set this false so the audioplayers plugin is not constructed.
+  static bool createPlayer = true;
+
+  AudioPlayer? _player;
   AppLifecycleListener? _lifecycleListener;
   bool _wasPlayingBeforePause = false;
+
+  AudioPlayer? get _audio {
+    if (!createPlayer) return null;
+    return _player ??= AudioPlayer();
+  }
 
   @override
   AmbientAudioState build() {
     try {
-      _player.setReleaseMode(ReleaseMode.loop);
+      _audio?.setReleaseMode(ReleaseMode.loop);
     } catch (_) {}
 
     _lifecycleListener = AppLifecycleListener(
@@ -83,7 +91,7 @@ class AmbientAudioNotifier extends _$AmbientAudioNotifier {
         if (state.isPlaying) {
           _wasPlayingBeforePause = true;
           try {
-            _player.pause();
+            _audio?.pause();
           } catch (_) {}
         }
       },
@@ -91,7 +99,7 @@ class AmbientAudioNotifier extends _$AmbientAudioNotifier {
         if (_wasPlayingBeforePause && state.isPlaying) {
           _wasPlayingBeforePause = false;
           try {
-            _player.resume();
+            _audio?.resume();
           } catch (_) {}
         }
       },
@@ -100,7 +108,7 @@ class AmbientAudioNotifier extends _$AmbientAudioNotifier {
     ref.onDispose(() {
       try {
         _lifecycleListener?.dispose();
-        _player.dispose();
+        _audio?.dispose();
       } catch (_) {}
     });
     return const AmbientAudioState();
@@ -110,7 +118,7 @@ class AmbientAudioNotifier extends _$AmbientAudioNotifier {
     _wasPlayingBeforePause = false;
     if (state.isPlaying) {
       try {
-        await _player.pause();
+        await _audio?.pause();
       } catch (_) {}
       state = state.copyWith(isPlaying: false);
     } else {
@@ -130,29 +138,29 @@ class AmbientAudioNotifier extends _$AmbientAudioNotifier {
   Future<void> duckVolume([double target = 0.15]) async {
     _preDuckVolume = state.volume;
     try {
-      await _player.setVolume(target);
+      await _audio?.setVolume(target);
     } catch (_) {}
   }
 
   Future<void> restoreVolume() async {
     try {
-      await _player.setVolume(_preDuckVolume);
+      await _audio?.setVolume(_preDuckVolume);
     } catch (_) {}
   }
 
   Future<void> setVolume(double volume) async {
     state = state.copyWith(volume: volume);
     try {
-      await _player.setVolume(volume);
+      await _audio?.setVolume(volume);
     } catch (_) {}
   }
 
   Future<void> _playTrack(SoundscapeTrack track) async {
     try {
-      await _player.setVolume(state.volume);
+      await _audio?.setVolume(state.volume);
       // 1. Attempt instantaneous local asset playback
       try {
-        await _player.play(AssetSource(track.assetPath));
+        await _audio?.play(AssetSource(track.assetPath));
         state = state.copyWith(isPlaying: true);
         return;
       } catch (assetErr) {
@@ -160,7 +168,7 @@ class AmbientAudioNotifier extends _$AmbientAudioNotifier {
       }
 
       // 2. Fallback to remote network stream if local asset is unresolvable
-      await _player.play(UrlSource(track.fallbackUrl));
+      await _audio?.play(UrlSource(track.fallbackUrl));
       state = state.copyWith(isPlaying: true);
     } catch (e) {
       debugPrint('[AmbientAudio] Playback error: $e');
