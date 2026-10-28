@@ -108,8 +108,7 @@ Complete each declaration as follows:
 ### 3. App Access (Reviewer Instructions)
 - Click **Start**.
 - Select: **"All functionality is available without special access"** *(Guest mode allows immediate access to all core divination rituals without an account)*.
-- *Optional review note:* If you want to give the reviewer instant Oracle Pro testing privileges without billing:
-  > *"Reviewers can test Oracle Pro features by tapping the top crown icon, selecting Enter Promo Code, and entering: CELESTIAL_PRO."*
+- *Optional review note:* Oracle Pro has no unlock code. Add the review account as a license tester and use a test purchase.
 - Click **Save**.
 
 ### 4. Content Ratings (IARC Questionnaire)
@@ -361,7 +360,7 @@ Google mandates **20 testers opted-in for at least 14 days** before you can appl
 
 ## 🌟 Support & Developer Troubleshooting
 If Google Play reviewers request any additional clarifications during the review:
-- **Review Access Promo Code:** `CELESTIAL_PRO` grants instant 1-year Pro testing.
+- **Review access:** Google Play license testing and a test purchase. There is no promo unlock code.
 - **Support Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
 - **Live Netlify Sanctuary:** `https://oracalum.netlify.app`
 - **Source Code Repository:** `https://github.com/Dreke20/TarotApp`

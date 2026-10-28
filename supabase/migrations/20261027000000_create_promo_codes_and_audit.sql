@@ -67,11 +67,4 @@ TO service_role
 USING (true)
 WITH CHECK (true);
 
--- Seed initial secure promo codes with caps & expiration
-INSERT INTO public.promo_codes (code, plan, max_redemptions, is_active, expires_at)
-VALUES 
-    ('CELESTIAL_PRO', 'yearly', 100, true, now() + interval '90 days'),
-    ('ORACULUM_2026', 'yearly', 250, true, now() + interval '180 days'),
-    ('MYSTIC_SEEKER', 'monthly', 500, true, now() + interval '365 days'),
-    ('COSMIC_LIFETIME', 'lifetime', 25, true, now() + interval '30 days')
-ON CONFLICT (code) DO NOTHING;
+-- Promo codes are not seeded. Oracle Pro comes from a store purchase only.
