@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import '../domain/subscription_offer.dart';
 import '../domain/subscription_plan.dart';
+import 'store_product_offers.dart';
 
 /// Callback signature for handling completed purchase verification with backend.
 typedef OnPurchaseVerified = Future<bool> Function(
@@ -32,7 +34,7 @@ class InAppPurchaseService {
   List<ProductDetails> get products => _products;
 
   /// Initializes store connection and queries available subscription product details.
-  Future<Map<String, String>> initialize({
+  Future<PaywallCatalogSnapshot> initialize({
     required OnPurchaseVerified onPurchaseVerified,
     required void Function(String error) onError,
   }) async {
@@ -41,13 +43,13 @@ class InAppPurchaseService {
       if (iap == null) {
         _isAvailable = false;
         debugPrint('[IAP] Platform in-app purchase instance could not be resolved.');
-        return const {};
+        return PaywallCatalogSnapshot.empty;
       }
 
       _isAvailable = await iap.isAvailable();
       if (!_isAvailable) {
         debugPrint('[IAP] Store is not available on this platform/device.');
-        return const {};
+        return PaywallCatalogSnapshot.empty;
       }
 
       // Listen to the native purchase stream
@@ -70,42 +72,46 @@ class InAppPurchaseService {
       final response = await iap.queryProductDetails(SubscriptionPlan.allProductIds);
       if (response.error != null) {
         debugPrint('[IAP] Error querying products: ${response.error!.message}');
-        return const {};
+        return PaywallCatalogSnapshot.empty;
       }
 
       _products = response.productDetails;
-      final localizedMap = <String, String>{};
-      for (final product in _products) {
-        localizedMap[product.id] = product.price;
-      }
-      return localizedMap;
+      final introEligibility = await loadIosIntroEligibility(_products);
+      return catalogFromStoreProducts(
+        _products,
+        storeAvailable: true,
+        iosIntroEligible: introEligibility,
+      );
     } catch (e) {
       debugPrint('[IAP] Initialization exception: $e');
       _isAvailable = false;
-      return const {};
+      return PaywallCatalogSnapshot.empty;
     }
   }
 
-  /// Triggers native Google Play / Apple StoreKit checkout sheet for the requested plan.
-  Future<bool> buyPlan(SubscriptionPlan plan) async {
+  /// Triggers native Google Play / Apple StoreKit checkout for [plan].
+  ///
+  /// [offerToken] is the Play Billing token of the free-trial offer when the
+  /// user is eligible, or the base-plan token otherwise. Lifetime passes null.
+  Future<bool> buyPlan(SubscriptionPlan plan, {String? offerToken}) async {
     final iap = _iap;
     if (iap == null || !_isAvailable) {
       debugPrint('[IAP] Native store unavailable. Resorting to server verification.');
       return false;
     }
 
-    final product = _products.cast<ProductDetails?>().firstWhere(
-          (p) => p?.id == plan.id,
-          orElse: () => null,
-        );
+    final product = selectStoreProduct(
+      products: _products,
+      productId: plan.id,
+      offerToken: offerToken,
+    );
 
     if (product == null) {
-      debugPrint('[IAP] Product ${plan.id} not found in store catalog.');
+      debugPrint('[IAP] Product ${plan.id} not found for the selected offer.');
       return false;
     }
 
-    final purchaseParam = PurchaseParam(productDetails: product);
-    return iap.buyNonConsumable(purchaseParam: purchaseParam);
+    return iap.buyNonConsumable(purchaseParam: purchaseParamFor(product));
   }
 
   /// Restores previous purchases across devices.

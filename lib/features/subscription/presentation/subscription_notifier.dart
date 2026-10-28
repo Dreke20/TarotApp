@@ -28,7 +28,7 @@ class SubscriptionNotifier extends _$SubscriptionNotifier {
 
   Future<void> _initializeIAP() async {
     try {
-      final prices = await _iapService.initialize(
+      final catalog = await _iapService.initialize(
         onPurchaseVerified: (purchase, plan) async {
           return _handleServerVerification(purchase, plan);
         },
@@ -40,11 +40,12 @@ class SubscriptionNotifier extends _$SubscriptionNotifier {
         },
       );
 
-      state = state.copyWith(
-        isAvailable: _iapService.isAvailable,
-        isLoading: false,
-        localizedPrices: prices,
-      );
+      state = state
+          .copyWith(
+            isAvailable: _iapService.isAvailable,
+            isLoading: false,
+          )
+          .withLiveCatalog(catalog);
     } catch (e) {
       debugPrint('[SubscriptionNotifier] Init error: $e');
       state = state.copyWith(isLoading: false, isAvailable: false);
@@ -67,7 +68,10 @@ class SubscriptionNotifier extends _$SubscriptionNotifier {
 
     try {
       if (state.isAvailable) {
-        final launched = await _iapService.buyPlan(state.selectedPlan);
+        final launched = await _iapService.buyPlan(
+          state.selectedPlan,
+          offerToken: state.offerTokenFor(state.selectedPlan),
+        );
         if (launched) {
           // Native purchase sheet opened; completion is handled asynchronously via purchase stream
           return true;
