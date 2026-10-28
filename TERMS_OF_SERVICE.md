@@ -84,7 +84,7 @@ We reserve the right to amend these Terms to reflect feature updates, legal chan
 
 ### 10. Contact & Support
 For subscription inquiries, support, or legal correspondence:
-- **Support & Privacy Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
+- **Support & Privacy Email:** `oraculum26@gmail.com` / `dreke.dev@gmail.com`
 - **Official Website:** `https://oracalum.netlify.app`
 - **Account Deletion Portal:** `https://oracalum.netlify.app/delete-account`
 - **Developer GitHub:** `https://github.com/Dreke20/TarotApp`

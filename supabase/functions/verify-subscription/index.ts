@@ -9,7 +9,7 @@ const corsHeaders = {
 };
 
 interface SubscriptionRequest {
-  action?: "subscribe" | "redeem_promo" | "restore_purchase";
+  action?: string;
   plan?: "yearly" | "monthly" | "lifetime";
   receipt?: string;
   purchase_token?: string;
@@ -88,95 +88,24 @@ serve(async (req: Request) => {
 
     let message = "";
 
-    // 3. Validation logic
-    if (action === "redeem_promo") {
-      const codeStr = (body.promo_code || "").trim().toUpperCase();
-      if (!codeStr || codeStr.length < 3) {
-        return new Response(
-          JSON.stringify({ error: "Please enter a valid celestial promo code." }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
+    // 3. Validation logic. Promo redemption never grants Pro.
+    // DEPLOY FOLLOW-UP: this file is not deployed by this change. The live
+    // function still accepts redeem_promo until `supabase functions deploy verify-subscription`.
+    const promoCode = (body.promo_code || "").trim();
+    if (action === "redeem_promo" || promoCode.length > 0) {
+      return new Response(
+        JSON.stringify({
+          error:
+            "Promo codes are not accepted. Oracle Pro is unlocked only through a store purchase.",
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
 
-      // Query database for promo code
-      const { data: promo, error: promoErr } = await adminClient
-        .from("promo_codes")
-        .select("*")
-        .eq("code", codeStr)
-        .eq("is_active", true)
-        .maybeSingle();
-
-      if (promoErr || !promo) {
-        return new Response(
-          JSON.stringify({
-            error: "The celestial promo code provided is invalid or expired.",
-          }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
-
-      // Check expiration
-      if (promo.expires_at && new Date(promo.expires_at) < new Date()) {
-        return new Response(
-          JSON.stringify({ error: "This celestial blessing has already reached its twilight." }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
-
-      // Check max redemption cap
-      if (promo.times_redeemed >= promo.max_redemptions) {
-        return new Response(
-          JSON.stringify({ error: "This promo code has reached its maximum cosmic capacity." }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
-
-      // Check if user already redeemed this code
-      const { data: priorRedemption } = await adminClient
-        .from("promo_redemptions")
-        .select("id")
-        .eq("code_id", promo.id)
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (priorRedemption) {
-        return new Response(
-          JSON.stringify({
-            error: "You have already consecrated this promo code on your altar.",
-          }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
-
-      // Record user redemption & update counter
-      await adminClient.from("promo_redemptions").insert({
-        code_id: promo.id,
-        user_id: user.id,
-      });
-
-      await adminClient
-        .from("promo_codes")
-        .update({ times_redeemed: (promo.times_redeemed || 0) + 1 })
-        .eq("id", promo.id);
-
-      plan = promo.plan || plan;
-      message = `Cosmic blessing accepted! Promo code '${codeStr}' unlocked Oracle Pro (${plan} plan).`;
-    } else if (action === "subscribe" || action === "restore_purchase") {
+    if (action === "subscribe" || action === "restore_purchase") {
       const rawToken = (body.receipt || body.purchase_token || "").trim();
       
       // Enforce receipt requirement to prevent arbitrary unverified pro upgrades
