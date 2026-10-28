@@ -6,6 +6,10 @@ plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    // Resolved here, applied at the bottom only when google-services.json is present
+    // and its package_name matches applicationId. See FIREBASE_CRASHLYTICS.md.
+    id("com.google.gms.google-services") apply false
+    id("com.google.firebase.crashlytics") apply false
 }
 
 val keystoreProperties = Properties()
@@ -91,4 +95,22 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+}
+
+// google-services fails the build when the json is missing or its package_name
+// does not match applicationId. Leave the plugins off until Dreke drops the real
+// file at android/app/google-services.json. Release builds then upload crashes.
+val crashlyticsApplicationId = "oraculum.dirtysouth"
+val googleServicesFile = file("google-services.json")
+val googleServicesReady = googleServicesFile.exists() &&
+    googleServicesFile.readText().contains("\"package_name\": \"$crashlyticsApplicationId\"")
+if (googleServicesReady) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
+} else if (googleServicesFile.exists()) {
+    logger.warn(
+        "android/app/google-services.json is present but package_name is not " +
+            "$crashlyticsApplicationId. Crashlytics Gradle plugins were not applied. " +
+            "See FIREBASE_CRASHLYTICS.md.",
+    )
 }

@@ -95,19 +95,23 @@ TarotApp/
 flutter run
 ```
 
-### 2. Configure Remote Supabase & Gemini (Production)
+### 2. Crash reporting (Firebase Crashlytics)
+
+Crashlytics is on for release builds once `android/app/google-services.json` is added. Until that file arrives, the app still builds and runs and does not upload crashes. Setup and the Play Data safety answers are in [FIREBASE_CRASHLYTICS.md](FIREBASE_CRASHLYTICS.md).
+
+### 3. Configure Remote Supabase & Gemini (Production)
 Run with `--dart-define` flags or set environment variables:
 ```bash
 flutter run --dart-define=SUPABASE_URL=https://your-project.supabase.co --dart-define=SUPABASE_ANON_KEY=your-anon-key
 ```
 
-### 3. Deploy Supabase Database Schema
+### 4. Deploy Supabase Database Schema
 Run the SQL migration in [20261013000000_create_tarot_tables.sql](file:///c:/Users/dreke/OneDrive/Desktop/TarotApp/supabase/migrations/20261013000000_create_tarot_tables.sql) inside the Supabase SQL Editor, or use the Supabase CLI:
 ```bash
 supabase db push
 ```
 
-### 4. Deploy the Edge Function
+### 5. Deploy the Edge Function
 Deploy the `tarot-reader` function to your Supabase project:
 ```bash
 supabase functions deploy tarot-reader --no-verify-jwt

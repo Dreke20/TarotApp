@@ -121,6 +121,8 @@ To test premium features (Celtic Cross 10-card spread, multi-turn AI conversatio
 | **App Info / Diagnostics** | Yes | No | Crash reports & error monitoring | Yes (TLS 1.3) | Diagnostic only |
 | **Device / Other IDs** | Yes | Yes (AdMob) | Advertising & fraud prevention (Free tier) | Yes (TLS 1.3) | Reset via Android Settings |
 
+Crashlytics adds device-or-other IDs that are **collected and not shared**: the Crashlytics installation UUID, the Firebase installation ID, and the Firebase session ID. Those are crash-grouping identifiers, not the AdMob advertising ID. Collection is **on in release** and **not optional** (no in-app opt-out). The field list is in [FIREBASE_CRASHLYTICS.md](FIREBASE_CRASHLYTICS.md).
+
 ---
 
 ## 🎯 Section 6: Official URLs for Play Console
