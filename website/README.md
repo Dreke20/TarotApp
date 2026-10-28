@@ -1,6 +1,6 @@
 # 🌐 Oraculum Web Sanctuary & Netlify Free Hosting Guide
 
-This directory (`/website`) contains the official landing page, interactive Tarot card flipping demo, high-resolution app showcase, and Google Play compliance portals for **Oraculum: Sacred AI Tarot & Astral Guidance** (`oraculum.dirtysouth`).
+This directory (`/website`) contains the official landing page, interactive Tarot card flipping demo, high-resolution app showcase, and Google Play compliance portals for **Oraculum: Sacred AI Tarot & Astral Guidance** (`com.tarotapp.tarot_app`).
 
 ---
 

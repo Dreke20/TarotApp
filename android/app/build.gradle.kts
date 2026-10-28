@@ -6,6 +6,10 @@ plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    // Resolved here, applied at the bottom only when google-services.json is present
+    // and its package_name matches applicationId. See FIREBASE_CRASHLYTICS.md.
+    id("com.google.gms.google-services") apply false
+    id("com.google.firebase.crashlytics") apply false
 }
 
 val keystoreProperties = Properties()
@@ -42,8 +46,10 @@ android {
     }
 
     defaultConfig {
-        // Specify unique Application ID matching Google Play Console package name
-        applicationId = "oraculum.dirtysouth"
+        // Must match package_name in android/app/google-services.json
+        // (Firebase project oraculum-5d56e). Store listing docs still say
+        // oraculum.dirtysouth; this id is the one Crashlytics is registered for.
+        applicationId = "com.tarotapp.tarot_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -91,4 +97,22 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+}
+
+// google-services fails the build when the json is missing or its package_name
+// does not match applicationId. iOS has no GoogleService-Info.plist yet; Dart
+// init catches that and keeps running.
+val crashlyticsApplicationId = "com.tarotapp.tarot_app"
+val googleServicesFile = file("google-services.json")
+val googleServicesReady = googleServicesFile.exists() &&
+    googleServicesFile.readText().contains("\"package_name\": \"$crashlyticsApplicationId\"")
+if (googleServicesReady) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
+} else if (googleServicesFile.exists()) {
+    logger.warn(
+        "android/app/google-services.json is present but package_name is not " +
+            "$crashlyticsApplicationId. Crashlytics Gradle plugins were not applied. " +
+            "See FIREBASE_CRASHLYTICS.md.",
+    )
 }

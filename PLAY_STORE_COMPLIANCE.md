@@ -1,5 +1,5 @@
 # 🛡️ Google Play Store Compliance & Policy Declarations Playbook
-## Oraculum: Sacred AI Tarot (`oraculum.dirtysouth`)
+## Oraculum: Sacred AI Tarot (`com.tarotapp.tarot_app`)
 
 This document serves as the authoritative, comprehensive guide for completing all mandatory **App Content**, **Policy Declarations**, **Play App Signing**, and **US Export Laws** requirements in the **Google Play Console**.
 
@@ -120,6 +120,8 @@ To test premium features (Celtic Cross 10-card spread, multi-turn AI conversatio
 | **App Activity** | Yes | No | Spread usage & local reading history | Yes (TLS 1.3) | User can purge anytime |
 | **App Info / Diagnostics** | Yes | No | Crash reports & error monitoring | Yes (TLS 1.3) | Diagnostic only |
 | **Device / Other IDs** | Yes | Yes (AdMob) | Advertising & fraud prevention (Free tier) | Yes (TLS 1.3) | Reset via Android Settings |
+
+Crashlytics adds device-or-other IDs that are **collected and not shared**: the Crashlytics installation UUID, the Firebase installation ID, and the Firebase session ID. Those are crash-grouping identifiers, not the AdMob advertising ID. Collection is **on in release** and **not optional** (no in-app opt-out). The field list is in [FIREBASE_CRASHLYTICS.md](FIREBASE_CRASHLYTICS.md).
 
 ---
 

@@ -1,5 +1,5 @@
 # 🚀 Complete Google Play Store Publishing Guide
-## Oraculum: Sacred AI Tarot (`oraculum.dirtysouth`)
+## Oraculum: Sacred AI Tarot (`com.tarotapp.tarot_app`)
 
 This is the definitive, step-by-step master manual for taking **Oraculum** from your local machine to live publication on the **Google Play Store**. All technical preparation, code signing, security hardening, and compliance documentation have already been completed for you.
 
@@ -239,7 +239,7 @@ Click **In-app products > Create product**:
 3. In the **App bundles** drop zone:
    - Click **Upload** and select:
      `c:\Users\dreke\OneDrive\Desktop\TarotApp\build\app\outputs\bundle\release\app-release.aab`
-   - Wait for Google Play to inspect and upload the bundle. It will verify the package name (`oraculum.dirtysouth`), version code (`1`), and target SDK (`35`+).
+   - Wait for Google Play to inspect and upload the bundle. It will verify the package name (`com.tarotapp.tarot_app`), version code (`1`), and target SDK (`35`+).
 4. **Release name:** Set to `1.0.0 (1)`.
 5. **Release notes:** Paste:
    ```text
