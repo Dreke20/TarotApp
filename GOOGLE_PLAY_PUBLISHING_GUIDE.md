@@ -80,7 +80,7 @@ In the left-hand navigation menu, scroll down to **Grow** and click **Store pres
   - **App category:** `Lifestyle`
   - **Tags:** Click *Manage tags*, search and select: `Astrology`, `Lifestyle`, `Meditation`, `Entertainment`.
   - **Store listing contact details:**
-    - **Email address:** `privacy@oraculumtarot.com` (or your personal developer email `dreke.dev@gmail.com`)
+    - **Email address:** `oraculum26@gmail.com` (or your personal developer email `dreke.dev@gmail.com`)
     - **Website URL:** `https://oracalum.netlify.app`
 
 Click **Save** at the bottom right.
@@ -279,7 +279,7 @@ Google Play offers two primary testing tracks depending on your goal:
    - **Add email addresses:** Type or paste your testers' Gmail / Google account addresses separated by commas (e.g., `tester1@gmail.com, tester2@gmail.com`), or upload a `.csv` file.
    - Click **Save changes** at the bottom-right of the modal.
 4. **Make sure the checkbox next to your list is checked ☑️** to enable it for this track.
-5. In the *Feedback URL or email address* box, enter your support email (e.g., `privacy@oraculumtarot.com` or `dreke.dev@gmail.com`).
+5. In the *Feedback URL or email address* box, enter your support email (e.g., `oraculum26@gmail.com` or `dreke.dev@gmail.com`).
 6. Click **Save** at the bottom-right of the page.
 
 #### 2. Get and Share the Invitation Link
@@ -361,6 +361,6 @@ Google mandates **20 testers opted-in for at least 14 days** before you can appl
 ## 🌟 Support & Developer Troubleshooting
 If Google Play reviewers request any additional clarifications during the review:
 - **Review access:** Google Play license testing and a test purchase. There is no promo unlock code.
-- **Support Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
+- **Support Email:** `oraculum26@gmail.com` / `dreke.dev@gmail.com`
 - **Live Netlify Sanctuary:** `https://oracalum.netlify.app`
 - **Source Code Repository:** `https://github.com/Dreke20/TarotApp`

@@ -128,5 +128,5 @@ Premium features (Celtic Cross 10-card spread, multi-turn AI conversation, and p
   *(Raw alternative: `https://raw.githubusercontent.com/Dreke20/TarotApp/main/PRIVACY_POLICY.md`)*
 - **Account & Data Deletion URL:** `https://github.com/Dreke20/TarotApp/blob/main/ACCOUNT_DELETION.md`  
   *(Raw alternative: `https://raw.githubusercontent.com/Dreke20/TarotApp/main/ACCOUNT_DELETION.md`)*
-- **Support / Privacy Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
+- **Support / Privacy Email:** `oraculum26@gmail.com` / `dreke.dev@gmail.com`
 - **Developer Website / Repository:** `https://github.com/Dreke20/TarotApp`

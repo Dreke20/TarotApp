@@ -68,7 +68,7 @@ If you explore Oraculum as an anonymous guest without signing in, all card draws
 - **Web-Based Deletion Portal:** In compliance with Google Play policies, seekers can also request complete account and data deletion online without opening the application:  
   - **Portal URL:** `https://oracalum.netlify.app/delete-account`  
   - **Public Repository Form:** `https://github.com/Dreke20/TarotApp/blob/main/ACCOUNT_DELETION.md`  
-  - **Email Request:** Email `privacy@oraculumtarot.com` or `dreke.dev@gmail.com` with the subject *"Data Deletion Request"*. All records will be permanently erased within 30 days.
+  - **Email Request:** Email `oraculum26@gmail.com` or `dreke.dev@gmail.com` with the subject *"Data Deletion Request"*. All records will be permanently erased within 30 days.
 
 ---
 
@@ -92,7 +92,7 @@ Oraculum is designed for seekers aged **13 and older** (Teen / Everyone 10+). We
 
 ### 8. Contact & Sanctuary Desk
 For inquiries, rights requests, or feedback regarding this Privacy Policy:
-- **Privacy & Security Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
+- **Privacy & Security Email:** `oraculum26@gmail.com` / `dreke.dev@gmail.com`
 - **Official Website:** `https://oracalum.netlify.app`
 - **Account Deletion Portal:** `https://oracalum.netlify.app/delete-account`
 - **Developer GitHub:** `https://github.com/Dreke20/TarotApp`
