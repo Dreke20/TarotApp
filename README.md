@@ -97,7 +97,7 @@ flutter run
 
 ### 2. Crash reporting (Firebase Crashlytics)
 
-Crashlytics is on for release builds once `android/app/google-services.json` is added. Until that file arrives, the app still builds and runs and does not upload crashes. Setup and the Play Data safety answers are in [FIREBASE_CRASHLYTICS.md](FIREBASE_CRASHLYTICS.md).
+Android release builds report crashes using `android/app/google-services.json` (project `oraculum-5d56e`, package `com.tarotapp.tarot_app`). iOS has no Firebase plist yet and still runs. Setup and the Play Data safety answers are in [FIREBASE_CRASHLYTICS.md](FIREBASE_CRASHLYTICS.md).
 
 ### 3. Configure Remote Supabase & Gemini (Production)
 Run with `--dart-define` flags or set environment variables:

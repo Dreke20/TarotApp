@@ -9,22 +9,20 @@ Packages: `firebase_core` ^5.1.0 and `firebase_crashlytics` ^6.0.1. Android Grad
 
 `firebase_crashlytics` 6.0.1 does not depend on `firebase_analytics`. The Android Crashlytics SDK (BOM 35.1.0 / `firebase-crashlytics` 21.0.1) depends on `firebase-installations` and `firebase-sessions`, plus the `firebase-measurement-connector` stub. That stub is not the Analytics SDK (it depends only on `play-services-basement` and `firebase-annotations`) and does not collect Analytics events, so there is nothing to disable. If a later change adds `firebase_analytics`, stop and set `firebase_analytics_collection_deactivated` / `FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED` before shipping.
 
-## Where Dreke's file goes
+## Android config in the repo
 
-Dreke is creating the Firebase project. Put the downloaded Android config here, and nowhere else:
+`android/app/google-services.json` is the Spark project `oraculum-5d56e`. Its `package_name` is `com.tarotapp.tarot_app`, and `applicationId` in `android/app/build.gradle.kts` is the same string, so the Google Services and Crashlytics plugins apply. There is no `lib/firebase_options.dart`. Android `Firebase.initializeApp()` reads the native file the plugin generates. Do not invent iOS values.
 
-`android/app/google-services.json`
+iOS has no `GoogleService-Info.plist`. `PRODUCT_BUNDLE_IDENTIFIER` is still `com.tarotapp.tarotApp`. `initCrashReporting()` catches the missing plist and the app keeps running with crash upload off on iOS.
 
-That is the directory that already contains `build.gradle.kts`, not `android/app/src/`. The Google Services and Crashlytics Gradle plugins turn on only when that file exists and contains `"package_name": "oraculum.dirtysouth"`. Until then, debug and release builds still succeed and Crashlytics stays dormant.
-
-**Package id mismatch:** Play's `applicationId` in `android/app/build.gradle.kts` is `oraculum.dirtysouth`. The id mentioned for the new Firebase Android app, `com.tarotapp.tarot_app`, does not match. A json registered as `com.tarotapp.tarot_app` will not activate the plugins (the build keeps working and logs a warning). Register the Android app as `oraculum.dirtysouth`, or change `applicationId` to match the Firebase app before dropping the file in. iOS is separate: `PRODUCT_BUNDLE_IDENTIFIER` is `com.tarotapp.tarotApp`. Put `GoogleService-Info.plist` in `ios/Runner/` and add it to the Runner target.
+Store listing docs (`PLAY_STORE_COMPLIANCE.md`, `STORE_LISTING.md`, `GOOGLE_PLAY_PUBLISHING_GUIDE.md`) still name the Play package `oraculum.dirtysouth`. The Android binary id is now `com.tarotapp.tarot_app` so it matches this Firebase app. Confirm which package Play Console actually uses before the next upload. The Gradle `namespace` stays `oraculum.dirtysouth`.
 
 Once the matching json is in place, **release and profile builds upload crashes**. Debug builds do not (`setCrashlyticsCollectionEnabled(!kDebugMode)`), and the manifest / Info.plist keep native collection off until Dart enables it.
 
 `initCrashReporting()` in `lib/core/services/crash_reporting.dart` (called from `main`):
 
 1. Install local `FlutterError.onError` and `PlatformDispatcher.instance.onError` handlers.
-2. `Firebase.initializeApp()` with no Dart options. There is no `lib/firebase_options.dart` yet; do not invent one. Android and iOS read the native config files.
+2. `Firebase.initializeApp()` with no Dart options. Android uses the google-services resources. iOS throws until a real plist exists, and that throw is caught.
 3. If init throws, print a local note and return. The app keeps running.
 4. On success, `FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!kDebugMode)`.
 5. Replace the handlers with `recordFlutterFatalError` and `recordError(..., fatal: true)`.
@@ -37,9 +35,9 @@ Crashlytics stores the plain-text exception message of an uncaught error ([examp
 
 ## Setup steps
 
-1. In the [Firebase console](https://console.firebase.google.com/), use the Spark plan. Leave Google Analytics **disabled**.
-2. Add an Android app whose package name is **`oraculum.dirtysouth`** (the Gradle `applicationId`). Download `google-services.json` into **`android/app/google-services.json`**.
-3. Add an iOS app with bundle id `com.tarotapp.tarotApp`. Download `GoogleService-Info.plist` into `ios/Runner/` and add it to the Runner target.
+1. Android is already on Spark project `oraculum-5d56e` with Google Analytics off. The checked-in file is `android/app/google-services.json` for package `com.tarotapp.tarot_app`.
+2. Restrict that client API key in Google Cloud Console to package `com.tarotapp.tarot_app` plus your SHA-1 certificates, and to the Firebase APIs you use.
+3. iOS is not configured. When you add it, use bundle id `com.tarotapp.tarotApp`, put the real `GoogleService-Info.plist` in `ios/Runner/`, and do not invent values.
 4. From the repo root:
 
    ```bash
@@ -47,10 +45,9 @@ Crashlytics stores the plain-text exception message of an uncaught error ([examp
    flutterfire configure
    ```
 
-   Commit `lib/firebase_options.dart`, the json, the plist, and `ios/firebase_app_id_file.json`. The running app does not import `firebase_options.dart` yet; native files are enough for Android and iOS init. The generated Dart file and `firebase_app_id_file.json` are for symbol upload and a later `DefaultFirebaseOptions` switch.
-5. Open **Crashlytics** in the console and enable it for both apps. Do not enable another Firebase product.
-6. Restrict the client API key in Google Cloud Console: Android package `oraculum.dirtysouth` plus your SHA-1 certificates, iOS bundle id `com.tarotapp.tarotApp`, and only the Firebase APIs you use. The key ships in the binary; it is not a server secret, but an unrestricted key can burn quota.
-7. Confirm a report with a **profile or release** run (`flutter run --profile` or `--release`). A debug crash will not appear. A temporary `throw StateError('Crashlytics test');` on a non-store build is enough; remove it afterward. The first report can take a few minutes ([Flutter get started](https://firebase.google.com/docs/crashlytics/flutter/get-started)).
+   That command is optional for Android. Do not let it invent an iOS plist. If it writes `lib/firebase_options.dart`, keep iOS behind a guard until a real Apple app exists. `ios/firebase_app_id_file.json` is only needed for the dSYM upload phase.
+5. Open **Crashlytics** in the console for the Android app. Do not enable another Firebase product.
+6. Confirm a report with a **profile or release** run (`flutter run --profile` or `--release`). A debug crash will not appear. A temporary `throw StateError('Crashlytics test');` on a non-store build is enough; remove it afterward. The first report can take a few minutes ([Flutter get started](https://firebase.google.com/docs/crashlytics/flutter/get-started)).
 
 Do not commit placeholder API keys.
 

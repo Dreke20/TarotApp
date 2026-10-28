@@ -46,8 +46,10 @@ android {
     }
 
     defaultConfig {
-        // Specify unique Application ID matching Google Play Console package name
-        applicationId = "oraculum.dirtysouth"
+        // Must match package_name in android/app/google-services.json
+        // (Firebase project oraculum-5d56e). Store listing docs still say
+        // oraculum.dirtysouth; this id is the one Crashlytics is registered for.
+        applicationId = "com.tarotapp.tarot_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -98,9 +100,9 @@ dependencies {
 }
 
 // google-services fails the build when the json is missing or its package_name
-// does not match applicationId. Leave the plugins off until Dreke drops the real
-// file at android/app/google-services.json. Release builds then upload crashes.
-val crashlyticsApplicationId = "oraculum.dirtysouth"
+// does not match applicationId. iOS has no GoogleService-Info.plist yet; Dart
+// init catches that and keeps running.
+val crashlyticsApplicationId = "com.tarotapp.tarot_app"
 val googleServicesFile = file("google-services.json")
 val googleServicesReady = googleServicesFile.exists() &&
     googleServicesFile.readText().contains("\"package_name\": \"$crashlyticsApplicationId\"")
