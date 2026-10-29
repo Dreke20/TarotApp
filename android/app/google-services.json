@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1047593232023",
+    "project_id": "oraculum-5d56e",
+    "storage_bucket": "oraculum-5d56e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1047593232023:android:a9378658e95a31fa7bebd2",
+        "android_client_info": {
+          "package_name": "com.tarotapp.tarot_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDX9v9hrYlm8JIityV3Kkjo6AleyblCnZc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,5 @@
 # 📱 Google Play Store Listing Specification
-## Oraculum: Sacred AI Tarot & Astrology (`oraculum.dirtysouth`)
+## Oraculum: Sacred AI Tarot & Astrology (`com.tarotapp.tarot_app`)
 
 This document contains the exact, character-verified copy and configuration settings ready to copy-paste directly into the **Google Play Console** under **Grow > Store presence > Main store listing**.
 
