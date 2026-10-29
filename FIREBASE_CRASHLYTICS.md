@@ -71,7 +71,7 @@ If the phase is missing, add that Run Script on Runner. For an obfuscated Androi
 
 ## Likely overlaps
 
-Voice input, `CELESTIAL_PRO` removal, and paywall/billing work may also touch `pubspec.yaml`, `pubspec.lock`, `android/settings.gradle.kts`, `android/app/build.gradle.kts`, `AndroidManifest.xml`, and `lib/main.dart`. This change does not edit billing, promo codes, or voice.
+Voice input and paywall/billing work may also touch `pubspec.yaml`, `pubspec.lock`, `android/settings.gradle.kts`, `android/app/build.gradle.kts`, `AndroidManifest.xml`, and `lib/main.dart`. This change does not edit billing or voice.
 
 ## Google Play Data safety (this Crashlytics setup)
 
