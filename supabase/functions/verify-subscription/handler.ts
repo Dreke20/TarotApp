@@ -34,13 +34,14 @@ export interface ProRecord {
 
 export interface ProStore {
   receiptOwner(receiptHash: string): Promise<string | null>;
+  /** True only when this caller owns the receipt. Must not replace another user. */
   saveVerifiedPurchase(input: {
     userId: string;
     productId: string;
     receiptHash: string;
     source: string;
     expiresAt: string | null;
-  }): Promise<void>;
+  }): Promise<boolean>;
   setPro(input: {
     userId: string;
     isPro: boolean;
@@ -159,20 +160,19 @@ export async function handleVerifySubscription(
 
     const hashToken = deps.hashToken ?? sha256Hex;
     const receiptHash = await hashToken(rawToken);
-    const owner = await deps.store.receiptOwner(receiptHash);
-    if (owner && owner !== user.id) {
-      return json(409, {
-        error: "This purchase receipt is already associated with another cosmic traveler.",
-      });
-    }
-
-    await deps.store.saveVerifiedPurchase({
+    const owned = await deps.store.saveVerifiedPurchase({
       userId: user.id,
       productId: purchase.productId || body.product_id || plan,
       receiptHash,
       source: body.source || "google_play",
       expiresAt: purchase.expiresAt,
     });
+    if (!owned) {
+      return json(409, {
+        error: "This purchase receipt is already associated with another cosmic traveler.",
+      });
+    }
+
     await deps.store.setPro({
       userId: user.id,
       isPro: true,

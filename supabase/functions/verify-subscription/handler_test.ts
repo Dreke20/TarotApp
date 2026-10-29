@@ -24,12 +24,16 @@ class MemoryStore implements ProStore {
     receiptHash: string;
     source: string;
     expiresAt: string | null;
-  }): Promise<void> {
-    this.receipts.set(input.receiptHash, {
-      userId: input.userId,
-      expiresAt: input.expiresAt,
-    });
-    return Promise.resolve();
+  }): Promise<boolean> {
+    const existing = this.receipts.get(input.receiptHash);
+    if (existing && existing.userId !== input.userId) return Promise.resolve(false);
+    if (!existing) {
+      this.receipts.set(input.receiptHash, {
+        userId: input.userId,
+        expiresAt: input.expiresAt,
+      });
+    }
+    return Promise.resolve(true);
   }
 
   setPro(input: { userId: string; isPro: boolean; expiresAt: string | null }): Promise<void> {
@@ -175,6 +179,49 @@ Deno.test("a verified subscription stores expiry and a lifetime product has none
   assertEquals(life.status, 200);
   assertEquals(store.profiles.get("user-2")?.isPro, true);
   assertEquals(store.profiles.get("user-2")?.expiresAt, null);
+});
+
+Deno.test("a second user presenting the same token is rejected", async () => {
+  const store = new MemoryStore();
+  const play = {
+    verify: () => Promise.resolve({
+      status: "entitled" as const,
+      purchase: {
+        productId: "oracle_pro_yearly",
+        orderId: "GPA.1",
+        expiresAt: FUTURE,
+        lifetime: false,
+      },
+    }),
+  };
+  const body = {
+    action: "subscribe",
+    plan: "yearly",
+    receipt: "shared-purchase-token",
+    product_id: "oracle_pro_yearly",
+  };
+  const first = await handleVerifySubscription(request({
+    authorization: "Bearer user-1",
+    body,
+  }), {
+    getUser: async () => ({ id: "user-1" }),
+    play,
+    store,
+  });
+  assertEquals(first.status, 200);
+
+  const second = await handleVerifySubscription(request({
+    authorization: "Bearer user-2",
+    body,
+  }), {
+    getUser: async () => ({ id: "user-2" }),
+    play,
+    store,
+  });
+  assertEquals(second.status, 409);
+  assertEquals(store.profiles.has("user-2"), false);
+  const owners = [...store.receipts.values()].map((row) => row.userId);
+  assertEquals(owners, ["user-1"]);
 });
 
 Deno.test("an expired subscription does not stay Pro", async () => {

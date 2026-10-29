@@ -8,6 +8,7 @@ import {
   handleVerifySubscription,
   type ProStore,
 } from "./handler.ts";
+import { claimReceipt } from "./receipt_claim.ts";
 
 function serviceClient() {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -29,15 +30,28 @@ function storeFrom(admin: ReturnType<typeof serviceClient>): ProStore {
       return data?.user_id ?? null;
     },
     async saveVerifiedPurchase(input) {
-      const { error } = await admin.from("purchase_receipt_audit").upsert({
-        user_id: input.userId,
-        product_id: input.productId,
-        receipt_hash: input.receiptHash,
-        source: input.source,
-        expires_at: input.expiresAt,
-        verified_at: new Date().toISOString(),
-      }, { onConflict: "receipt_hash" });
-      if (error) throw new Error("receipt_audit_failed");
+      return await claimReceipt({
+        insertIfAbsent: async (row) => {
+          const { error } = await admin.from("purchase_receipt_audit").insert({
+            user_id: row.userId,
+            product_id: row.productId,
+            receipt_hash: row.receiptHash,
+            source: row.source,
+            expires_at: row.expiresAt,
+          });
+          // 23505 is the unique violation. The existing row keeps its user_id.
+          if (error && error.code !== "23505") throw new Error("receipt_audit_failed");
+        },
+        ownerOf: async (receiptHash) => {
+          const { data, error } = await admin
+            .from("purchase_receipt_audit")
+            .select("user_id")
+            .eq("receipt_hash", receiptHash)
+            .maybeSingle();
+          if (error) throw new Error("receipt_audit_failed");
+          return data?.user_id ?? null;
+        },
+      }, input);
     },
     async setPro(input) {
       const { error } = await admin.from("profiles").upsert({
@@ -107,7 +121,7 @@ serve(async (req: Request) => {
 function unusedStore(): ProStore {
   return {
     receiptOwner: async () => null,
-    saveVerifiedPurchase: async () => {},
+    saveVerifiedPurchase: async () => false,
     setPro: async () => {},
   };
 }
