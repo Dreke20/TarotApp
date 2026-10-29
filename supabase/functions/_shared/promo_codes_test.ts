@@ -98,7 +98,7 @@ Deno.test("redeem_promo does not grant Pro and does not read codes", async () =>
       },
       store: {
         receiptOwner: () => Promise.resolve(null),
-        saveVerifiedPurchase: () => Promise.resolve(),
+        saveVerifiedPurchase: () => Promise.resolve(false),
         setPro: () => Promise.reject(new Error("pro was granted")),
       },
     },
