@@ -15,6 +15,9 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
   moonSign: json['moon_sign'] as String?,
   risingSign: json['rising_sign'] as String?,
   isPro: json['is_pro'] as bool? ?? false,
+  proExpiresAt: json['pro_expires_at'] == null
+      ? null
+      : DateTime.parse(json['pro_expires_at'] as String),
   createdAt: json['created_at'] == null
       ? null
       : DateTime.parse(json['created_at'] as String),
@@ -30,5 +33,6 @@ Map<String, dynamic> _$UserProfileToJson(_UserProfile instance) =>
       'moon_sign': instance.moonSign,
       'rising_sign': instance.risingSign,
       'is_pro': instance.isPro,
+      'pro_expires_at': instance.proExpiresAt?.toIso8601String(),
       'created_at': instance.createdAt?.toIso8601String(),
     };

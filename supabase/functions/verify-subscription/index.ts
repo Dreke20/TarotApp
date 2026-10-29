@@ -1,208 +1,113 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.42.0";
-import { crypto } from "https://deno.land/std@0.168.0/crypto/mod.ts";
+import {
+  GOOGLE_PLAY_SERVICE_ACCOUNT_ENV,
+  verifierFromEnv,
+} from "../_shared/play_billing.ts";
+import {
+  handleVerifySubscription,
+  type ProStore,
+} from "./handler.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
-
-interface SubscriptionRequest {
-  action?: string;
-  plan?: "yearly" | "monthly" | "lifetime";
-  receipt?: string;
-  purchase_token?: string;
-  promo_code?: string;
-  product_id?: string;
-  source?: string;
-}
-
-async function hashToken(token: string): Promise<string> {
-  const data = new TextEncoder().encode(token);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-serve(async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+function serviceClient() {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!supabaseUrl || !serviceKey) {
+    throw new Error("missing_supabase_keys");
   }
+  return createClient(supabaseUrl, serviceKey);
+}
 
-  try {
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({
-          error: "Authorization header required. Please sign in to activate Oracle Pro.",
-        }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-    const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-
-    if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceRoleKey) {
-      return new Response(
-        JSON.stringify({ error: "Server configuration error (missing keys)." }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    // 1. Verify user identity using their auth token
-    const clientAuth = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-
-    const {
-      data: { user },
-      error: userError,
-    } = await clientAuth.auth.getUser();
-
-    if (userError || !user) {
-      return new Response(
-        JSON.stringify({
-          error: "Invalid or expired session. Please sign in to verify membership.",
-        }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    // 2. Parse request payload
-    const body: SubscriptionRequest = await req.json().catch(() => ({}));
-    const action = body.action || "subscribe";
-    let plan = body.plan || "yearly";
-    const adminClient = createClient(supabaseUrl, supabaseServiceRoleKey);
-
-    let message = "";
-
-    // 3. Validation logic. Promo redemption never grants Pro.
-    // DEPLOY FOLLOW-UP: this file is not deployed by this change. The live
-    // function still accepts redeem_promo until `supabase functions deploy verify-subscription`.
-    const promoCode = (body.promo_code || "").trim();
-    if (action === "redeem_promo" || promoCode.length > 0) {
-      return new Response(
-        JSON.stringify({
-          error:
-            "Promo codes are not accepted. Oracle Pro is unlocked only through a store purchase.",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    if (action === "subscribe" || action === "restore_purchase") {
-      const rawToken = (body.receipt || body.purchase_token || "").trim();
-      
-      // Enforce receipt requirement to prevent arbitrary unverified pro upgrades
-      if (!rawToken || rawToken.length < 12) {
-        return new Response(
-          JSON.stringify({
-            error: "A valid store purchase receipt or order token is required to verify membership.",
-          }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
-
-      // Hash receipt to prevent replay attack across accounts
-      const receiptHash = await hashToken(rawToken);
-      const { data: existingReceipt } = await adminClient
+function storeFrom(admin: ReturnType<typeof serviceClient>): ProStore {
+  return {
+    async receiptOwner(receiptHash) {
+      const { data } = await admin
         .from("purchase_receipt_audit")
         .select("user_id")
         .eq("receipt_hash", receiptHash)
         .maybeSingle();
-
-      if (existingReceipt && existingReceipt.user_id !== user.id) {
-        return new Response(
-          JSON.stringify({
-            error: "This purchase receipt is already associated with another cosmic traveler.",
-          }),
-          {
-            status: 409,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
-
-      // Record in receipt audit
-      if (!existingReceipt) {
-        await adminClient.from("purchase_receipt_audit").insert({
-          user_id: user.id,
-          product_id: body.product_id || plan,
-          receipt_hash: receiptHash,
-          source: body.source || "google_play",
-        });
-      }
-
-      message = action === "restore_purchase"
-        ? "Oracle Pro membership successfully restored from celestial records."
-        : `Welcome to Oracle Pro (${plan} plan)! All celestial decks, spreads, and prophecies are unlocked.`;
-    } else {
-      return new Response(
-        JSON.stringify({ error: `Unsupported subscription action: ${action}` }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    // 4. Update the profile using SERVICE_ROLE_KEY to set is_pro
-    const { error: updateError } = await adminClient
-      .from("profiles")
-      .update({
-        is_pro: true,
+      return data?.user_id ?? null;
+    },
+    async saveVerifiedPurchase(input) {
+      const { error } = await admin.from("purchase_receipt_audit").upsert({
+        user_id: input.userId,
+        product_id: input.productId,
+        receipt_hash: input.receiptHash,
+        source: input.source,
+        expires_at: input.expiresAt,
+        verified_at: new Date().toISOString(),
+      }, { onConflict: "receipt_hash" });
+      if (error) throw new Error("receipt_audit_failed");
+    },
+    async setPro(input) {
+      const { error } = await admin.from("profiles").upsert({
+        id: input.userId,
+        is_pro: input.isPro,
+        pro_expires_at: input.expiresAt,
         updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id);
+      }, { onConflict: "id" });
+      if (error) throw new Error("profile_update_failed");
+    },
+  };
+}
 
-    if (updateError) {
-      console.error("Failed to update profile to Pro:", updateError);
-      return new Response(
-        JSON.stringify({ error: "Failed to persist Oracle Pro status in database." }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        is_pro: true,
-        plan: plan,
-        message: message,
-        user_id: user.id,
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error("Unhandled error in verify-subscription:", message);
-    return new Response(JSON.stringify({ error: message }), {
+serve(async (req: Request) => {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  if (!supabaseUrl || !anonKey) {
+    return new Response(JSON.stringify({ error: "Server configuration error (missing keys)." }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" },
     });
   }
+
+  let play;
+  try {
+    play = verifierFromEnv({
+      [GOOGLE_PLAY_SERVICE_ACCOUNT_ENV]: Deno.env.get(GOOGLE_PLAY_SERVICE_ACCOUNT_ENV),
+      PLAY_PACKAGE_NAME: Deno.env.get("PLAY_PACKAGE_NAME"),
+    });
+  } catch (err) {
+    const missing = err instanceof Error && err.message === "missing_service_account";
+    if (req.method === "OPTIONS") {
+      return handleVerifySubscription(req, {
+        getUser: async () => null,
+        play: { verify: () => Promise.resolve({ status: "unverified" as const }) },
+        store: unusedStore(),
+      });
+    }
+    if (missing || (err instanceof Error && err.message.startsWith("Service account")) ||
+      (err instanceof Error && err.message.includes("GOOGLE_PLAY_SERVICE_ACCOUNT_JSON"))) {
+      return new Response(JSON.stringify({
+        error: "Play billing verification is not configured. Oracle Pro was not unlocked.",
+      }), {
+        status: 503,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    throw err;
+  }
+
+  const admin = serviceClient();
+  return await handleVerifySubscription(req, {
+    play,
+    store: storeFrom(admin),
+    getUser: async (authHeader) => {
+      const client = createClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const token = authHeader.replace(/^Bearer\s+/i, "");
+      const { data, error } = await client.auth.getUser(token);
+      if (error || !data.user) return null;
+      return { id: data.user.id };
+    },
+  });
 });
+
+function unusedStore(): ProStore {
+  return {
+    receiptOwner: async () => null,
+    saveVerifiedPurchase: async () => {},
+    setPro: async () => {},
+  };
+}

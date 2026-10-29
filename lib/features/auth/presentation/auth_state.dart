@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../domain/pro_entitlement.dart';
 import '../domain/user_profile.dart';
 
 part 'auth_state.freezed.dart';
@@ -22,5 +23,9 @@ abstract class AuthState with _$AuthState {
       profile!.email == 'seeker@oraculum.app';
 
   bool get isAuthenticated => !isGuest;
-  bool get isPro => profile?.isPro ?? false;
+
+  /// Guests are never Pro. A cached flag is also ignored once
+  /// [UserProfile.proExpiresAt] has passed.
+  bool get isPro =>
+      profile != null && !isGuest && proIsActive(profile!, DateTime.now());
 }

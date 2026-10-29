@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserProfile {
 
- String get id; String? get email;@JsonKey(name: 'display_name') String? get displayName;@JsonKey(name: 'avatar_url') String? get avatarUrl;@JsonKey(name: 'zodiac_sign') String? get zodiacSign;@JsonKey(name: 'moon_sign') String? get moonSign;@JsonKey(name: 'rising_sign') String? get risingSign;@JsonKey(name: 'is_pro') bool get isPro;@JsonKey(name: 'created_at') DateTime? get createdAt;
+ String get id; String? get email;@JsonKey(name: 'display_name') String? get displayName;@JsonKey(name: 'avatar_url') String? get avatarUrl;@JsonKey(name: 'zodiac_sign') String? get zodiacSign;@JsonKey(name: 'moon_sign') String? get moonSign;@JsonKey(name: 'rising_sign') String? get risingSign;@JsonKey(name: 'is_pro') bool get isPro;/// Null is lifetime Pro. A past timestamp means the store subscription ended.
+@JsonKey(name: 'pro_expires_at') DateTime? get proExpiresAt;@JsonKey(name: 'created_at') DateTime? get createdAt;
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +31,20 @@ $UserProfileCopyWith<UserProfile> get copyWith => _$UserProfileCopyWithImpl<User
 @override
 bool operator ==(Object other) {
   final _this = this as UserProfile;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfile&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.displayName, _this.displayName) || other.displayName == _this.displayName)&&(identical(other.avatarUrl, _this.avatarUrl) || other.avatarUrl == _this.avatarUrl)&&(identical(other.zodiacSign, _this.zodiacSign) || other.zodiacSign == _this.zodiacSign)&&(identical(other.moonSign, _this.moonSign) || other.moonSign == _this.moonSign)&&(identical(other.risingSign, _this.risingSign) || other.risingSign == _this.risingSign)&&(identical(other.isPro, _this.isPro) || other.isPro == _this.isPro)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfile&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.displayName, _this.displayName) || other.displayName == _this.displayName)&&(identical(other.avatarUrl, _this.avatarUrl) || other.avatarUrl == _this.avatarUrl)&&(identical(other.zodiacSign, _this.zodiacSign) || other.zodiacSign == _this.zodiacSign)&&(identical(other.moonSign, _this.moonSign) || other.moonSign == _this.moonSign)&&(identical(other.risingSign, _this.risingSign) || other.risingSign == _this.risingSign)&&(identical(other.isPro, _this.isPro) || other.isPro == _this.isPro)&&(identical(other.proExpiresAt, _this.proExpiresAt) || other.proExpiresAt == _this.proExpiresAt)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as UserProfile;
-  return Object.hash(runtimeType,_this.id,_this.email,_this.displayName,_this.avatarUrl,_this.zodiacSign,_this.moonSign,_this.risingSign,_this.isPro,_this.createdAt);
+  return Object.hash(runtimeType,_this.id,_this.email,_this.displayName,_this.avatarUrl,_this.zodiacSign,_this.moonSign,_this.risingSign,_this.isPro,_this.proExpiresAt,_this.createdAt);
 }
 
 @override
 String toString() {
   final _this = this as UserProfile;
-  return 'UserProfile(id: ${_this.id}, email: ${_this.email}, displayName: ${_this.displayName}, avatarUrl: ${_this.avatarUrl}, zodiacSign: ${_this.zodiacSign}, moonSign: ${_this.moonSign}, risingSign: ${_this.risingSign}, isPro: ${_this.isPro}, createdAt: ${_this.createdAt})';
+  return 'UserProfile(id: ${_this.id}, email: ${_this.email}, displayName: ${_this.displayName}, avatarUrl: ${_this.avatarUrl}, zodiacSign: ${_this.zodiacSign}, moonSign: ${_this.moonSign}, risingSign: ${_this.risingSign}, isPro: ${_this.isPro}, proExpiresAt: ${_this.proExpiresAt}, createdAt: ${_this.createdAt})';
 }
 
 
@@ -54,7 +55,7 @@ abstract mixin class $UserProfileCopyWith<$Res>  {
   factory $UserProfileCopyWith(UserProfile value, $Res Function(UserProfile) _then) = _$UserProfileCopyWithImpl;
 @useResult
 $Res call({
- String id, String? email,@JsonKey(name: 'display_name') String? displayName,@JsonKey(name: 'avatar_url') String? avatarUrl,@JsonKey(name: 'zodiac_sign') String? zodiacSign,@JsonKey(name: 'moon_sign') String? moonSign,@JsonKey(name: 'rising_sign') String? risingSign,@JsonKey(name: 'is_pro') bool isPro,@JsonKey(name: 'created_at') DateTime? createdAt
+ String id, String? email,@JsonKey(name: 'display_name') String? displayName,@JsonKey(name: 'avatar_url') String? avatarUrl,@JsonKey(name: 'zodiac_sign') String? zodiacSign,@JsonKey(name: 'moon_sign') String? moonSign,@JsonKey(name: 'rising_sign') String? risingSign,@JsonKey(name: 'is_pro') bool isPro,@JsonKey(name: 'pro_expires_at') DateTime? proExpiresAt,@JsonKey(name: 'created_at') DateTime? createdAt
 });
 
 
@@ -71,7 +72,7 @@ class _$UserProfileCopyWithImpl<$Res>
 
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = freezed,Object? displayName = freezed,Object? avatarUrl = freezed,Object? zodiacSign = freezed,Object? moonSign = freezed,Object? risingSign = freezed,Object? isPro = null,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = freezed,Object? displayName = freezed,Object? avatarUrl = freezed,Object? zodiacSign = freezed,Object? moonSign = freezed,Object? risingSign = freezed,Object? isPro = null,Object? proExpiresAt = freezed,Object? createdAt = freezed,}) {
   return _then(UserProfile(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -81,7 +82,8 @@ as String?,zodiacSign: freezed == zodiacSign ? _self.zodiacSign : zodiacSign // 
 as String?,moonSign: freezed == moonSign ? _self.moonSign : moonSign // ignore: cast_nullable_to_non_nullable
 as String?,risingSign: freezed == risingSign ? _self.risingSign : risingSign // ignore: cast_nullable_to_non_nullable
 as String?,isPro: null == isPro ? _self.isPro : isPro // ignore: cast_nullable_to_non_nullable
-as bool,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as bool,proExpiresAt: freezed == proExpiresAt ? _self.proExpiresAt : proExpiresAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }
@@ -167,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? email, @JsonKey(name: 'display_name')  String? displayName, @JsonKey(name: 'avatar_url')  String? avatarUrl, @JsonKey(name: 'zodiac_sign')  String? zodiacSign, @JsonKey(name: 'moon_sign')  String? moonSign, @JsonKey(name: 'rising_sign')  String? risingSign, @JsonKey(name: 'is_pro')  bool isPro, @JsonKey(name: 'created_at')  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? email, @JsonKey(name: 'display_name')  String? displayName, @JsonKey(name: 'avatar_url')  String? avatarUrl, @JsonKey(name: 'zodiac_sign')  String? zodiacSign, @JsonKey(name: 'moon_sign')  String? moonSign, @JsonKey(name: 'rising_sign')  String? risingSign, @JsonKey(name: 'is_pro')  bool isPro, @JsonKey(name: 'pro_expires_at')  DateTime? proExpiresAt, @JsonKey(name: 'created_at')  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserProfile() when $default != null:
-return $default(_that.id,_that.email,_that.displayName,_that.avatarUrl,_that.zodiacSign,_that.moonSign,_that.risingSign,_that.isPro,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.displayName,_that.avatarUrl,_that.zodiacSign,_that.moonSign,_that.risingSign,_that.isPro,_that.proExpiresAt,_that.createdAt);case _:
   return orElse();
 
 }
@@ -188,10 +190,10 @@ return $default(_that.id,_that.email,_that.displayName,_that.avatarUrl,_that.zod
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? email, @JsonKey(name: 'display_name')  String? displayName, @JsonKey(name: 'avatar_url')  String? avatarUrl, @JsonKey(name: 'zodiac_sign')  String? zodiacSign, @JsonKey(name: 'moon_sign')  String? moonSign, @JsonKey(name: 'rising_sign')  String? risingSign, @JsonKey(name: 'is_pro')  bool isPro, @JsonKey(name: 'created_at')  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? email, @JsonKey(name: 'display_name')  String? displayName, @JsonKey(name: 'avatar_url')  String? avatarUrl, @JsonKey(name: 'zodiac_sign')  String? zodiacSign, @JsonKey(name: 'moon_sign')  String? moonSign, @JsonKey(name: 'rising_sign')  String? risingSign, @JsonKey(name: 'is_pro')  bool isPro, @JsonKey(name: 'pro_expires_at')  DateTime? proExpiresAt, @JsonKey(name: 'created_at')  DateTime? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _UserProfile():
-return $default(_that.id,_that.email,_that.displayName,_that.avatarUrl,_that.zodiacSign,_that.moonSign,_that.risingSign,_that.isPro,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.displayName,_that.avatarUrl,_that.zodiacSign,_that.moonSign,_that.risingSign,_that.isPro,_that.proExpiresAt,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +210,10 @@ return $default(_that.id,_that.email,_that.displayName,_that.avatarUrl,_that.zod
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? email, @JsonKey(name: 'display_name')  String? displayName, @JsonKey(name: 'avatar_url')  String? avatarUrl, @JsonKey(name: 'zodiac_sign')  String? zodiacSign, @JsonKey(name: 'moon_sign')  String? moonSign, @JsonKey(name: 'rising_sign')  String? risingSign, @JsonKey(name: 'is_pro')  bool isPro, @JsonKey(name: 'created_at')  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? email, @JsonKey(name: 'display_name')  String? displayName, @JsonKey(name: 'avatar_url')  String? avatarUrl, @JsonKey(name: 'zodiac_sign')  String? zodiacSign, @JsonKey(name: 'moon_sign')  String? moonSign, @JsonKey(name: 'rising_sign')  String? risingSign, @JsonKey(name: 'is_pro')  bool isPro, @JsonKey(name: 'pro_expires_at')  DateTime? proExpiresAt, @JsonKey(name: 'created_at')  DateTime? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _UserProfile() when $default != null:
-return $default(_that.id,_that.email,_that.displayName,_that.avatarUrl,_that.zodiacSign,_that.moonSign,_that.risingSign,_that.isPro,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.displayName,_that.avatarUrl,_that.zodiacSign,_that.moonSign,_that.risingSign,_that.isPro,_that.proExpiresAt,_that.createdAt);case _:
   return null;
 
 }
@@ -223,7 +225,7 @@ return $default(_that.id,_that.email,_that.displayName,_that.avatarUrl,_that.zod
 @JsonSerializable()
 
 class _UserProfile implements UserProfile {
-  const _UserProfile({required this.id, this.email, @JsonKey(name: 'display_name') this.displayName, @JsonKey(name: 'avatar_url') this.avatarUrl, @JsonKey(name: 'zodiac_sign') this.zodiacSign, @JsonKey(name: 'moon_sign') this.moonSign, @JsonKey(name: 'rising_sign') this.risingSign, @JsonKey(name: 'is_pro') this.isPro = false, @JsonKey(name: 'created_at') this.createdAt});
+  const _UserProfile({required this.id, this.email, @JsonKey(name: 'display_name') this.displayName, @JsonKey(name: 'avatar_url') this.avatarUrl, @JsonKey(name: 'zodiac_sign') this.zodiacSign, @JsonKey(name: 'moon_sign') this.moonSign, @JsonKey(name: 'rising_sign') this.risingSign, @JsonKey(name: 'is_pro') this.isPro = false, @JsonKey(name: 'pro_expires_at') this.proExpiresAt, @JsonKey(name: 'created_at') this.createdAt});
   factory _UserProfile.fromJson(Map<String, dynamic> json) => _$UserProfileFromJson(json);
 
 @override final  String id;
@@ -234,6 +236,8 @@ class _UserProfile implements UserProfile {
 @override@JsonKey(name: 'moon_sign') final  String? moonSign;
 @override@JsonKey(name: 'rising_sign') final  String? risingSign;
 @override@JsonKey(name: 'is_pro') final  bool isPro;
+/// Null is lifetime Pro. A past timestamp means the store subscription ended.
+@override@JsonKey(name: 'pro_expires_at') final  DateTime? proExpiresAt;
 @override@JsonKey(name: 'created_at') final  DateTime? createdAt;
 
 /// Create a copy of UserProfile
@@ -249,18 +253,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.zodiacSign, zodiacSign) || other.zodiacSign == zodiacSign)&&(identical(other.moonSign, moonSign) || other.moonSign == moonSign)&&(identical(other.risingSign, risingSign) || other.risingSign == risingSign)&&(identical(other.isPro, isPro) || other.isPro == isPro)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.zodiacSign, zodiacSign) || other.zodiacSign == zodiacSign)&&(identical(other.moonSign, moonSign) || other.moonSign == moonSign)&&(identical(other.risingSign, risingSign) || other.risingSign == risingSign)&&(identical(other.isPro, isPro) || other.isPro == isPro)&&(identical(other.proExpiresAt, proExpiresAt) || other.proExpiresAt == proExpiresAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,email,displayName,avatarUrl,zodiacSign,moonSign,risingSign,isPro,createdAt);
+    return Object.hash(runtimeType,id,email,displayName,avatarUrl,zodiacSign,moonSign,risingSign,isPro,proExpiresAt,createdAt);
 }
 
 @override
 String toString() {
-    return 'UserProfile(id: $id, email: $email, displayName: $displayName, avatarUrl: $avatarUrl, zodiacSign: $zodiacSign, moonSign: $moonSign, risingSign: $risingSign, isPro: $isPro, createdAt: $createdAt)';
+    return 'UserProfile(id: $id, email: $email, displayName: $displayName, avatarUrl: $avatarUrl, zodiacSign: $zodiacSign, moonSign: $moonSign, risingSign: $risingSign, isPro: $isPro, proExpiresAt: $proExpiresAt, createdAt: $createdAt)';
 }
 
 
@@ -271,7 +275,7 @@ abstract mixin class _$UserProfileCopyWith<$Res> implements $UserProfileCopyWith
   factory _$UserProfileCopyWith(_UserProfile value, $Res Function(_UserProfile) _then) = __$UserProfileCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String? email,@JsonKey(name: 'display_name') String? displayName,@JsonKey(name: 'avatar_url') String? avatarUrl,@JsonKey(name: 'zodiac_sign') String? zodiacSign,@JsonKey(name: 'moon_sign') String? moonSign,@JsonKey(name: 'rising_sign') String? risingSign,@JsonKey(name: 'is_pro') bool isPro,@JsonKey(name: 'created_at') DateTime? createdAt
+ String id, String? email,@JsonKey(name: 'display_name') String? displayName,@JsonKey(name: 'avatar_url') String? avatarUrl,@JsonKey(name: 'zodiac_sign') String? zodiacSign,@JsonKey(name: 'moon_sign') String? moonSign,@JsonKey(name: 'rising_sign') String? risingSign,@JsonKey(name: 'is_pro') bool isPro,@JsonKey(name: 'pro_expires_at') DateTime? proExpiresAt,@JsonKey(name: 'created_at') DateTime? createdAt
 });
 
 
@@ -288,7 +292,7 @@ class __$UserProfileCopyWithImpl<$Res>
 
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = freezed,Object? displayName = freezed,Object? avatarUrl = freezed,Object? zodiacSign = freezed,Object? moonSign = freezed,Object? risingSign = freezed,Object? isPro = null,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = freezed,Object? displayName = freezed,Object? avatarUrl = freezed,Object? zodiacSign = freezed,Object? moonSign = freezed,Object? risingSign = freezed,Object? isPro = null,Object? proExpiresAt = freezed,Object? createdAt = freezed,}) {
   return _then(_UserProfile(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -298,7 +302,8 @@ as String?,zodiacSign: freezed == zodiacSign ? _self.zodiacSign : zodiacSign // 
 as String?,moonSign: freezed == moonSign ? _self.moonSign : moonSign // ignore: cast_nullable_to_non_nullable
 as String?,risingSign: freezed == risingSign ? _self.risingSign : risingSign // ignore: cast_nullable_to_non_nullable
 as String?,isPro: null == isPro ? _self.isPro : isPro // ignore: cast_nullable_to_non_nullable
-as bool,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as bool,proExpiresAt: freezed == proExpiresAt ? _self.proExpiresAt : proExpiresAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }

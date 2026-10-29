@@ -59,19 +59,31 @@ void main() {
       expect((await repo.getCurrentProfile()).isPro, isFalse);
     });
 
-    test('a store receipt grants guest Pro and sign-out clears it', () async {
+    test('a store receipt does not grant guest Pro', () async {
       final repo = AuthRepository();
-      final updated = await repo.verifyAndActivatePro(
-        action: 'subscribe',
-        plan: 'lifetime',
-        receipt: 'play-purchase-token',
-        productId: 'oracle_pro_lifetime',
-        source: 'google_play',
+      await expectLater(
+        repo.verifyAndActivatePro(
+          action: 'subscribe',
+          plan: 'lifetime',
+          receipt: 'play-purchase-token',
+          productId: 'oracle_pro_lifetime',
+          source: 'google_play',
+        ),
+        throwsA(
+          isA<Exception>().having(
+            (error) => error.toString(),
+            'message',
+            contains('Sign in'),
+          ),
+        ),
       );
-      expect(updated.isPro, isTrue);
-
-      await repo.signOut();
       expect((await repo.getCurrentProfile()).isPro, isFalse);
+
+      const sneakyGuest = AuthState(
+        profile: UserProfile(id: 'local_seeker_001', isPro: true),
+      );
+      expect(sneakyGuest.isGuest, isTrue);
+      expect(sneakyGuest.isPro, isFalse);
     });
 
     test('setProStatus(true) does not grant Pro', () async {

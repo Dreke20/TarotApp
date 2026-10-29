@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/services/storage_service.dart';
 import '../../../core/supabase/supabase_config.dart';
+import '../domain/pro_entitlement.dart';
 import '../domain/user_profile.dart';
 
 class AuthRepository {
@@ -26,7 +27,7 @@ class AuthRepository {
     // 1. Try loading cached profile from persistent device storage
     final cached = await _storage.loadProfile();
     if (cached != null) {
-      _localProfile = cached;
+      _localProfile = withoutGuestPro(enforceProExpiry(cached));
     }
 
     // 2. Fetch fresh profile from Supabase if online
@@ -41,7 +42,7 @@ class AuthRepository {
               .maybeSingle();
 
           if (data != null) {
-            final remoteProfile = UserProfile.fromJson(data);
+            final remoteProfile = enforceProExpiry(UserProfile.fromJson(data));
             await _storage.saveProfile(remoteProfile);
             return remoteProfile;
           } else {
@@ -62,7 +63,7 @@ class AuthRepository {
       }
     }
 
-    return _localProfile;
+    return withoutGuestPro(enforceProExpiry(_localProfile));
   }
 
   Future<UserProfile> updateProfile(UserProfile profile) async {
@@ -151,22 +152,28 @@ class AuthRepository {
     }
   }
 
-  /// Permanently deletes remote profile data and clears local profile
+  /// Deletes the signed-in account on the server, then clears the local profile.
+  ///
+  /// The Edge Function removes the user's rows, storage objects, and auth user.
+  /// Guests only have on-device data, so they are cleared locally.
   Future<void> deleteAccount() async {
     if (_supabase != null && SupabaseConfig.isConfigured) {
       final user = _supabase.auth.currentUser;
       if (user != null) {
-        try {
-          await _supabase.from('profiles').delete().eq('id', user.id);
-        } catch (e) {
-          debugPrint('Supabase delete profile error: $e');
+        final res = await _supabase.functions.invoke('delete-account');
+        if (res.status != 200) {
+          final data = res.data;
+          final errorMsg = (data is Map && data['error'] != null)
+              ? data['error'].toString()
+              : 'Account deletion did not finish.';
+          throw Exception(errorMsg);
         }
       }
       try {
         await _supabase.auth.signOut();
       } catch (_) {}
     }
-    _localProfile = const UserProfile(id: 'local_seeker');
+    _localProfile = const UserProfile(id: 'local_seeker', isPro: false);
     await _storage.saveProfile(_localProfile);
   }
 
@@ -223,9 +230,9 @@ class AuthRepository {
       }
     }
 
-    // Guest session: the store already produced a receipt.
-    _localProfile = _localProfile.copyWith(isPro: true);
-    await _storage.saveProfile(_localProfile);
-    return _localProfile;
+    // Guests have no account for the server to verify. Never grant local Pro.
+    throw Exception(
+      'Sign in before unlocking Oracle Pro. A store receipt is checked on the server.',
+    );
   }
 }

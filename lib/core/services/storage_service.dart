@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../features/auth/domain/pro_entitlement.dart';
 import '../../features/auth/domain/user_profile.dart';
 import '../../features/tarot/domain/reading.dart';
 import '../../features/dream/domain/dream_entry.dart';
@@ -13,6 +14,7 @@ class StorageService {
   static const String _keyReadings = 'oraculum_readings_cache_v1';
   static const String _keyProfile = 'oraculum_profile_cache_v1';
   static const String _keyProfileProSig = 'oraculum_profile_is_pro_sig';
+  static const String _keyProfileProExpiry = 'oraculum_profile_pro_expires_at';
   static const String _keyDreams = 'oraculum_dreams_cache_v1';
   static const String _keyCustomSpreads = 'oraculum_custom_spreads_cache_v1';
   static const String _keyNotificationHour = 'oraculum_notif_hour';
@@ -50,8 +52,13 @@ class StorageService {
   Future<void> saveProfile(UserProfile profile) async {
     final prefs = await _getPrefs();
     await prefs.setString(_keyProfile, jsonEncode(profile.toJson()));
-    // Cryptographically sign the isPro entitlement with hardware Keystore HMAC
+    // Sign both the flag and the expiry. Changing either without the signature
+    // is rejected on the next load.
     await EncryptedVaultStorage.instance.setSignedBool(_keyProfileProSig, profile.isPro);
+    await EncryptedVaultStorage.instance.setSignedInt(
+      _keyProfileProExpiry,
+      profile.proExpiresAt?.toUtc().millisecondsSinceEpoch ?? 0,
+    );
   }
 
   Future<UserProfile?> loadProfile() async {
@@ -60,18 +67,25 @@ class StorageService {
     if (raw == null || raw.isEmpty) return null;
 
     try {
-      final profile = UserProfile.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+      var profile = UserProfile.fromJson(jsonDecode(raw) as Map<String, dynamic>);
       // Verify isPro against the cryptographically signed vault
       final verifiedPro = await EncryptedVaultStorage.instance.getSignedBool(
         _keyProfileProSig,
         defaultValue: false,
       );
+      final verifiedExpiry = await EncryptedVaultStorage.instance.getSignedInt(
+        _keyProfileProExpiry,
+      );
       // If the plaintext JSON was tampered with (e.g. isPro modified to true without valid HMAC),
       // enforce the cryptographically verified entitlement.
       if (profile.isPro && !verifiedPro) {
-        return profile.copyWith(isPro: false);
+        profile = profile.copyWith(isPro: false);
       }
-      return profile;
+      final claimedExpiry = profile.proExpiresAt?.toUtc().millisecondsSinceEpoch ?? 0;
+      if (profile.isPro && claimedExpiry != verifiedExpiry) {
+        profile = profile.copyWith(isPro: false);
+      }
+      return withoutGuestPro(enforceProExpiry(profile));
     } catch (_) {
       return null;
     }

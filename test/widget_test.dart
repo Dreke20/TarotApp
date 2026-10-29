@@ -99,17 +99,24 @@ void main() {
       expect(profile.risingSign, 'Leo');
     });
 
-    test('AuthRepository verifyAndActivatePro records a store receipt for guests', () async {
+    test('AuthRepository verifyAndActivatePro does not grant guest Pro', () async {
       SharedPreferences.setMockInitialValues({});
       final repo = AuthRepository();
-      final updated = await repo.verifyAndActivatePro(
-        action: 'subscribe',
-        plan: 'yearly',
-        receipt: 'play-purchase-token',
-        productId: 'oracle_pro_yearly',
-        source: 'google_play',
+      await expectLater(
+        repo.verifyAndActivatePro(
+          action: 'subscribe',
+          plan: 'yearly',
+          receipt: 'play-purchase-token',
+          productId: 'oracle_pro_yearly',
+          source: 'google_play',
+        ),
+        throwsA(isA<Exception>().having(
+          (error) => error.toString(),
+          'message',
+          contains('Sign in'),
+        )),
       );
-      expect(updated.isPro, isTrue);
+      expect((await repo.getCurrentProfile()).isPro, isFalse);
     });
 
     test('Specialized Spreads draw accurate card counts and positions', () {
