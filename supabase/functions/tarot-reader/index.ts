@@ -1,5 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.42.0";
+import { prepareAiRequest, type AiDeps } from "../_shared/ai_guard.ts";
+import { decodedBase64Bytes, MAX_IMAGE_BYTES } from "../_shared/ai_limits.ts";
+import { callGemini } from "../_shared/gemini.ts";
+import { proStillActive } from "../_shared/play_billing.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -52,13 +56,6 @@ interface TarotRequest {
   card_catalog?: { id: string; name: string }[];
 }
 
-// gemini-2.0 and 1.5 models were retired (404), so lead with current ones.
-const CANDIDATE_MODELS = [
-  "gemini-2.5-flash",
-  "gemini-flash-latest",
-  "gemini-2.5-flash-lite",
-];
-
 function sanitizeInput(text: unknown, maxLength = 600): string {
   if (typeof text !== "string") return "";
   let sanitized = text
@@ -78,32 +75,55 @@ function sanitizeInput(text: unknown, maxLength = 600): string {
   return sanitized;
 }
 
-async function callGemini(
-  apiKey: string,
-  payload: Record<string, unknown>
-): Promise<string | null> {
-  for (const model of CANDIDATE_MODELS) {
-    try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (text) return text;
-      } else {
-        const errText = await res.text();
-        console.warn(`Model ${model} returned ${res.status}: ${errText.slice(0, 120)}`);
-      }
-    } catch (err) {
-      console.warn(`Error invoking ${model}:`, err);
-    }
+function aiDeps(): AiDeps {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!supabaseUrl || !anonKey || !serviceKey) {
+    throw new Error("missing_supabase_keys");
   }
-  return null;
+  const admin = createClient(supabaseUrl, serviceKey);
+  return {
+    getUser: async (authHeader) => {
+      const client = createClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const token = authHeader.replace(/^Bearer\s+/i, "");
+      const { data, error } = await client.auth.getUser(token);
+      if (error || !data.user) return null;
+      return { id: data.user.id };
+    },
+    proActive: async (userId, now) => {
+      const { data, error } = await admin
+        .from("profiles")
+        .select("is_pro, pro_expires_at")
+        .eq("id", userId)
+        .maybeSingle();
+      if (error) throw new Error("profile_read_failed");
+      const active = proStillActive(
+        Boolean(data?.is_pro),
+        data?.pro_expires_at ?? null,
+        now,
+      );
+      if (data?.is_pro && !active) {
+        await admin.from("profiles").update({
+          is_pro: false,
+          updated_at: now.toISOString(),
+        }).eq("id", userId);
+      }
+      return active;
+    },
+    consume: async (userId, limit) => {
+      const { data, error } = await admin.rpc("consume_ai_reading", {
+        p_user_id: userId,
+        p_limit: limit,
+      });
+      if (error) throw new Error("quota_failed");
+      if (data == null) return null;
+      const used = Number(data);
+      return Number.isFinite(used) ? used : null;
+    },
+  };
 }
 
 serve(async (req) => {
@@ -112,24 +132,24 @@ serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  let prepared;
   try {
-    // 1. Verify Authorization or API Key Header
-    const authHeader = req.headers.get("Authorization") || req.headers.get("authorization");
-    const apiKeyHeader = req.headers.get("apikey");
+    prepared = await prepareAiRequest(req, aiDeps());
+  } catch (err) {
+    const missing = err instanceof Error && err.message === "missing_supabase_keys";
+    return new Response(
+      JSON.stringify({
+        error: missing
+          ? "Server configuration error (missing keys)."
+          : "Could not authorize this reading.",
+      }),
+      { status: missing ? 500 : 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  }
+  if (!prepared.ok) return prepared.response;
 
-    if (!authHeader && !apiKeyHeader) {
-      return new Response(
-        JSON.stringify({
-          error: "Unauthorized access: Valid credentials or session token required.",
-        }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    const body: TarotRequest = await req.json();
+  try {
+    const body = prepared.body as TarotRequest;
     const {
       user_question,
       spread_type,
@@ -169,8 +189,7 @@ serve(async (req) => {
         ? String(body.lens_mime_type)
         : "image/jpeg";
 
-      // ~4.5 MB of raw image data is plenty for one card photo.
-      if (imageData.length > 6_000_000) {
+      if (decodedBase64Bytes(imageData) > MAX_IMAGE_BYTES) {
         return new Response(JSON.stringify({ error: "image_too_large" }), {
           status: 413,
           headers: jsonHeaders,
@@ -362,7 +381,7 @@ Strict Safety Rule: Never give medical, legal, or financial directives; advise c
             parts: [{ text: systemPrompt }],
           },
           contents: historyParts,
-          generationConfig: { temperature: 0.75 },
+          generationConfig: { temperature: 0.75, maxOutputTokens: 1024 },
         });
 
         if (text) {
@@ -505,6 +524,7 @@ Provide your reading in strictly valid JSON format matching this schema:
         ],
         generationConfig: {
           temperature: 0.75,
+          maxOutputTokens: 4096,
           responseMimeType: "application/json",
         },
       });
