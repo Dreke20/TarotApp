@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../auth/presentation/auth_notifier.dart';
 import '../../../subscription/presentation/oracle_pro_modal.dart';
 import '../../domain/celestial_bazaar_models.dart';
+import '../../domain/shard_pack_purchases.dart';
 import '../notifiers/bazaar_notifier.dart';
 
 /// Master Sanctum Bazaar & Treasury Modal providing access to Starlight Shards,
@@ -284,6 +285,7 @@ class _MysticBazaarModalState extends ConsumerState<MysticBazaarModal>
           ),
         ),
 
+        if (kShardPackPurchasesEnabled) ...[
         const SizedBox(height: 18),
 
         Text(
@@ -382,6 +384,7 @@ class _MysticBazaarModalState extends ConsumerState<MysticBazaarModal>
             ),
           );
         }),
+        ],
 
         const SizedBox(height: 10),
 

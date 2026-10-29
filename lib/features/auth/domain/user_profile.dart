@@ -14,6 +14,8 @@ abstract class UserProfile with _$UserProfile {
     @JsonKey(name: 'moon_sign') String? moonSign,
     @JsonKey(name: 'rising_sign') String? risingSign,
     @JsonKey(name: 'is_pro') @Default(false) bool isPro,
+    /// Null is lifetime Pro. A past timestamp means the store subscription ended.
+    @JsonKey(name: 'pro_expires_at') DateTime? proExpiresAt,
     @JsonKey(name: 'created_at') DateTime? createdAt,
   }) = _UserProfile;
 

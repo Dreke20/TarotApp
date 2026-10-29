@@ -99,11 +99,24 @@ void main() {
       expect(profile.risingSign, 'Leo');
     });
 
-    test('AuthRepository verifyAndActivatePro updates profile in local/offline fallback', () async {
+    test('AuthRepository verifyAndActivatePro does not grant guest Pro', () async {
       SharedPreferences.setMockInitialValues({});
       final repo = AuthRepository();
-      final updated = await repo.verifyAndActivatePro(action: 'subscribe', plan: 'yearly');
-      expect(updated.isPro, isTrue);
+      await expectLater(
+        repo.verifyAndActivatePro(
+          action: 'subscribe',
+          plan: 'yearly',
+          receipt: 'play-purchase-token',
+          productId: 'oracle_pro_yearly',
+          source: 'google_play',
+        ),
+        throwsA(isA<Exception>().having(
+          (error) => error.toString(),
+          'message',
+          contains('Sign in'),
+        )),
+      );
+      expect((await repo.getCurrentProfile()).isPro, isFalse);
     });
 
     test('Specialized Spreads draw accurate card counts and positions', () {

@@ -15,3 +15,9 @@ port = 54323
 
 [functions.tarot-reader]
 verify_jwt = true
+
+[functions.verify-subscription]
+verify_jwt = true
+
+[functions.delete-account]
+verify_jwt = true

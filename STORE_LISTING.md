@@ -1,5 +1,5 @@
 # 📱 Google Play Store Listing Specification
-## Oraculum: Sacred AI Tarot & Astrology (`oraculum.dirtysouth`)
+## Oraculum: Sacred AI Tarot & Astrology (`com.tarotapp.tarot_app`)
 
 This document contains the exact, character-verified copy and configuration settings ready to copy-paste directly into the **Google Play Console** under **Grow > Store presence > Main store listing**.
 
@@ -88,7 +88,7 @@ Oraculum is intended solely for personal reflection, meditation, and creative mi
 ## 4. Developer Contact Details
 
 - **Developer / Publisher Name:** Rodriguez Edwards / Oraculum Sanctuary
-- **Contact / Support Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
+- **Contact / Support Email:** `oraculum26@gmail.com` / `dreke.dev@gmail.com`
 - **Developer Website / Landing Page:** `https://oracalum.netlify.app`
 - **Privacy Policy URL:** `https://oracalum.netlify.app/privacy`
 - **Account Deletion URL:** `https://oracalum.netlify.app/delete-account`

@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/services/celestial_voice_service.dart';
+import '../../../../core/supabase/supabase_client.dart';
+import '../../data/ai_report_repository.dart';
 import '../../../auth/presentation/auth_notifier.dart';
 import '../../../monetization/presentation/widgets/starlight_offering_modal.dart';
 import '../../domain/oracle_persona.dart';
@@ -1470,14 +1472,34 @@ class _ReadingResultSheetState extends ConsumerState<ReadingResultSheet> {
                     backgroundColor: AppColors.goldBright,
                     foregroundColor: AppColors.backgroundDeep,
                   ),
-                  onPressed: () {
+                  onPressed: () async {
+                    final messenger = ScaffoldMessenger.of(context);
                     Navigator.of(ctx).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Thank you. This reading has been flagged for review.'),
-                        backgroundColor: AppColors.cosmicSurface,
-                      ),
-                    );
+                    try {
+                      final excerpt = widget.reading.interpretation;
+                      await AiReportRepository(ref.read(supabaseClientProvider)).submit(
+                        reason: selectedReason,
+                        readingId: widget.reading.id,
+                        excerpt: excerpt,
+                      );
+                      messenger.showSnackBar(
+                        const SnackBar(
+                          content: Text('Thank you. This reading has been flagged for review.'),
+                          backgroundColor: AppColors.cosmicSurface,
+                        ),
+                      );
+                    } catch (error) {
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            error is StateError
+                                ? error.message
+                                : 'The report could not be saved. Try again while signed in.',
+                          ),
+                          backgroundColor: AppColors.cosmicSurface,
+                        ),
+                      );
+                    }
                   },
                   child: Text(
                     'SUBMIT REPORT',

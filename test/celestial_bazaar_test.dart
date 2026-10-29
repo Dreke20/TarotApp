@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tarot_app/features/monetization/data/celestial_bazaar_storage.dart';
 import 'package:tarot_app/features/monetization/domain/celestial_bazaar_models.dart';
+import 'package:tarot_app/features/monetization/domain/shard_pack_purchases.dart';
 import 'package:tarot_app/features/monetization/presentation/notifiers/bazaar_notifier.dart';
 import 'package:tarot_app/features/monetization/presentation/widgets/celestial_flash_banner.dart';
 import 'package:tarot_app/features/monetization/presentation/widgets/grimoire_parchment_exporter.dart';
@@ -51,7 +53,9 @@ void main() {
   });
 
   group('BazaarNotifier State & Actions Tests', () {
-    test('Can purchase shard pack and update state', () async {
+    test('Shard packs are hidden and do not grant shards without a verified purchase', () async {
+      expect(kShardPackPurchasesEnabled, isFalse);
+
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
@@ -59,22 +63,20 @@ void main() {
       await pumpEventQueue();
 
       final success = await notifier.buyShardPack(ShardPack.medium);
-      expect(success, isTrue);
+      expect(success, isFalse);
 
       final state = container.read(bazaarProvider);
-      expect(state.shards, 30);
-      expect(state.message, contains('30 Starlight Shards received'));
+      expect(state.shards, 0);
+      expect(state.errorMessage, contains('not available'));
     });
 
     test('Can light candle and deduct shards', () async {
+      await _seedShards(10);
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
       final notifier = container.read(bazaarProvider.notifier);
       await pumpEventQueue();
-
-      // Give shards first
-      await notifier.buyShardPack(ShardPack.small); // 10 shards
 
       final success = await notifier.lightCandle(
         type: CandleType.love,
@@ -91,6 +93,7 @@ void main() {
     });
 
     test('Can equip and unlock holographic foil finish', () async {
+      await _seedShards(30);
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
@@ -101,8 +104,6 @@ void main() {
       await notifier.equipFoil(CardFoilFinish.standard);
       expect(container.read(bazaarProvider).equippedFoil, CardFoilFinish.standard.id);
 
-      // Buy enough shards to unlock prismatic
-      await notifier.buyShardPack(ShardPack.medium); // 30 shards
       final unlocked = await notifier.unlockFoil(CardFoilFinish.prismaticIridescent, isPro: false);
       expect(unlocked, isTrue);
       expect(container.read(bazaarProvider).isFoilUnlocked(CardFoilFinish.prismaticIridescent.id), isTrue);
@@ -110,13 +111,13 @@ void main() {
     });
 
     test('Can generate Twin Flame Synastry Dossier', () async {
+      await _seedShards(10);
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
       final notifier = container.read(bazaarProvider.notifier);
       await pumpEventQueue();
 
-      await notifier.buyShardPack(ShardPack.small); // 10 shards
       final dossier = await notifier.generateSynastryDossier(
         seekerName: 'Aria',
         partnerName: 'Julian',
@@ -203,6 +204,11 @@ void main() {
       expect(find.text('CANDLES'), findsOneWidget);
       expect(find.text('HOLO FOILS'), findsOneWidget);
       expect(find.text('SYNASTRY'), findsOneWidget);
+      expect(find.text('STARLIGHT SHARD BUNDLES'), findsNothing);
     });
   });
+}
+
+Future<void> _seedShards(int count) {
+  return CelestialBazaarStorage.instance.setShards(count);
 }

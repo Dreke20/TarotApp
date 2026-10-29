@@ -1,5 +1,5 @@
 # 🛡️ Google Play Store Compliance & Policy Declarations Playbook
-## Oraculum: Sacred AI Tarot (`oraculum.dirtysouth`)
+## Oraculum: Sacred AI Tarot (`com.tarotapp.tarot_app`)
 
 This document serves as the authoritative, comprehensive guide for completing all mandatory **App Content**, **Policy Declarations**, **Play App Signing**, and **US Export Laws** requirements in the **Google Play Console**.
 
@@ -96,12 +96,11 @@ Oraculum is an esoteric divination app designed for open, anonymous spiritual ex
 1. GUEST ACCESS:
 Seekers can immediately access all core features (Daily Guidance, Three Fates spread, Tarot Codex, Runes, I Ching, Moon Phase, Altar Cloths, and Card Back Geometries) directly upon opening the app without registering an account.
 
-2. PRO REVIEW ACCESS / BYPASS:
-To test premium features (Celtic Cross 10-card spread, multi-turn AI conversation, and premium soundscapes):
-- Tap the top-left crown icon or any locked spread to open the Oracle Pro modal.
-- Tap "Enter Promo Code".
-- Enter the reviewer unlock code: CELESTIAL_PRO
-- This will instantly grant the reviewer full Oracle Pro privileges for testing without requiring a financial transaction.
+2. PRO REVIEW ACCESS:
+Premium features (Celtic Cross 10-card spread, multi-turn AI conversation, and premium soundscapes) require an Oracle Pro entitlement from Google Play. There is no promo or reviewer unlock code.
+- Add the review Google account as a license tester in Play Console.
+- Complete a license-test purchase for oracle_pro_yearly, oracle_pro_monthly, or oracle_pro_lifetime.
+- Restore purchases on another device with that same account if the entitlement needs to be redelivered.
 ```
 
 ---
@@ -121,6 +120,8 @@ To test premium features (Celtic Cross 10-card spread, multi-turn AI conversatio
 | **App Info / Diagnostics** | Yes | No | Crash reports & error monitoring | Yes (TLS 1.3) | Diagnostic only |
 | **Device / Other IDs** | Yes | Yes (AdMob) | Advertising & fraud prevention (Free tier) | Yes (TLS 1.3) | Reset via Android Settings |
 
+Crashlytics adds device-or-other IDs that are **collected and not shared**: the Crashlytics installation UUID, the Firebase installation ID, and the Firebase session ID. Those are crash-grouping identifiers, not the AdMob advertising ID. Collection is **on in release** and **not optional** (no in-app opt-out). The field list is in [FIREBASE_CRASHLYTICS.md](FIREBASE_CRASHLYTICS.md).
+
 ---
 
 ## 🎯 Section 6: Official URLs for Play Console
@@ -129,5 +130,5 @@ To test premium features (Celtic Cross 10-card spread, multi-turn AI conversatio
   *(Raw alternative: `https://raw.githubusercontent.com/Dreke20/TarotApp/main/PRIVACY_POLICY.md`)*
 - **Account & Data Deletion URL:** `https://github.com/Dreke20/TarotApp/blob/main/ACCOUNT_DELETION.md`  
   *(Raw alternative: `https://raw.githubusercontent.com/Dreke20/TarotApp/main/ACCOUNT_DELETION.md`)*
-- **Support / Privacy Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
+- **Support / Privacy Email:** `oraculum26@gmail.com` / `dreke.dev@gmail.com`
 - **Developer Website / Repository:** `https://github.com/Dreke20/TarotApp`

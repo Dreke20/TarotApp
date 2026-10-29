@@ -22,6 +22,12 @@ class TarotLensIdentification {
   });
 }
 
+/// About 1.5 MB (1.5 * 1024 * 1024). Photos are compressed before this check.
+const int kMaxLensImageBytes = 1572864;
+
+bool lensImageWithinCap(int byteLength) =>
+    byteLength >= 0 && byteLength <= kMaxLensImageBytes;
+
 /// Service responsible for real-world photo capture and multimodal card scrying.
 class TarotLensService {
   /// Confidence used when the seeker picked the card themselves.
@@ -53,6 +59,10 @@ class TarotLensService {
 
     try {
       final bytes = await XFile(imagePath).readAsBytes();
+      if (!lensImageWithinCap(bytes.length)) {
+        debugPrint('Tarot Lens photo is over 1.5 MB after compression.');
+        return null;
+      }
       final lower = imagePath.toLowerCase();
       final mimeType = lower.endsWith('.png')
           ? 'image/png'
@@ -109,9 +119,9 @@ class TarotLensService {
     try {
       final XFile? file = await _picker.pickImage(
         source: ImageSource.camera,
-        imageQuality: 80,
-        maxWidth: 1080,
-        maxHeight: 1440,
+        imageQuality: 60,
+        maxWidth: 1024,
+        maxHeight: 1365,
       );
       return file?.path;
     } catch (_) {
@@ -124,9 +134,9 @@ class TarotLensService {
     try {
       final XFile? file = await _picker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 80,
-        maxWidth: 1080,
-        maxHeight: 1440,
+        imageQuality: 60,
+        maxWidth: 1024,
+        maxHeight: 1365,
       );
       return file?.path;
     } catch (_) {

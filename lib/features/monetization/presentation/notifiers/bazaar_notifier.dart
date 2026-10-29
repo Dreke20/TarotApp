@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/services/admob_service.dart';
 import '../../data/celestial_bazaar_storage.dart';
 import '../../domain/celestial_bazaar_models.dart';
+import '../../domain/shard_pack_purchases.dart';
 import 'bazaar_state.dart';
 
 export 'bazaar_state.dart';
@@ -119,10 +120,20 @@ class BazaarNotifier extends _$BazaarNotifier {
   }
 
   /// Purchases a consumable Starlight Shard bundle.
+  ///
+  /// Disabled until a Play Billing purchase is verified on the server.
+  /// Calling this does not credit shards.
   Future<bool> buyShardPack(ShardPack pack) async {
+    if (!kShardPackPurchasesEnabled) {
+      state = state.copyWith(
+        isProcessing: false,
+        message: null,
+        errorMessage: 'Starlight Shard packs are not available for purchase yet.',
+      );
+      return false;
+    }
     state = state.copyWith(isProcessing: true, message: null, errorMessage: null);
     try {
-      // In development / testing or native store completion:
       final updatedShards = state.shards + pack.shardCount;
       await _storage.setShards(updatedShards);
 

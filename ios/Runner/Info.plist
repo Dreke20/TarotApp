@@ -68,6 +68,8 @@
 	</array>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<key>FirebaseCrashlyticsCollectionEnabled</key>
+	<false/>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
@@ -76,9 +78,9 @@
 		</dict>
 	</array>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>The Conversational Oracle listens to your spoken questions so it can answer you aloud.</string>
+	<string>Oraculum uses the microphone so you can speak your tarot question. You can type your question instead.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Your spoken questions are transcribed so the Oracle can understand and respond.</string>
+	<string>Oraculum uses speech recognition to turn the question you speak into text for your reading. You can type your question instead.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>The AR Altar and Tarot Lens use the camera to project your spread onto your real surroundings.</string>
 </dict>

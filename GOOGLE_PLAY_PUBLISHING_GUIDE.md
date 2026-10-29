@@ -1,5 +1,5 @@
 # 🚀 Complete Google Play Store Publishing Guide
-## Oraculum: Sacred AI Tarot (`oraculum.dirtysouth`)
+## Oraculum: Sacred AI Tarot (`com.tarotapp.tarot_app`)
 
 This is the definitive, step-by-step master manual for taking **Oraculum** from your local machine to live publication on the **Google Play Store**. All technical preparation, code signing, security hardening, and compliance documentation have already been completed for you.
 
@@ -80,7 +80,7 @@ In the left-hand navigation menu, scroll down to **Grow** and click **Store pres
   - **App category:** `Lifestyle`
   - **Tags:** Click *Manage tags*, search and select: `Astrology`, `Lifestyle`, `Meditation`, `Entertainment`.
   - **Store listing contact details:**
-    - **Email address:** `privacy@oraculumtarot.com` (or your personal developer email `dreke.dev@gmail.com`)
+    - **Email address:** `oraculum26@gmail.com` (or your personal developer email `dreke.dev@gmail.com`)
     - **Website URL:** `https://oracalum.netlify.app`
 
 Click **Save** at the bottom right.
@@ -108,8 +108,7 @@ Complete each declaration as follows:
 ### 3. App Access (Reviewer Instructions)
 - Click **Start**.
 - Select: **"All functionality is available without special access"** *(Guest mode allows immediate access to all core divination rituals without an account)*.
-- *Optional review note:* If you want to give the reviewer instant Oracle Pro testing privileges without billing:
-  > *"Reviewers can test Oracle Pro features by tapping the top crown icon, selecting Enter Promo Code, and entering: CELESTIAL_PRO."*
+- *Optional review note:* Oracle Pro has no unlock code. Add the review account as a license tester and use a test purchase.
 - Click **Save**.
 
 ### 4. Content Ratings (IARC Questionnaire)
@@ -239,7 +238,7 @@ Click **In-app products > Create product**:
 3. In the **App bundles** drop zone:
    - Click **Upload** and select:
      `c:\Users\dreke\OneDrive\Desktop\TarotApp\build\app\outputs\bundle\release\app-release.aab`
-   - Wait for Google Play to inspect and upload the bundle. It will verify the package name (`oraculum.dirtysouth`), version code (`1`), and target SDK (`35`+).
+   - Wait for Google Play to inspect and upload the bundle. It will verify the package name (`com.tarotapp.tarot_app`), version code (`1`), and target SDK (`35`+).
 4. **Release name:** Set to `1.0.0 (1)`.
 5. **Release notes:** Paste:
    ```text
@@ -280,7 +279,7 @@ Google Play offers two primary testing tracks depending on your goal:
    - **Add email addresses:** Type or paste your testers' Gmail / Google account addresses separated by commas (e.g., `tester1@gmail.com, tester2@gmail.com`), or upload a `.csv` file.
    - Click **Save changes** at the bottom-right of the modal.
 4. **Make sure the checkbox next to your list is checked ☑️** to enable it for this track.
-5. In the *Feedback URL or email address* box, enter your support email (e.g., `privacy@oraculumtarot.com` or `dreke.dev@gmail.com`).
+5. In the *Feedback URL or email address* box, enter your support email (e.g., `oraculum26@gmail.com` or `dreke.dev@gmail.com`).
 6. Click **Save** at the bottom-right of the page.
 
 #### 2. Get and Share the Invitation Link
@@ -361,7 +360,7 @@ Google mandates **20 testers opted-in for at least 14 days** before you can appl
 
 ## 🌟 Support & Developer Troubleshooting
 If Google Play reviewers request any additional clarifications during the review:
-- **Review Access Promo Code:** `CELESTIAL_PRO` grants instant 1-year Pro testing.
-- **Support Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
+- **Review access:** Google Play license testing and a test purchase. There is no promo unlock code.
+- **Support Email:** `oraculum26@gmail.com` / `dreke.dev@gmail.com`
 - **Live Netlify Sanctuary:** `https://oracalum.netlify.app`
 - **Source Code Repository:** `https://github.com/Dreke20/TarotApp`

@@ -729,18 +729,24 @@ class _ProfileDialogState extends ConsumerState<ProfileDialog> {
                 foregroundColor: Colors.white,
               ),
               onPressed: () async {
+                final messenger = ScaffoldMessenger.of(context);
                 Navigator.of(ctx).pop();
                 Navigator.of(context).pop();
                 try {
-                  await ref.read(tarotRepositoryProvider).purgeAllUserData();
                   await ref.read(authNotifierProvider.notifier).deleteAccount();
+                  await ref.read(tarotRepositoryProvider).purgeAllUserData();
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.clear();
-                } catch (_) {}
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  messenger.showSnackBar(
                     const SnackBar(
                       content: Text('All personal data and account records have been permanently purged.'),
+                      backgroundColor: Color(0xFF450A0A),
+                    ),
+                  );
+                } catch (error) {
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text('Account deletion did not finish. ${error.toString()}'),
                       backgroundColor: Color(0xFF450A0A),
                     ),
                   );

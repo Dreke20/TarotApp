@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/constants/app_theme.dart';
 import 'core/services/admob_service.dart';
+import 'core/services/crash_reporting.dart';
 import 'features/notifications/data/notification_settings_store.dart';
 import 'features/notifications/data/sanctuary_notification_service.dart';
 import 'core/supabase/supabase_config.dart';
@@ -13,21 +14,13 @@ import 'features/tarot/presentation/screens/tarot_table_screen.dart';
 import 'features/tarot/services/tarot_widget_service.dart';
 import 'core/services/sensory_service.dart';
 
-import 'dart:ui' show PlatformDispatcher;
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Global uncaught error handling to prevent hard crashes in release
-  FlutterError.onError = (FlutterErrorDetails details) {
-    FlutterError.presentError(details);
-    debugPrint('[Oraculum Error] ${details.exceptionAsString()}');
-  };
-
-  PlatformDispatcher.instance.onError = (error, stack) {
-    debugPrint('[Oraculum Async Error] $error');
-    return true; // Handled safely to prevent crash
-  };
+  // Fatal framework and async errors go to Crashlytics when Firebase is
+  // configured. Debug builds and a missing google-services.json do not upload.
+  // Release builds enable collection. See FIREBASE_CRASHLYTICS.md.
+  await initCrashReporting();
 
   // Lock preferred orientation to portrait for sacred card table geometry
   await SystemChrome.setPreferredOrientations([

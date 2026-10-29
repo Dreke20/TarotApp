@@ -35,6 +35,7 @@ class HandsFreeCommunionModal extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final voiceState = ref.watch(handsFreeVoiceNotifierProvider);
     final voiceNotifier = ref.read(handsFreeVoiceNotifierProvider.notifier);
+    final notice = ref.watch(voiceInputNoticeProvider);
 
     final isListening = voiceState.isListening;
     final transcript = voiceState.currentTranscript;
@@ -161,6 +162,7 @@ class HandsFreeCommunionModal extends ConsumerWidget {
                   // Glowing Concentric Sound Wave Orb
                   Center(
                     child: GestureDetector(
+              key: const Key('voice_oracle_mic'),
               onTap: () {
                 HapticFeedback.mediumImpact();
                 if (isListening) {
@@ -248,6 +250,33 @@ class HandsFreeCommunionModal extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 12),
+          if (notice != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                notice.message,
+                key: const Key('voice_oracle_notice'),
+                textAlign: TextAlign.center,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 12.5,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ),
+          if (notice?.canOpenSettings ?? false)
+            TextButton(
+              key: const Key('voice_oracle_settings'),
+              onPressed: voiceNotifier.openSettings,
+              child: Text(
+                'Open Settings',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.goldBright,
+                ),
+              ),
+            ),
+          const SizedBox(height: 12),
 
           // Live Transcription Box
           Padding(
@@ -292,18 +321,12 @@ class HandsFreeCommunionModal extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    transcript.isEmpty
-                        ? (isListening
-                            ? 'Speak your question freely; atmospheric audio has been ducked...'
-                            : 'Speak to the altar, or choose an inquiry below...')
-                        : '"$transcript"',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 13.5,
-                      fontStyle: transcript.isEmpty ? FontStyle.italic : FontStyle.normal,
-                      color: transcript.isEmpty ? AppColors.textSecondary : AppColors.textPrimary,
-                      height: 1.4,
-                    ),
+                  _EditableIntention(
+                    transcript: transcript,
+                    onChanged: voiceNotifier.editTranscript,
+                    onFocus: () {
+                      if (isListening) voiceNotifier.stopListening();
+                    },
                   ),
                 ],
               ),
@@ -388,7 +411,91 @@ class HandsFreeCommunionModal extends ConsumerWidget {
                 ),
               ),
             ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+            child: Text(
+              'Audio is not saved in Oraculum. Recognition stays on this device when the phone supports it.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 10.5,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class _EditableIntention extends StatefulWidget {
+  const _EditableIntention({
+    required this.transcript,
+    required this.onChanged,
+    required this.onFocus,
+  });
+
+  final String transcript;
+  final ValueChanged<String> onChanged;
+  final VoidCallback onFocus;
+
+  @override
+  State<_EditableIntention> createState() => _EditableIntentionState();
+}
+
+class _EditableIntentionState extends State<_EditableIntention> {
+  late final TextEditingController _controller;
+  late final FocusNode _focus;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.transcript);
+    _focus = FocusNode();
+  }
+
+  @override
+  void didUpdateWidget(covariant _EditableIntention oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!_focus.hasFocus && _controller.text != widget.transcript) {
+      _controller.value = TextEditingValue(
+        text: widget.transcript,
+        selection: TextSelection.collapsed(offset: widget.transcript.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focus.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      key: const Key('voice_oracle_transcript'),
+      controller: _controller,
+      focusNode: _focus,
+      minLines: 1,
+      maxLines: 3,
+      onTap: widget.onFocus,
+      onChanged: widget.onChanged,
+      style: GoogleFonts.plusJakartaSans(
+        fontSize: 13.5,
+        color: AppColors.textPrimary,
+        height: 1.4,
+      ),
+      decoration: InputDecoration(
+        hintText: 'Speak your question, edit it here, or type instead.',
+        hintStyle: GoogleFonts.plusJakartaSans(
+          fontSize: 13,
+          fontStyle: FontStyle.italic,
+          color: AppColors.textSecondary,
+        ),
+        border: InputBorder.none,
+        isDense: true,
       ),
     );
   }

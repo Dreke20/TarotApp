@@ -1,7 +1,7 @@
 # Privacy Policy for Oraculum: Sacred AI Tarot
 
 **Effective Date:** October 16, 2026  
-**Last Updated:** October 27, 2026
+**Last Updated:** October 28, 2026
 
 Welcome to **Oraculum: Sacred AI Tarot** ("Oraculum", "we", "our", or "us"). We honor your sacred spiritual privacy. This Privacy Policy details how data is collected, processed, and safeguarded when you use our mobile application and associated services across Android devices.
 
@@ -24,6 +24,9 @@ If you explore Oraculum as an anonymous guest without signing in, all card draws
 - **Biometric Security:** If you enable the App Sanctum Lock, fingerprint or facial biometric authentication is handled exclusively by the Android OS Keystore / StrongBox (`local_auth`). Oraculum never accesses, receives, or stores your raw biometric markers.
 - **Hardware-Backed Cryptographic Vault:** High-security tokens, Starlight Passes, and offline Pro entitlements are sealed using dynamic 256-bit keys inside the hardware Android Keystore (`flutter_secure_storage`).
 
+#### D. Crash Diagnostics (Firebase Crashlytics)
+Release builds send crash diagnostics to **Firebase Crashlytics** (Google, Spark plan) so we can fix stability bugs. That includes stack traces, device model, OS version, app version, a Crashlytics installation UUID, a Firebase installation ID, and a Firebase session ID. We do **not** send your user id, email, moniker, tarot questions, readings, dream text, voice transcripts, or photos. We do not use Firebase Analytics. Debug builds do not upload. Details are in [FIREBASE_CRASHLYTICS.md](FIREBASE_CRASHLYTICS.md).
+
 ---
 
 ### 2. How We Use Your Information
@@ -32,6 +35,7 @@ If you explore Oraculum as an anonymous guest without signing in, all card draws
 - To verify and restore Google Play In-App Purchases, Oracle Pro subscriptions, and Celestial Bazaar acquisitions.
 - To display non-intrusive rewarded video offerings via Google AdMob (strictly for free-tier seekers seeking Starlight Passes).
 - To calculate live moon phases, lunar illumination, and astrological alignments.
+- To diagnose crashes on release builds via Firebase Crashlytics. Crash reports are not used for advertising and are not tied to your account.
 
 ---
 
@@ -59,6 +63,9 @@ If you explore Oraculum as an anonymous guest without signing in, all card draws
 - Celestial Shards and Starlight Tokens hold no real-world monetary cash value and cannot be redeemed outside the application.
 - Free-tier seekers may view optional rewarded video ads via Google AdMob, which collects advertising identifiers (GAID) in compliance with Google Play Advertising Policies. Oracle Pro subscribers enjoy a 100% ad-free experience.
 
+#### E. Firebase Crashlytics
+Release builds send crash diagnostics to Google Firebase Crashlytics. Reports are encrypted in transit (HTTPS) and at rest, kept for 90 days, and are not linked to your Oraculum account because we never set a Crashlytics user identifier. Deleting your account does not delete these anonymous crash reports; they age out on the 90-day schedule. See [FIREBASE_CRASHLYTICS.md](FIREBASE_CRASHLYTICS.md).
+
 ---
 
 ### 4. Data Security, Retention & Deletion
@@ -68,7 +75,7 @@ If you explore Oraculum as an anonymous guest without signing in, all card draws
 - **Web-Based Deletion Portal:** In compliance with Google Play policies, seekers can also request complete account and data deletion online without opening the application:  
   - **Portal URL:** `https://oracalum.netlify.app/delete-account`  
   - **Public Repository Form:** `https://github.com/Dreke20/TarotApp/blob/main/ACCOUNT_DELETION.md`  
-  - **Email Request:** Email `privacy@oraculumtarot.com` or `dreke.dev@gmail.com` with the subject *"Data Deletion Request"*. All records will be permanently erased within 30 days.
+  - **Email Request:** Email `oraculum26@gmail.com` or `dreke.dev@gmail.com` with the subject *"Data Deletion Request"*. All records will be permanently erased within 30 days.
 
 ---
 
@@ -92,7 +99,7 @@ Oraculum is designed for seekers aged **13 and older** (Teen / Everyone 10+). We
 
 ### 8. Contact & Sanctuary Desk
 For inquiries, rights requests, or feedback regarding this Privacy Policy:
-- **Privacy & Security Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
+- **Privacy & Security Email:** `oraculum26@gmail.com` / `dreke.dev@gmail.com`
 - **Official Website:** `https://oracalum.netlify.app`
 - **Account Deletion Portal:** `https://oracalum.netlify.app/delete-account`
 - **Developer GitHub:** `https://github.com/Dreke20/TarotApp`
