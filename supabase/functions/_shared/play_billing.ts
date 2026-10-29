@@ -66,21 +66,15 @@ export function parseServiceAccount(raw: string): ServiceAccount {
   };
 }
 
-export function productIdForPlan(plan: string | undefined, productId: string | undefined): string {
-  const explicit = (productId ?? "").trim();
-  if (explicit) return explicit;
-  switch ((plan ?? "").trim()) {
-    case "monthly":
-      return "oracle_pro_monthly";
-    case "lifetime":
-      return LIFETIME_PRODUCT_ID;
-    default:
-      return "oracle_pro_yearly";
-  }
+const ALLOWED_SUBSCRIPTION_IDS = new Set<string>(SUBSCRIPTION_PRODUCT_IDS);
+
+export function isAllowedSubscription(productId: string): boolean {
+  return ALLOWED_SUBSCRIPTION_IDS.has(productId);
 }
 
-export function isLifetimeProduct(productId: string, plan?: string): boolean {
-  return productId === LIFETIME_PRODUCT_ID || plan === "lifetime";
+/** Lifetime is only the one-time product. A client plan name cannot grant it. */
+export function isLifetimeProduct(productId: string): boolean {
+  return productId === LIFETIME_PRODUCT_ID;
 }
 
 /**
@@ -104,35 +98,38 @@ export function entitlementFromSubscription(
   expectedProductId: string,
   now: Date,
 ): PlayCheck {
+  if (!isAllowedSubscription(expectedProductId)) return { status: "unverified" };
   if (!body || typeof body !== "object") return { status: "unverified" };
   const record = body as Record<string, unknown>;
   const state = record.subscriptionState;
   if (typeof state !== "string") return { status: "unverified" };
   const lineItems = Array.isArray(record.lineItems) ? record.lineItems : [];
   let bestExpiry: string | null = null;
-  let matchedProduct = expectedProductId;
   const orderId = typeof record.latestOrderId === "string" ? record.latestOrderId : null;
   for (const item of lineItems) {
     if (!item || typeof item !== "object") continue;
     const line = item as Record<string, unknown>;
     const productId = typeof line.productId === "string" ? line.productId : "";
-    if (expectedProductId && productId && productId !== expectedProductId) continue;
+    if (productId !== expectedProductId) continue;
     const expiry = typeof line.expiryTime === "string" ? line.expiryTime : "";
-    if (!expiry) continue;
-    if (bestExpiry == null || new Date(expiry).getTime() > new Date(bestExpiry).getTime()) {
+    const parsed = new Date(expiry);
+    if (!expiry || Number.isNaN(parsed.getTime())) continue;
+    if (bestExpiry == null || parsed.getTime() > new Date(bestExpiry).getTime()) {
       bestExpiry = expiry;
-      if (productId) matchedProduct = productId;
     }
   }
+  // No matching allowlisted line item with a real expiry. Do not treat that
+  // as lifetime (a null expiry).
+  if (bestExpiry == null) return { status: "unverified" };
   const entitled = ENTITLED_SUBSCRIPTION_STATES.has(state) &&
-    proStillActive(true, bestExpiry, now);
+    new Date(bestExpiry).getTime() > now.getTime();
   if (!entitled) {
     return { status: "inactive", expiresAt: bestExpiry };
   }
   return {
     status: "entitled",
     purchase: {
-      productId: matchedProduct,
+      productId: expectedProductId,
       orderId,
       expiresAt: bestExpiry,
       lifetime: false,
@@ -144,6 +141,7 @@ export function entitlementFromProduct(
   body: unknown,
   productId: string,
 ): PlayCheck {
+  if (!isLifetimeProduct(productId)) return { status: "unverified" };
   if (!body || typeof body !== "object") return { status: "unverified" };
   const record = body as Record<string, unknown>;
   if (typeof record.purchaseState !== "number") return { status: "unverified" };
@@ -265,9 +263,17 @@ export class GooglePlayPurchaseVerifier {
   }): Promise<PlayCheck> {
     const token = input.purchaseToken.trim();
     if (token.length < 12) return { status: "unverified" };
-    const productId = productIdForPlan(input.plan, input.productId);
+    const productId = input.productId.trim();
+    const plan = (input.plan ?? "").trim();
+    // Lifetime is the product id only. plan=lifetime cannot retarget another product.
+    if (plan === "lifetime" && productId !== LIFETIME_PRODUCT_ID) {
+      return { status: "unverified" };
+    }
+    if (!isLifetimeProduct(productId) && !isAllowedSubscription(productId)) {
+      return { status: "unverified" };
+    }
     const access = await this.accessToken();
-    if (isLifetimeProduct(productId, input.plan)) {
+    if (isLifetimeProduct(productId)) {
       return await this.getProduct(productId, token, access);
     }
     return await this.getSubscription(productId, token, access);

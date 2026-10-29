@@ -294,6 +294,63 @@ Deno.test("subscriptionsv2 parsing rejects inactive and expired purchases", () =
   assertEquals(proStillActive(true, PAST, now), false);
   assertEquals(proStillActive(true, null, now), true);
   assertEquals(proStillActive(false, FUTURE, now), false);
+
+  const unknown = entitlementFromSubscription({
+    subscriptionState: "SUBSCRIPTION_STATE_ACTIVE",
+    lineItems: [{ productId: "oracle_pro_yearly", expiryTime: FUTURE }],
+  }, "made_up_subscription", now);
+  assertEquals(unknown.status, "unverified");
+
+  const skipped = entitlementFromSubscription({
+    subscriptionState: "SUBSCRIPTION_STATE_ACTIVE",
+    lineItems: [{ productId: "oracle_pro_yearly" }],
+  }, "oracle_pro_yearly", now);
+  assertEquals(skipped.status, "unverified");
+});
+
+Deno.test("an unknown subscription product id is unverified", async () => {
+  const calls: string[] = [];
+  const verifier = new GooglePlayPurchaseVerifier(
+    { client_email: "play@example.iam.gserviceaccount.com", private_key: "unused" },
+    PLAY_PACKAGE_NAME,
+    (url) => {
+      calls.push(url);
+      return Promise.resolve(new Response(JSON.stringify({
+        subscriptionState: "SUBSCRIPTION_STATE_ACTIVE",
+        lineItems: [{ productId: "oracle_pro_yearly", expiryTime: FUTURE }],
+      }), { status: 200 }));
+    },
+  );
+  const result = await verifier.verify({
+    productId: "made_up_subscription",
+    purchaseToken: "some-purchase-token",
+    plan: "yearly",
+  });
+  assertEquals(result.status, "unverified");
+  assertEquals(calls.length, 0);
+});
+
+Deno.test("plan=lifetime with a non-lifetime product is unverified", async () => {
+  const calls: string[] = [];
+  const verifier = new GooglePlayPurchaseVerifier(
+    { client_email: "play@example.iam.gserviceaccount.com", private_key: "unused" },
+    PLAY_PACKAGE_NAME,
+    (url) => {
+      calls.push(url);
+      return Promise.resolve(new Response(JSON.stringify({
+        purchaseState: 0,
+        orderId: "GPA.nope",
+      }), { status: 200 }));
+    },
+  );
+  const result = await verifier.verify({
+    productId: "oracle_pro_yearly",
+    purchaseToken: "some-purchase-token",
+    plan: "lifetime",
+  });
+  assertEquals(result.status, "unverified");
+  assertEquals(calls.some((url) => url.includes("/purchases/products/")), false);
+  assertEquals(calls.length, 0);
 });
 
 Deno.test("service account JSON without a private key is rejected", () => {
