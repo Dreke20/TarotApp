@@ -60,103 +60,64 @@ class SubscriptionNotifier extends _$SubscriptionNotifier {
     );
   }
 
-  /// Triggers purchase for the currently selected plan.
-  /// Uses native Google Play Billing / StoreKit if available;
-  /// gracefully falls back to celestial cloud verification in development or offline mode.
+  /// Starts a native store purchase for the selected plan.
+  ///
+  /// Pro is applied only after the store reports a purchase and its receipt
+  /// is accepted. A failed or unavailable store does not grant Pro.
   Future<bool> purchaseSelectedPlan() async {
     state = state.copyWith(isSubmitting: true, errorMessage: null, successMessage: null);
 
     try {
-      if (state.isAvailable) {
-        final launched = await _iapService.buyPlan(
-          state.selectedPlan,
-          offerToken: state.offerTokenFor(state.selectedPlan),
-        );
-        if (launched) {
-          // Native purchase sheet opened; completion is handled asynchronously via purchase stream
-          return true;
-        }
-      }
-
-      // Fallback: direct server verification (e.g. testing / sandbox / desktop / web)
-      final planName = state.selectedPlan.name;
-      final success = await ref.read(authNotifierProvider.notifier).activatePro(
-            action: 'subscribe',
-            plan: planName,
-          );
-
-      if (success) {
+      if (state.isLoading || !state.isAvailable) {
         state = state.copyWith(
           isSubmitting: false,
-          successMessage: 'Welcome to Oracle Pro! All celestial mysteries are unlocked.',
+          errorMessage: state.isLoading
+              ? 'The store is still connecting. Try the purchase again in a moment.'
+              : 'Google Play billing is unavailable. Oracle Pro can only be unlocked with a store purchase.',
         );
-        return true;
-      } else {
-        final error = ref.read(authNotifierProvider).errorMessage ?? 'Subscription could not be verified.';
-        state = state.copyWith(isSubmitting: false, errorMessage: error);
         return false;
       }
+
+      final launched = await _iapService.buyPlan(
+        state.selectedPlan,
+        offerToken: state.offerTokenFor(state.selectedPlan),
+      );
+      if (!launched) {
+        state = state.copyWith(
+          isSubmitting: false,
+          errorMessage: 'Could not start the store purchase. Oracle Pro was not unlocked.',
+        );
+        return false;
+      }
+
+      return true;
     } catch (e) {
       state = state.copyWith(isSubmitting: false, errorMessage: e.toString());
       return false;
     }
   }
 
-  /// Restores previous purchases through native store and server records.
+  /// Asks the store to redeliver previous purchases.
+  ///
+  /// Restored entitlements arrive on the purchase stream and are verified
+  /// individually. This does not grant Pro when the store has nothing to restore.
   Future<bool> restorePurchases() async {
     state = state.copyWith(isSubmitting: true, errorMessage: null, successMessage: null);
 
     try {
-      if (state.isAvailable) {
-        await _iapService.restorePurchases();
-      }
-
-      final success = await ref.read(authNotifierProvider.notifier).activatePro(
-            action: 'restore_purchase',
-          );
-
-      if (success) {
+      if (state.isLoading || !state.isAvailable) {
         state = state.copyWith(
           isSubmitting: false,
-          successMessage: 'Oracle Pro purchases restored successfully.',
+          errorMessage: state.isLoading
+              ? 'The store is still connecting. Try restore again in a moment.'
+              : 'The store is unavailable. Oracle Pro can only be restored from a previous purchase.',
         );
-        return true;
-      } else {
-        final error = ref.read(authNotifierProvider).errorMessage ??
-            'No active Oracle Pro subscription found to restore.';
-        state = state.copyWith(isSubmitting: false, errorMessage: error);
         return false;
       }
-    } catch (e) {
-      state = state.copyWith(isSubmitting: false, errorMessage: e.toString());
-      return false;
-    }
-  }
 
-  /// Redeems a celestial promo code (e.g. CELESTIAL_PRO, ORACULUM_2026).
-  Future<bool> redeemPromoCode(String code) async {
-    final cleanCode = code.trim().toUpperCase();
-    if (cleanCode.isEmpty) return false;
-
-    state = state.copyWith(isSubmitting: true, errorMessage: null, successMessage: null);
-
-    try {
-      final success = await ref.read(authNotifierProvider.notifier).activatePro(
-            action: 'redeem_promo',
-            promoCode: cleanCode,
-          );
-
-      if (success) {
-        state = state.copyWith(
-          isSubmitting: false,
-          successMessage: 'Celestial code "$cleanCode" redeemed! Welcome to Oracle Pro.',
-        );
-        return true;
-      } else {
-        final error = ref.read(authNotifierProvider).errorMessage ?? 'Invalid or expired celestial code.';
-        state = state.copyWith(isSubmitting: false, errorMessage: error);
-        return false;
-      }
+      await _iapService.restorePurchases();
+      state = state.copyWith(isSubmitting: false);
+      return true;
     } catch (e) {
       state = state.copyWith(isSubmitting: false, errorMessage: e.toString());
       return false;

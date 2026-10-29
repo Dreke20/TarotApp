@@ -39,7 +39,7 @@ If you have uninstalled the application or cannot access your device, you can su
 
 ### How to Request Deletion:
 Send an email to our dedicated data privacy desk:
-- **Email:** `privacy@oraculumtarot.com` or `dreke.dev@gmail.com`
+- **Email:** `oraculum26@gmail.com` or `dreke.dev@gmail.com`
 - **Subject:** `Data & Account Deletion Request - Oraculum`
 - **Required Information:**
   - The email address associated with your Oraculum account.
@@ -78,4 +78,4 @@ This deletion policy adheres to:
 For any questions regarding your data privacy, account deletion, or personal information:
 - **Developer / Publisher:** Rodriguez Edwards
 - **GitHub Repository:** [https://github.com/Dreke20/TarotApp](https://github.com/Dreke20/TarotApp)
-- **Data Protection Email:** `privacy@oraculumtarot.com` / `dreke.dev@gmail.com`
+- **Data Protection Email:** `oraculum26@gmail.com` / `dreke.dev@gmail.com`

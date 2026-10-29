@@ -171,15 +171,32 @@ class AuthRepository {
   }
 
 
-  /// Securely verifies and activates Oracle Pro through the Supabase Edge Function
+  /// Activates Oracle Pro from a store purchase receipt.
+  ///
+  /// Promo redemption is rejected. A non-empty store receipt is required.
   Future<UserProfile> verifyAndActivatePro({
     String action = 'subscribe',
     String plan = 'yearly',
-    String? promoCode,
     String? receipt,
     String? productId,
     String? source,
   }) async {
+    if (action == 'redeem_promo') {
+      throw Exception(
+        'Promo codes are not accepted. Oracle Pro is available through the store.',
+      );
+    }
+
+    final purchaseReceipt = receipt?.trim() ?? '';
+    if (purchaseReceipt.isEmpty) {
+      throw Exception(
+        'A store purchase receipt is required to activate Oracle Pro.',
+      );
+    }
+    if (action != 'subscribe' && action != 'restore_purchase') {
+      throw Exception('Oracle Pro can only be activated from a store purchase.');
+    }
+
     if (_supabase != null && SupabaseConfig.isConfigured) {
       final user = _supabase.auth.currentUser;
       if (user != null) {
@@ -188,10 +205,7 @@ class AuthRepository {
           body: {
             'action': action,
             'plan': plan,
-            if (promoCode != null && promoCode.trim().isNotEmpty)
-              'promo_code': promoCode.trim(),
-            if (receipt != null && receipt.trim().isNotEmpty)
-              'receipt': receipt.trim(),
+            'receipt': purchaseReceipt,
             'product_id': ?productId,
             'source': ?source,
           },
@@ -209,7 +223,7 @@ class AuthRepository {
       }
     }
 
-    // Local / Guest fallback for offline testing
+    // Guest session: the store already produced a receipt.
     _localProfile = _localProfile.copyWith(isPro: true);
     await _storage.saveProfile(_localProfile);
     return _localProfile;
