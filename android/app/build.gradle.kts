@@ -65,10 +65,9 @@ android {
     buildTypes {
         release {
             val releaseSigning = signingConfigs.findByName("release")
-            if (releaseSigning?.storeFile != null && releaseSigning.storeFile!!.exists()) {
+            val store = releaseSigning?.storeFile
+            if (keystorePropertiesFile.exists() && store != null && store.exists()) {
                 signingConfig = releaseSigning
-            } else {
-                signingConfig = signingConfigs.getByName("debug")
             }
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
@@ -97,6 +96,30 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+}
+
+// A release artifact must be signed with the upload key. Do not fall back to
+// the debug keystore when android/key.properties is missing.
+gradle.taskGraph.whenReady {
+    val assemblingRelease = allTasks.any { task ->
+        val name = task.name
+        val isRelease = name.contains("Release")
+        val packagesApp = name.startsWith("assemble") ||
+            name.startsWith("bundle") ||
+            name.startsWith("sign") ||
+            name.startsWith("package")
+        isRelease && packagesApp
+    }
+    if (!assemblingRelease) return@whenReady
+    if (!keystorePropertiesFile.exists()) {
+        throw GradleException(
+            "Release builds require android/key.properties and an upload keystore. Refusing to sign with the debug key.",
+        )
+    }
+    val storePath = keystoreProperties.getProperty("storeFile")
+    if (storePath.isNullOrBlank()) {
+        throw GradleException("android/key.properties is missing storeFile.")
+    }
 }
 
 // google-services fails the build when the json is missing or its package_name
