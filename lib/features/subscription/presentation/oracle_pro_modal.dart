@@ -6,6 +6,7 @@ import '../../../core/services/external_launch_service.dart';
 import '../../monetization/presentation/widgets/starlight_offering_modal.dart';
 import '../../monetization/presentation/widgets/mystic_bazaar_modal.dart';
 import '../../tarot/presentation/widgets/glass_container.dart';
+import '../domain/subscription_offer.dart';
 import '../domain/subscription_plan.dart';
 import 'subscription_notifier.dart';
 
@@ -234,9 +235,10 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                     ),
                     const SizedBox(height: 18),
 
-                    // Featured Annual Plan Card (with 3-day Free Trial)
                     _buildFeaturedAnnualCard(
-                      price: subState.priceFor(SubscriptionPlan.yearly),
+                      price: subState.paywallPriceFor(SubscriptionPlan.yearly),
+                      trialPhrase: subState.trialPhraseFor(SubscriptionPlan.yearly),
+                      savingsLabel: subState.yearlySavingsLabel,
                       isSelected: subState.selectedPlan == SubscriptionPlan.yearly,
                       onTap: () => subNotifier.selectPlan(SubscriptionPlan.yearly),
                     ),
@@ -248,7 +250,7 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                         Expanded(
                           child: _buildPlanCard(
                             plan: SubscriptionPlan.monthly,
-                            price: subState.priceFor(SubscriptionPlan.monthly),
+                            price: subState.paywallPriceFor(SubscriptionPlan.monthly),
                             badgeText: 'FLEXIBLE',
                             isSelected: subState.selectedPlan == SubscriptionPlan.monthly,
                             onTap: () => subNotifier.selectPlan(SubscriptionPlan.monthly),
@@ -258,7 +260,7 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                         Expanded(
                           child: _buildPlanCard(
                             plan: SubscriptionPlan.lifetime,
-                            price: subState.priceFor(SubscriptionPlan.lifetime),
+                            price: subState.paywallPriceFor(SubscriptionPlan.lifetime),
                             badgeText: 'ONE-TIME',
                             isSelected: subState.selectedPlan == SubscriptionPlan.lifetime,
                             onTap: () => subNotifier.selectPlan(SubscriptionPlan.lifetime),
@@ -394,9 +396,9 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  onPressed: subState.isSubmitting
-                      ? null
-                      : () => subNotifier.purchaseSelectedPlan(),
+                  onPressed: subState.canPurchase(subState.selectedPlan)
+                      ? () => subNotifier.purchaseSelectedPlan()
+                      : null,
                   child: subState.isSubmitting
                       ? const SizedBox(
                           width: 20,
@@ -408,7 +410,7 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                           ),
                         )
                       : Text(
-                          _getPlanButtonLabel(subState.selectedPlan),
+                          _getPlanButtonLabel(subState),
                           textAlign: TextAlign.center,
                           style: GoogleFonts.cinzel(
                             fontSize: 12.0,
@@ -422,11 +424,7 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
             ),
             const SizedBox(height: 6),
             Text(
-              subState.selectedPlan == SubscriptionPlan.yearly
-                  ? 'Includes 3-day free trial. Cancel anytime in Google Play.'
-                  : subState.selectedPlan == SubscriptionPlan.lifetime
-                      ? 'One-time investment. All future updates included forever.'
-                      : 'Monthly subscription. Cancel anytime in Google Play.',
+              _planFootnote(subState),
               textAlign: TextAlign.center,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 9.5,
@@ -547,15 +545,36 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
     );
   }
 
-  String _getPlanButtonLabel(SubscriptionPlan plan) {
-    switch (plan) {
-      case SubscriptionPlan.yearly:
-        return '✦ START 3-DAY FREE TRIAL & UPGRADE ✦';
-      case SubscriptionPlan.lifetime:
-        return '✦ UNLOCK LIFETIME ACCESS ✦';
-      case SubscriptionPlan.monthly:
-        return '✦ SUBSCRIBE TO ORACLE PRO ✦';
+  String _getPlanButtonLabel(SubscriptionState state) {
+    if (state.isLoading) return '✦ LOADING PRICES ✦';
+    if (!state.isAvailable ||
+        state.paywallPriceFor(state.selectedPlan) == PaywallQuote.unavailablePrice) {
+      return '✦ STORE UNAVAILABLE ✦';
     }
+    final trial = state.trialPhraseFor(state.selectedPlan);
+    if (trial != null) return '✦ START ${trial.toUpperCase()} ✦';
+    if (state.selectedPlan == SubscriptionPlan.lifetime) {
+      return '✦ UNLOCK LIFETIME ACCESS ✦';
+    }
+    return '✦ SUBSCRIBE TO ORACLE PRO ✦';
+  }
+
+  String _planFootnote(SubscriptionState state) {
+    if (state.isLoading) return 'Loading prices from the store…';
+    if (!state.isAvailable) {
+      return 'Store unavailable. Purchases stay disabled until the store returns live prices.';
+    }
+    if (state.selectedPlan == SubscriptionPlan.lifetime) {
+      return 'One-time investment. All future updates included forever.';
+    }
+    final trial = state.trialPhraseFor(state.selectedPlan);
+    if (trial != null) {
+      return '$trial, then the price shown. Cancel anytime in your store subscriptions.';
+    }
+    if (state.selectedPlan == SubscriptionPlan.yearly) {
+      return 'Annual subscription. Cancel anytime in your store subscriptions.';
+    }
+    return 'Monthly subscription. Cancel anytime in your store subscriptions.';
   }
 
   Widget _buildFeatureRow({
@@ -608,6 +627,8 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
 
   Widget _buildFeaturedAnnualCard({
     required String price,
+    required String? trialPhrase,
+    required String? savingsLabel,
     required bool isSelected,
     required VoidCallback onTap,
   }) {
@@ -638,46 +659,50 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
-                        decoration: BoxDecoration(
-                          gradient: AppColors.goldButtonGradient,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Text(
-                          'SAVE 58%',
-                          style: GoogleFonts.cinzel(
-                            fontSize: 8.5,
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFF09080C),
+                  if (savingsLabel != null || trialPhrase != null)
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: [
+                        if (savingsLabel != null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+                            decoration: BoxDecoration(
+                              gradient: AppColors.goldButtonGradient,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Text(
+                              savingsLabel,
+                              style: GoogleFonts.cinzel(
+                                fontSize: 8.5,
+                                fontWeight: FontWeight.w900,
+                                color: const Color(0xFF09080C),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
-                        decoration: BoxDecoration(
-                          color: AppColors.etherealLavender.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(
-                            color: AppColors.etherealLavender.withValues(alpha: 0.5),
-                            width: 0.8,
+                        if (trialPhrase != null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+                            decoration: BoxDecoration(
+                              color: AppColors.etherealLavender.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(
+                                color: AppColors.etherealLavender.withValues(alpha: 0.5),
+                                width: 0.8,
+                              ),
+                            ),
+                            child: Text(
+                              trialPhrase.toUpperCase(),
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 8.5,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.etherealLavender,
+                              ),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          '3-DAY FREE TRIAL',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 8.5,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.etherealLavender,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 7),
+                      ],
+                    ),
+                  if (savingsLabel != null || trialPhrase != null) const SizedBox(height: 7),
                   Text(
                     'ANNUAL SANCTUARY',
                     style: GoogleFonts.cinzel(
@@ -689,7 +714,17 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Only \$4.17/month · Cancel anytime',
+                    price,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                      height: 1.3,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Cancel anytime',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 10,
                       color: AppColors.textSecondary,
@@ -702,15 +737,6 @@ class _OracleProModalState extends ConsumerState<OracleProModal> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  price,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 6),
                 Container(
                   width: 20,
                   height: 20,
