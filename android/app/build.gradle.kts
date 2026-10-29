@@ -121,6 +121,14 @@ gradle.taskGraph.whenReady {
     if (storePath.isNullOrBlank()) {
         throw GradleException("android/key.properties is missing storeFile.")
     }
+    val namedStore = File(storePath)
+    val resolvedStore = if (namedStore.isAbsolute) namedStore else rootProject.file(storePath)
+    if (!resolvedStore.exists()) {
+        throw GradleException(
+            "Release builds require the upload keystore named in android/key.properties. " +
+                "Refusing to sign with the debug key.",
+        )
+    }
 }
 
 // google-services fails the build when the json is missing or its package_name

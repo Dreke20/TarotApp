@@ -8,5 +8,10 @@ void main() {
     expect(gradle.contains('signingConfigs.getByName("debug")'), isFalse);
     expect(gradle, contains('Refusing to sign with the debug key'));
     expect(gradle, contains('keystorePropertiesFile.exists()'));
+    expect(gradle, contains('resolvedStore.exists()'));
+    expect(
+      gradle,
+      contains('upload keystore named in android/key.properties'),
+    );
   });
 }
